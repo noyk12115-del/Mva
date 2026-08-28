@@ -1,0 +1,1930 @@
+<meta charset="utf-8">
+<title>MVA Trainer</title>
+<style>
+:root{
+  --bg:#f4f7f9; --surface:#ffffff; --surface-2:#eef3f6; --line:#d8e2e8;
+  --text:#12232c; --muted:#5b7280; --brand:#0d7a72; --brand-2:#0a5f59; --brand-soft:#e8f6f4;
+  --on-brand:#ffffff; --on-bad:#ffffff;
+  --ok:#1c7c4a; --ok-soft:#e3f5ea; --warn:#a15c00; --warn-soft:#fdf1dc;
+  --bad:#b3261e; --bad-soft:#fbe6e5; --accent:#7b4bd6; --accent-soft:#efe8fb;
+  --radius:14px; --shadow:0 1px 2px rgba(16,40,50,.06),0 6px 20px rgba(16,40,50,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1518; --surface:#152025; --surface-2:#1c2a30; --line:#27383f;
+    --text:#e6eef1; --muted:#9db0b9; --brand:#3fbfb2; --brand-2:#5fd6c8; --brand-soft:#123832;
+    --on-brand:#04231f; --on-bad:#3a0f0c;
+    --ok:#5cd08c; --ok-soft:#123324; --warn:#e2a44a; --warn-soft:#3a2c14;
+    --bad:#ff8a80; --bad-soft:#3a1c1a; --accent:#b79bf0; --accent-soft:#241a3a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1518; --surface:#152025; --surface-2:#1c2a30; --line:#27383f;
+  --text:#e6eef1; --muted:#9db0b9; --brand:#3fbfb2; --brand-2:#5fd6c8; --brand-soft:#123832;
+  --on-brand:#04231f; --on-bad:#3a0f0c;
+  --ok:#5cd08c; --ok-soft:#123324; --warn:#e2a44a; --warn-soft:#3a2c14;
+  --bad:#ff8a80; --bad-soft:#3a1c1a; --accent:#b79bf0; --accent-soft:#241a3a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text); line-height:1.7;
+  font-family:"Noto Sans Thai","Sarabun","IBM Plex Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  font-size:16px; -webkit-text-size-adjust:100%;
+}
+img{max-width:100%}
+button{font:inherit;color:inherit}
+a{color:var(--brand);text-underline-offset:3px}
+
+/* header */
+.stickytop{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar{background:var(--surface)}
+.topbar-in{max-width:960px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;flex:none}
+.brand h1{margin:0;font-size:16px;font-weight:800;letter-spacing:.2px}
+.brand p{margin:0;font-size:12px;color:var(--muted)}
+@media(max-width:560px){.brand p{display:none}}
+.spacer{flex:1}
+.icon-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;width:44px;height:44px;
+  cursor:pointer;display:grid;place-items:center;font-size:16px}
+.icon-btn:hover{border-color:var(--brand)}
+
+nav.tabs{background:var(--surface);border-top:1px solid var(--line)}
+.tabs-in{max-width:960px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+.tabs-in::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;padding:11px 13px;font-size:14px;font-weight:600;color:var(--muted);
+  border:0;background:none;border-bottom:2.5px solid transparent;cursor:pointer}
+.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+
+main{max-width:960px;margin:0 auto;padding:18px 16px 80px}
+.page-head{margin:0 0 14px}
+.page-head h2{margin:0 0 4px;font-size:22px;font-weight:800;letter-spacing:-.2px}
+.page-head p{margin:0;color:var(--muted);font-size:14px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:17px;font-weight:700}
+.grid{display:grid;gap:12px}
+@media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}}
+
+.tile{display:block;width:100%;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px;cursor:pointer;box-shadow:var(--shadow);text-align:start;transition:.15s}
+.tile:hover{border-color:var(--brand);transform:translateY(-1px)}
+.tile .row{display:flex;gap:11px;align-items:flex-start}
+.tile .em{font-size:22px;line-height:1.2}
+.tile b{display:block;font-size:15px}
+.tile small{color:var(--muted);font-size:13px;display:block;margin-top:2px}
+
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;
+  background:var(--brand-soft);color:var(--brand);border:1px solid transparent}
+.pill.gray{background:var(--surface-2);color:var(--muted)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+
+.btn{border:1px solid var(--line);background:var(--surface-2);border-radius:11px;padding:10px 15px;
+  font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.primary:hover{background:var(--brand-2);border-color:var(--brand-2);color:var(--on-brand)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.bar{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent))}
+.stat{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;font-size:13px}
+.stat b{font-size:15px}
+
+/* content blocks */
+.body p{margin:0 0 10px}
+.body ul,.body ol{margin:0 0 12px;padding-inline-start:22px}
+.body li{margin-bottom:6px}
+.h4{margin:18px 0 8px;font-size:15.5px;font-weight:800;color:var(--brand);
+  border-inline-start:3px solid var(--brand);padding-inline-start:9px}
+.note{border-radius:12px;padding:11px 13px;margin:0 0 12px;font-size:14.5px;border:1px solid transparent}
+.note.warn{background:var(--warn-soft);border-color:var(--warn);color:var(--text)}
+.note.tip{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+.note b{display:block;margin-bottom:2px}
+.tablewrap{overflow-x:auto;margin:0 0 12px;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:340px;font-size:14px}
+th,td{padding:9px 11px;text-align:start;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface-2);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.kv{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.kv div{display:grid;grid-template-columns:minmax(120px,38%) 1fr;border-bottom:1px solid var(--line);font-size:14px}
+.kv div:last-child{border-bottom:0}
+.kv span{padding:9px 11px}
+.kv span:first-child{background:var(--surface-2);font-weight:700}
+.pearls{background:var(--brand-soft);border-radius:12px;padding:12px 14px;margin-top:14px}
+.pearls b{display:block;margin-bottom:5px;font-size:14px}
+.pearls ul{margin:0;padding-inline-start:20px;font-size:14.5px}
+
+/* quiz */
+.choice{display:block;width:100%;text-align:start;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:12px;padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:15px;transition:.12s}
+.choice:hover:not(:disabled){border-color:var(--brand);background:var(--surface-2)}
+.choice.correct{border-color:var(--ok);background:var(--ok-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice.picked{border-color:var(--brand);background:var(--brand-soft)}
+.choice:disabled{cursor:default}
+.qmeta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:var(--muted)}
+.why{border-radius:12px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line);font-size:14.5px;margin-top:10px}
+.why b{color:var(--brand)}
+
+/* checklist */
+.ci{border-bottom:1px solid var(--line);padding:11px 0}
+.ci:last-child{border-bottom:0}
+.ci .t{font-size:14.8px;margin-bottom:7px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1.5px solid var(--line);background:var(--surface);border-radius:9px;padding:5px 12px;
+  font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.seg button.on.z{background:var(--bad);border-color:var(--bad);color:var(--on-bad)}
+.hintline{font-size:12.5px;color:var(--muted);margin-top:5px}
+
+/* order game */
+.slot{display:flex;gap:9px;align-items:center;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:11px;padding:10px 12px;margin-bottom:8px;font-size:14.5px}
+.slot .n{width:26px;height:26px;flex:none;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+  display:grid;place-items:center;font-weight:800;font-size:13px}
+.slot.correct{border-color:var(--ok);background:var(--ok-soft)}
+.slot.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.pool button{display:block;width:100%;text-align:start;background:var(--surface);border:1.5px dashed var(--line);
+  border-radius:11px;padding:10px 12px;margin-bottom:8px;font-size:14.5px;cursor:pointer}
+.pool button:hover{border-color:var(--brand);border-style:solid}
+
+/* flashcard */
+.flash{min-height:190px;display:grid;place-items:center;text-align:center;padding:26px 18px;cursor:pointer;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.flash .q{font-size:19px;font-weight:800}
+.flash .a{font-size:16.5px;margin-top:10px;color:var(--brand)}
+.flash small{display:block;margin-top:12px;color:var(--muted);font-size:12.5px}
+
+.empty{text-align:center;color:var(--muted);padding:30px 10px}
+footer.disc{max-width:960px;margin:0 auto;padding:18px 16px 40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line)}
+
+@media print{
+  /* บังคับให้หน้าพิมพ์เป็นขาว-ดำเสมอ แม้ผู้ใช้กำลังเปิดโหมดมืดอยู่ */
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{
+    --bg:#fff;--surface:#fff;--surface-2:#fff;--line:#999;--text:#000;--muted:#333;
+    --brand:#000;--brand-2:#000;--brand-soft:#f0f0f0;--accent:#000;--accent-soft:#f4f4f4;
+    --ok:#000;--ok-soft:#f0f0f0;--warn:#000;--warn-soft:#f4f4f4;--bad:#000;--bad-soft:#f4f4f4;
+    --on-brand:#fff;--on-bad:#fff;--shadow:none;
+  }
+  .stickytop,.topbar,nav.tabs,.btn-row,.no-print,footer.disc{display:none!important}
+  body{background:#fff;color:#000;font-size:11.5pt}
+  main{padding:0}
+  .card{box-shadow:none;break-inside:avoid;border-color:#999;margin-bottom:10px;padding:12px}
+  .ci{break-inside:avoid}
+  .seg button{border-color:#999;color:#000}
+  .seg button:not(.on){opacity:.35}
+  .seg button.on{background:#000!important;color:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pill{border:1px solid #666;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bar{border-color:#999}
+  .inp{border:0;border-bottom:1px solid #000;border-radius:0;padding-inline:0}
+  th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .note,.pearls{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ช่องกรอกหัวใบประเมิน */
+.card.soft{background:var(--surface-2);box-shadow:none}
+.topbar-in .icon-btn+.icon-btn{margin-inline-start:6px}
+.metagrid{display:grid;gap:10px}
+@media(min-width:640px){.metagrid{grid-template-columns:repeat(3,1fr)}}
+.metagrid label{display:block}
+.metagrid span{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.inp{width:100%;font:inherit;font-size:15px;padding:9px 11px;border:1.5px solid var(--line);
+  border-radius:10px;background:var(--surface);color:var(--text)}
+.inp:focus{outline:none;border-color:var(--brand)}
+
+/* โฟกัสที่มองเห็นได้ชัดสำหรับการใช้คีย์บอร์ด */
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+/* เป้าหมายการแตะบนมือถือ */
+@media(pointer:coarse){
+  .btn{padding:12px 16px}
+  .seg button{padding:9px 14px}
+  .choice{padding:14px}
+  .tab{padding:13px 14px}
+}
+
+</style>
+<div class="stickytop">
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="logo">MVA</div>
+    <div class="brand">
+      <h1>MVA Trainer</h1>
+      <p>ฝึกหัตถการดูดชิ้นเนื้อในโพรงมดลูกด้วยมือ — ใช้ทำงานและเตรียมสอบ</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="shareTop" title="ส่งลิงก์หน้านี้ให้คนอื่น" aria-label="ส่งลิงก์หน้านี้">🔗</button>
+    <button class="icon-btn" id="themeBtn" title="สลับโหมดสว่าง/มืด" aria-label="สลับธีม">◐</button>
+  </div>
+</header>
+
+<nav class="tabs"><div class="tabs-in" id="tabs"></div></nav>
+</div>
+
+<main id="view" tabindex="-1"></main>
+<noscript><div style="max-width:960px;margin:0 auto;padding:24px 16px"><b>แอปนี้ต้องเปิดใช้งาน JavaScript</b> — กรุณาเปิด JavaScript ในเบราว์เซอร์แล้วโหลดหน้านี้ใหม่</div></noscript>
+
+<footer class="disc">
+  <b>ข้อจำกัดความรับผิดชอบ</b> — เนื้อหาในแอปนี้จัดทำเพื่อการศึกษาและทบทวนของบุคลากรทางการแพทย์เท่านั้น
+  ไม่ใช่คำสั่งการรักษาสำหรับผู้ป่วยรายบุคคล ก่อนนำไปปฏิบัติให้ตรวจสอบกับแนวปฏิบัติล่าสุดขององค์การอนามัยโลก
+  ราชวิทยาลัยสูตินรีแพทย์แห่งประเทศไทย ประกาศกระทรวงสาธารณสุข ข้อบังคับแพทยสภา และระเบียบของหน่วยงานท่านเสมอ
+  ขนาดยาและตัวเลขทุกค่าต้องทวนกับเอกสารกำกับยาและแนวทางของสถานพยาบาลก่อนใช้จริง
+  <br><br>ข้อมูลความก้าวหน้าทั้งหมดถูกเก็บไว้ในเครื่องของท่านเอง (localStorage) ไม่มีการส่งออกไปที่ใด
+</footer>
+<script>
+/* บทเรียน MVA — เนื้อหาหลัก */
+window.MVA = window.MVA || {};
+window.MVA.lessons = [
+{
+  id: "overview",
+  title: "ภาพรวม MVA และหลักฐานเชิงประจักษ์",
+  icon: "🧭",
+  minutes: 8,
+  summary: "MVA คืออะไร ต่างจาก D&C / EVA / ยาอย่างไร และทำไม WHO จึงแนะนำให้เลิกใช้การขูดมดลูกด้วยโลหะ",
+  sections: [
+    { h: "นิยาม",
+      body: [
+        "MVA (Manual Vacuum Aspiration) คือการดูดชิ้นเนื้อในโพรงมดลูกออกด้วยแรงดันลบที่สร้างจากกระบอกฉีดยาแบบมือ ผ่านท่อดูด (cannula) พลาสติกที่สอดผ่านปากมดลูก โดยไม่ต้องใช้ไฟฟ้า",
+        { kv: [
+          ["แรงดันลบที่ใช้", "ประมาณ 24–26 นิ้วปรอท (≈ 609–660 mmHg) หรือราว 0.8 บรรยากาศ"],
+          ["ความจุกระบอก", "60 มล. (Ipas MVA Plus แบบ double-valve)"],
+          ["อายุครรภ์ที่เหมาะสม", "ขนาดมดลูก ≤ 12 สัปดาห์ เป็นเกณฑ์ที่ใช้กันทั่วไป บางแนวทางขยายถึงประมาณ 14 สัปดาห์ในมือผู้ชำนาญ ให้ยึดตามระเบียบของหน่วยงานท่าน"],
+          ["สถานที่", "ทำได้ระดับ รพช. / ห้องหัตถการ / OPD ไม่จำเป็นต้องเข้าห้องผ่าตัด"]
+        ]}
+      ]},
+    { h: "เปรียบเทียบวิธีการยุติการตั้งครรภ์/ขับชิ้นเนื้อค้าง",
+      body: [
+        { table: { head: ["หัวข้อ", "MVA", "EVA (ไฟฟ้า)", "Sharp curettage (D&C)", "ยา (Misoprostol)"],
+          rows: [
+            ["แหล่งพลังงาน", "มือ ไม่ใช้ไฟฟ้า", "เครื่องดูดสุญญากาศไฟฟ้า", "ใช้แรงขูดด้วยโลหะ", "ไม่ต้องมีหัตถการ"],
+            ["เสียงและความน่ากลัว", "เงียบ ผู้ป่วยตื่นได้", "เสียงดัง", "มักต้องดมยา", "ไม่มีหัตถการ"],
+            ["ความเจ็บ/ยาระงับความรู้สึก", "Paracervical block + NSAIDs พอ", "เหมือน MVA", "มักต้อง GA/sedation", "ปวดบีบเป็นระยะ"],
+            ["ภาวะแทรกซ้อน", "ต่ำที่สุดกลุ่มหัตถการ", "ต่ำ ใกล้เคียง MVA", "สูงกว่า (ทะลุ, Asherman)", "ต่ำ แต่ล้มเหลว 5–15%"],
+            ["ต้นทุน", "ต่ำ อุปกรณ์นำกลับมาใช้ได้", "สูง (เครื่อง+ไฟฟ้า)", "สูง (ห้องผ่าตัด)", "ต่ำ"],
+            ["คำแนะนำ WHO", "แนะนำ", "แนะนำ", "ไม่แนะนำ — ให้เปลี่ยนเป็น vacuum aspiration", "แนะนำเป็นทางเลือก"]
+          ]}},
+        { warn: "WHO ระบุชัดว่า sharp curettage (การขูดมดลูกด้วยโลหะ) เป็นวิธีที่ล้าสมัย ควรถูกแทนที่ด้วย vacuum aspiration หรือการใช้ยา หากยังใช้อยู่ในหน่วยงานถือเป็นประเด็นคุณภาพบริการที่ต้องแก้ไข" }
+      ]},
+    { h: "ข้อดีที่ควรตอบได้ในการสอบ",
+      body: [
+        { ul: [
+          "ไม่ต้องใช้ไฟฟ้า ทำได้แม้ในที่ทรัพยากรจำกัด / ไฟดับ",
+          "ทำภายใต้ยาชาเฉพาะที่ ลดความเสี่ยงจากการดมยาสลบ",
+          "ผู้ป่วยกลับบ้านได้ในวันเดียวกัน ลดวันนอนโรงพยาบาล",
+          "เนื้อเยื่อที่ได้สภาพดี เหมาะกับการส่งตรวจพยาธิและการดูวิลไล",
+          "เลือดออกน้อยกว่าและอัตราทะลุมดลูกต่ำกว่าการขูดด้วยโลหะ",
+          "ลดโอกาสเกิดพังผืดในโพรงมดลูก (Asherman syndrome)"
+        ]}
+      ]}
+  ],
+  pearls: [
+    "MVA = แรงดันลบ ~0.8 atm จากกระบอก 60 มล. ไม่ต้องใช้ไฟฟ้า",
+    "WHO แนะนำให้เลิก sharp curettage และใช้ vacuum aspiration แทน",
+    "ทำได้ที่ OPD ภายใต้ paracervical block"
+  ]
+},
+{
+  id: "indication",
+  title: "ข้อบ่งชี้ ข้อห้าม และการคัดกรองผู้ป่วย",
+  icon: "🩺",
+  minutes: 10,
+  summary: "ใครควรได้ MVA ใครห้าม และต้องตรวจอะไรก่อนลงมือ — จุดที่ออกสอบบ่อยที่สุดคือ ectopic pregnancy",
+  sections: [
+    { h: "ข้อบ่งชี้",
+      body: [
+        { ul: [
+          "แท้งไม่ครบ (incomplete abortion) — ข้อบ่งชี้ที่พบบ่อยที่สุดในเวชปฏิบัติไทย",
+          "แท้งค้าง (missed abortion) ที่ขนาดมดลูก ≤ 12 สัปดาห์",
+          "แท้งติดเชื้อ (septic abortion) — ทำหลังให้ยาปฏิชีวนะแล้วอย่างน้อย 1–2 ชั่วโมง ไม่ต้องรอให้ไข้ลง",
+          "ยุติการตั้งครรภ์ในไตรมาสแรกตามข้อบ่งชี้ทางกฎหมายและการแพทย์",
+          "ครรภ์ไข่ปลาอุก (molar pregnancy) — ทำโดยผู้ชำนาญ เตรียมเลือด เปิดเส้น ให้ oxytocin ระหว่างทำ",
+          "เศษรกค้างหลังคลอด/หลังแท้ง (retained products of conception)",
+          "การเก็บชิ้นเนื้อเยื่อบุโพรงมดลูก (endometrial biopsy) ด้วย cannula ขนาดเล็ก"
+        ]}
+      ]},
+    { h: "ข้อห้ามและข้อควรระวัง",
+      body: [
+        { table: { head: ["ระดับ", "ภาวะ", "เหตุผล/สิ่งที่ต้องทำ"], rows: [
+          ["ห้ามเด็ดขาด", "สงสัยการตั้งครรภ์นอกมดลูก", "MVA ไม่ใช่การรักษา และทำให้วินิจฉัยล่าช้าจนแตกได้"],
+          ["ห้ามเด็ดขาด", "ผู้ป่วยไม่ยินยอม", "ต้องมีความยินยอมที่ได้รับข้อมูลครบถ้วน"],
+          ["ควรแก้ไขก่อน", "ช็อกจากการเสียเลือด", "กู้ชีพ ให้สารน้ำ/เลือด ก่อนหรือพร้อมกับการทำ"],
+          ["ควรแก้ไขก่อน", "ซีดรุนแรง (Hb < 7 g/dL)", "เตรียมเลือด พิจารณาให้เลือดก่อน"],
+          ["ควรแก้ไขก่อน", "ภาวะเลือดออกผิดปกติ/ได้ยาต้านการแข็งตัวของเลือด", "ปรึกษาอายุรแพทย์ แก้ไข coagulopathy"],
+          ["ข้อจำกัดเชิงเทคนิค", "ขนาดมดลูก > 12 สัปดาห์", "ต้องใช้ผู้ชำนาญ อาจต้องดูดหลายกระบอก หรือใช้วิธีอื่น"],
+          ["ข้อจำกัดเชิงเทคนิค", "ปากมดลูกตีบ/ผ่าตัดปากมดลูกมาก่อน", "ใช้ misoprostol เตรียมปากมดลูก หรือถ่างด้วย dilator"],
+          ["ระวัง", "มดลูกผิดรูป เนื้องอกกล้ามเนื้อมดลูกขนาดใหญ่", "เพิ่มโอกาสดูดไม่หมดและทะลุ ควรทำภายใต้ ultrasound"]
+        ]}},
+        { warn: "หากดูดแล้วไม่พบวิลไลหรือชิ้นเนื้อรก (no products of conception) ให้คิดถึงการตั้งครรภ์นอกมดลูกไว้ก่อนเสมอ ต้องส่งชิ้นเนื้อตรวจ และติดตาม β-hCG แบบอนุกรม" }
+      ]},
+    { h: "การประเมินก่อนทำ",
+      body: [
+        { ol: [
+          "ซักประวัติ: ประจำเดือนครั้งสุดท้าย อาการปวด/เลือดออก การใช้ยา ประวัติผ่าตัดมดลูก ประวัติแพ้ยา โรคประจำตัว",
+          "สัญญาณชีพ และประเมินภาวะช็อก/ติดเชื้อ",
+          "ตรวจภายใน: ขนาดและท่ามดลูก (anteverted/retroverted) ปากมดลูกเปิดหรือไม่ มีชิ้นเนื้อคาอยู่หรือไม่ กดเจ็บปีกมดลูกหรือไม่",
+          "ตรวจอัลตราซาวด์เมื่อทำได้ — ยืนยันตำแหน่งการตั้งครรภ์และปริมาณชิ้นเนื้อค้าง",
+          "แล็บ: Hb/Hct, blood group และ Rh, ทดสอบการตั้งครรภ์, β-hCG เมื่อมีข้อสงสัย ectopic",
+          "ยืนยันความยินยอม อธิบายขั้นตอน ความเสี่ยง และทางเลือก"
+        ]},
+        { tip: "การรู้ 'ท่ามดลูก' จากการตรวจภายในก่อนทำ คือสิ่งที่ป้องกันมดลูกทะลุได้มากที่สุด — มดลูกคว่ำหลัง (retroverted) แล้วสอด cannula ไปทางหน้า คือกลไกการทะลุที่พบบ่อยที่สุด" }
+      ]}
+  ],
+  pearls: [
+    "ข้อห้ามเด็ดขาดที่ต้องตอบให้ได้คือ 'สงสัย ectopic pregnancy'",
+    "แท้งติดเชื้อไม่ใช่ข้อห้าม — ให้ยาปฏิชีวนะแล้วรีบเอาชิ้นเนื้อออก",
+    "ดูดแล้วไม่เจอวิลไล = ectopic จนกว่าจะพิสูจน์ได้ว่าไม่ใช่"
+  ]
+},
+{
+  id: "equipment",
+  title: "อุปกรณ์ MVA และการเลือกขนาด cannula",
+  icon: "🧰",
+  minutes: 9,
+  summary: "รู้จักกระบอก Ipas MVA Plus ทีละส่วน วิธีสร้างสุญญากาศ วิธีทดสอบรั่ว และการเลือกขนาดท่อดูด",
+  sections: [
+    { h: "ส่วนประกอบของกระบอก Ipas MVA Plus",
+      body: [
+        { ol: [
+          "กระบอก (cylinder) ความจุ 60 มล. มีขีดบอกปริมาตร",
+          "ลูกสูบ (plunger) พร้อมโอริง (O-ring) ที่ต้องหล่อลื่นด้วยซิลิโคน",
+          "แขนล็อกลูกสูบ (plunger arms) — กางออกล็อกกับขอบกระบอกเพื่อคาสุญญากาศไว้",
+          "วาล์วคู่ (double valve) พร้อมปุ่มกด (pinch valve buttons) สำหรับปล่อยสุญญากาศ",
+          "ฝาวาล์ว (valve liner) และตัวยึด cannula (adaptor)",
+          "ปลอกกันลูกสูบหลุด (collar stop) ป้องกันลูกสูบหลุดออกจากกระบอก"
+        ]},
+        { warn: "ห้ามหล่อลื่นด้วยน้ำมันหรือปิโตรเลียมเจล — ใช้ซิลิโคนหล่อลื่นเท่านั้น มิฉะนั้นยางจะเสื่อมและกระบอกรั่ว" }
+      ]},
+    { h: "ท่อดูด (cannula) และการเลือกขนาด",
+      body: [
+        "Ipas EasyGrip cannula มีขนาด 4, 5, 6, 7, 8, 9, 10 และ 12 มม. ปลายมีรูด้านข้าง 1–2 รู และมีจุดบอกระยะ (dots) เพื่อวัดความลึกโพรงมดลูก",
+        { table: { head: ["ขนาดมดลูก / ข้อบ่งชี้", "ขนาด cannula ที่แนะนำ"], rows: [
+          ["Endometrial biopsy", "4–5 มม."],
+          ["4–6 สัปดาห์", "4–7 มม."],
+          ["7–9 สัปดาห์", "5–10 มม."],
+          ["9–12 สัปดาห์", "8–12 มม."],
+          ["แท้งไม่ครบทั่วไป (ปากมดลูกเปิดแล้ว)", "เลือกตามขนาดปากมดลูกที่เปิด มักได้ 6–8 มม."]
+        ]}},
+        { tip: "กฎง่ายที่ใช้ตอบข้อสอบ: ขนาด cannula (มม.) ≈ อายุครรภ์ (สัปดาห์) หรือเล็กกว่าเล็กน้อย — เล็กเกินไปจะอุดตัน ใหญ่เกินไปต้องถ่างปากมดลูกมากและเจ็บ" }
+      ]},
+    { h: "การสร้างและทดสอบสุญญากาศ",
+      body: [
+        { ol: [
+          "ตรวจกระบอก: ไม่มีรอยร้าว โอริงอยู่ครบและหล่อลื่นดี วาล์วประกอบถูกทาง",
+          "ปิดวาล์วโดยกดปุ่มลง แล้วดันไปข้างหน้าจนล็อก",
+          "ดึงลูกสูบถอยหลังจนสุด จนแขนล็อกทั้งสองข้างกางออกคร่อมขอบกระบอก",
+          "ทดสอบการรั่ว: ทิ้งไว้ 1 นาที แล้วกดปุ่มปล่อยวาล์ว ต้องได้ยินเสียงอากาศพุ่งเข้า 'ฟู่' ชัดเจน หากไม่มีเสียงแปลว่ากระบอกรั่ว ให้เปลี่ยนหรือประกอบใหม่",
+          "ห้ามต่อ cannula ก่อนสร้างสุญญากาศเสร็จ และห้ามกดปุ่มวาล์วขณะยังไม่ได้สอด cannula เข้าโพรงมดลูก"
+        ]},
+        { warn: "ห้ามดันลูกสูบเข้าขณะที่ cannula ยังอยู่ในโพรงมดลูก — เป็นการดันอากาศเข้ามดลูก เสี่ยงต่อภาวะฟองอากาศอุดหลอดเลือด (air embolism)" }
+      ]},
+    { h: "อุปกรณ์อื่นบนโต๊ะหัตถการ",
+      body: [
+        { ul: [
+          "Speculum (Graves/Sims) และแหล่งกำเนิดแสง",
+          "Tenaculum (single-tooth) หรือ vulsellum",
+          "Sponge/ring forceps และสำลีชุบน้ำยาฆ่าเชื้อ (povidone-iodine หรือ chlorhexidine)",
+          "ชุด dilator (Denniston หรือ Pratt) เผื่อกรณีปากมดลูกไม่เปิด",
+          "เข็มยาว spinal needle เบอร์ 22 และ 1% lidocaine สำหรับ paracervical block",
+          "ภาชนะใส และตะแกรงกรอง สำหรับตรวจชิ้นเนื้อ (strainer + clear dish)",
+          "ถังน้ำยาคลอรีน 0.5% สำหรับแช่ปนเปื้อน และภาชนะทิ้งของมีคม"
+        ]}
+      ]}
+  ],
+  pearls: [
+    "ทดสอบกระบอกทุกครั้งก่อนใช้ — ไม่มีเสียงอากาศเข้า = ไม่มีสุญญากาศ",
+    "หล่อลื่นด้วยซิลิโคนเท่านั้น",
+    "ห้ามดันลูกสูบขณะ cannula อยู่ในมดลูก (air embolism)"
+  ]
+},
+{
+  id: "analgesia",
+  title: "การเตรียมผู้ป่วย ยาแก้ปวด และ Paracervical block",
+  icon: "💉",
+  minutes: 10,
+  summary: "การจัดการความปวดแบบครบวงจร ขนาดยาที่ต้องจำ และเทคนิคฉีดยาชารอบปากมดลูกทีละขั้น",
+  sections: [
+    { h: "แนวคิด: การจัดการความปวดมี 3 เสา",
+      body: [
+        { ol: [
+          "การสนับสนุนด้วยคำพูด (verbal support / verbocaine): อธิบายทุกขั้นตอนก่อนทำ พูดคุยเป็นระยะ มีผู้ช่วยจับมือ ลดความปวดได้จริง",
+          "ยาแก้ปวด: NSAIDs ก่อนทำ 30–45 นาที เช่น ibuprofen 400–800 มก. หรือ diclofenac 50 มก. รับประทาน (พาราเซตามอลได้ผลน้อยกว่าอย่างชัดเจน)",
+          "ยาชาเฉพาะที่: paracervical block — เป็นมาตรฐานของ MVA"
+        ]},
+        { tip: "อย่าใช้ยาระงับความรู้สึกทั่วไปเป็นค่าตั้งต้น การดมยาสลบเพิ่มความเสี่ยงมากกว่าตัวหัตถการเอง" }
+      ]},
+    { h: "Paracervical block ทีละขั้น",
+      body: [
+        { kv: [
+          ["ยา", "1% lidocaine (ไม่ผสม adrenaline ก็ได้) รวม 10–20 มล."],
+          ["ขนาดสูงสุด", "4.5 มก./กก. (ไม่เกิน ~300 มก. หรือ 30 มล. ของ 1% ในผู้ใหญ่) ถ้าผสม adrenaline 7 มก./กก."],
+          ["เข็ม", "Spinal needle เบอร์ 22 ยาวพอถึงชั้นใต้เยื่อบุ"],
+          ["ตำแหน่ง", "รอยต่อปากมดลูกกับผนังช่องคลอด ที่ 4 และ 8 นาฬิกา (บางตำราใช้ 2, 4, 8, 10 นาฬิกา)"],
+          ["ความลึก", "1.5–3 ซม. ตื้น ๆ ใต้เยื่อบุ ไม่ลึกเข้าชั้นกล้ามเนื้อ"],
+          ["เวลารอออกฤทธิ์", "รออย่างน้อย 2–3 นาทีก่อนถ่างปากมดลูก"]
+        ]},
+        { ol: [
+          "ใส่ speculum เช็ดปากมดลูกและช่องคลอดด้วยน้ำยาฆ่าเชื้อ รอให้แห้ง",
+          "ฉีดยาชาจุดเล็ก ๆ ที่ริมฝีปากปากมดลูกด้านหน้า (12 นาฬิกา) 1–2 มล. ก่อนหนีบ tenaculum",
+          "หนีบ tenaculum แล้วดึงปากมดลูกลงเบา ๆ เพื่อให้เห็นรอยต่อชัด",
+          "แทงเข็มที่ 4 นาฬิกา ดูดกลับ (aspirate) ทุกครั้งก่อนฉีด — ถ้าได้เลือดให้ถอนแล้วเปลี่ยนตำแหน่ง",
+          "ฉีดช้า ๆ 5–10 มล. ต่อข้าง แล้วทำซ้ำที่ 8 นาฬิกา",
+          "สังเกตอาการพิษของยาชา: ชารอบปาก หูอื้อ เวียนศีรษะ รสโลหะในปาก ตามด้วยชักและหัวใจเต้นผิดจังหวะ"
+        ]},
+        { warn: "การดูดกลับก่อนฉีดทุกครั้งคือขั้นตอนที่กันภาวะยาชาเป็นพิษเข้ากระแสเลือด (LAST) หากเกิดขึ้น: หยุดฉีด ให้ออกซิเจน ดูแลทางเดินหายใจ ให้ 20% lipid emulsion และช่วยกู้ชีพตามมาตรฐาน" }
+      ]},
+    { h: "ตัวอย่างประโยคที่ใช้จริงระหว่างทำ (verbocaine)",
+      body: [
+        "การบอกล่วงหน้าก่อนทำทุกขั้นตอนคือยาแก้ปวดที่ไม่มีค่าใช้จ่ายและได้ผลจริง หลักคือ บอกก่อนทำ ไม่ใช่บอกหลังผู้ป่วยสะดุ้ง",
+        { ul: [
+          "ก่อนใส่ speculum — \"เดี๋ยวจะรู้สึกเย็นและตื้อ ๆ นะคะ ถ้าเจ็บมากบอกได้ตลอดเลย\"",
+          "ก่อนฉีดยาชา — \"จะรู้สึกจิ๊ดเหมือนมดกัดสักครู่ แล้วจะชาลง ประมาณสิบวินาทีนะคะ\"",
+          "ก่อนหนีบ tenaculum — \"ตอนนี้จะหน่วง ๆ คล้ายปวดประจำเดือน ไม่ใช่ของแหลมทิ่มนะคะ\"",
+          "ระหว่างดูด — \"กำลังดูดแล้วนะคะ จะปวดบีบเป็นจังหวะ หายใจเข้าลึก ๆ ช้า ๆ ตามเสียงหมอ อีกประมาณสามนาทีเสร็จ\"",
+          "ประเมินความปวดเป็นระยะ — \"ตอนนี้ปวดระดับไหนคะ ศูนย์ถึงสิบ\" แล้วตอบสนองต่อคำตอบจริง ๆ",
+          "เมื่อเสร็จ — \"เสร็จเรียบร้อยแล้วนะคะ ทำได้ดีมาก เดี๋ยวจะนอนพักสักครู่แล้วหมอจะมาดูอีกครั้ง\""
+        ]},
+        { tip: "อย่าใช้คำว่า 'ขูดมดลูก' กับผู้ป่วย ให้ใช้คำว่า 'ดูดเอาชิ้นเนื้อออก' ซึ่งตรงกับสิ่งที่ทำจริงและลดความกลัวได้มาก" }
+      ]},
+    { h: "ยาปฏิชีวนะและยาอื่น",
+      body: [
+        { table: { head: ["สถานการณ์", "แนวทาง"], rows: [
+          ["ยุติการตั้งครรภ์ (elective)", "ให้ยาปฏิชีวนะป้องกัน เช่น doxycycline 200 มก. ก่อนทำ หรือ azithromycin 500 มก."],
+          ["แท้งไม่ครบที่ไม่มีการติดเชื้อ", "ไม่จำเป็นต้องให้ยาปฏิชีวนะป้องกันเป็นกิจวัตร (พิจารณาตามบริบทหน่วยงาน)"],
+          ["แท้งติดเชื้อ", "ให้ยาปฏิชีวนะครอบคลุมเชื้อผสมทางหลอดเลือดดำ (เช่น ampicillin + gentamicin + metronidazole) แล้วดูดชิ้นเนื้อออกโดยเร็ว"],
+          ["Rh-negative", "ให้ anti-D immunoglobulin ภายใน 72 ชั่วโมง (50–120 มคก. หากอายุครรภ์ < 12 สัปดาห์, 300 มคก. หากมากกว่า)"],
+          ["ปากมดลูกไม่เปิด/อายุครรภ์มาก", "Misoprostol 400 มคก. อมใต้ลิ้น 1–3 ชม. หรือเหน็บช่องคลอด 3 ชม. ก่อนทำ"]
+        ]}},
+        { warn: "จุดที่แนวทางไม่ตรงกัน — anti-D immunoglobulin: แนวทางขององค์การอนามัยโลก พ.ศ. 2565 ระบุว่าไม่จำเป็นต้องให้ในการยุติการตั้งครรภ์หรือการดูดโพรงมดลูกก่อนอายุครรภ์ 12 สัปดาห์ ขณะที่แนวปฏิบัติของหลายหน่วยงานในประเทศไทยยังคงให้อยู่ ในการทำงานให้ยึดระเบียบของหน่วยงานท่าน และในการสอบให้ตอบตามแนวทางที่หลักสูตรของท่านใช้" }
+      ]}
+  ],
+  pearls: [
+    "1% lidocaine ขนาดสูงสุด 4.5 มก./กก. — ดูดกลับก่อนฉีดเสมอ",
+    "ฉีดที่ 4 และ 8 นาฬิกา ลึก 1.5–3 ซม. รอ 2–3 นาที",
+    "NSAIDs ก่อนทำ 30 นาที ได้ผลดีกว่าพาราเซตามอล"
+  ]
+},
+{
+  id: "procedure",
+  title: "ขั้นตอนการทำหัตถการ (No-touch technique)",
+  icon: "🔬",
+  minutes: 14,
+  summary: "ลำดับ 14 ขั้นตอนมาตรฐาน ตั้งแต่ล้างมือจนถอด tenaculum พร้อมสัญญาณบอกว่าดูดครบแล้ว",
+  sections: [
+    { h: "ลำดับขั้นตอนมาตรฐาน",
+      body: [
+        { ol: [
+          "ยืนยันตัวผู้ป่วยและใบยินยอม ให้ผู้ป่วยปัสสาวะให้หมด จัดท่า lithotomy",
+          "ล้างมือ สวมถุงมือปราศจากเชื้อ จัดโต๊ะอุปกรณ์ ตรวจกระบอกและสร้างสุญญากาศไว้ล่วงหน้า",
+          "ตรวจภายในซ้ำเพื่อยืนยันขนาดและท่ามดลูก",
+          "ใส่ speculum ตรวจปากมดลูก ถ้ามีชิ้นเนื้อคาที่ปากมดลูกให้คีบออกด้วย ring forceps ก่อน",
+          "เช็ดปากมดลูกและช่องคลอดด้วยน้ำยาฆ่าเชื้อจากในออกนอก 2–3 รอบ",
+          "ทำ paracervical block รอ 2–3 นาที",
+          "หนีบ tenaculum ที่ริมฝีปากบนของปากมดลูก ตำแหน่ง 10 และ 2 นาฬิกา แล้วดึงตึงสม่ำเสมอเพื่อทำให้โพรงมดลูกตรง",
+          "ถ่างปากมดลูกเท่าที่จำเป็น ด้วย dilator ไล่ขนาดจากเล็กไปใหญ่ จนผ่าน cannula ที่เลือกไว้ได้",
+          "สอด cannula ช้า ๆ ผ่านปากมดลูกด้วยการหมุนเบา ๆ จนแตะยอดมดลูก อ่านความลึกจากจุดบน cannula แล้วถอยกลับเล็กน้อย 1 ซม.",
+          "ต่อกระบอกที่สร้างสุญญากาศไว้แล้วเข้ากับ cannula โดยจับ cannula ไว้ไม่ให้เลื่อน",
+          "ปล่อยวาล์วด้วยการกดปุ่ม — จะเห็นเลือดและเนื้อเยื่อไหลเข้ากระบอก",
+          "ดูดโดยหมุน cannula 180 องศาไป-กลับ พร้อมขยับเข้า-ออกสั้น ๆ ห้ามดึงปลาย cannula พ้นปากมดลูกด้านใน (จะเสียสุญญากาศ)",
+          "ประเมินว่าดูดครบตามสัญญาณ 4 ข้อ แล้วถอน cannula ออก",
+          "ถอด tenaculum กดห้ามเลือด ตรวจปากมดลูกและช่องคลอด แล้วนำชิ้นเนื้อไปตรวจทันที"
+        ]}
+      ]},
+    { h: "สัญญาณว่าดูดครบแล้ว (4 สัญญาณ)",
+      body: [
+        { ol: [
+          "มีฟองสีแดง/ชมพูไหลผ่าน cannula โดยไม่มีชิ้นเนื้อปนแล้ว",
+          "รู้สึกสากคล้ายทรายเมื่อลาก cannula ไปตามผนังมดลูก (gritty sensation)",
+          "มดลูกหดรัดบีบ cannula ไว้ รู้สึกฝืดเมื่อขยับ",
+          "ผู้ป่วยรู้สึกปวดบีบมดลูกมากขึ้น (uterine cramping)"
+        ]},
+        { warn: "หากกระบอกเต็มก่อนดูดเสร็จ ให้ปิดวาล์วก่อน แล้วถอดกระบอกออกจาก cannula โดยคา cannula ไว้ในโพรงมดลูก เทชิ้นเนื้อออก สร้างสุญญากาศใหม่ แล้วต่อกลับ — ห้ามดึง cannula ออกมาด้วย" }
+      ]},
+    { h: "ข้อผิดพลาดที่พบบ่อยของผู้ฝึกใหม่",
+      body: [
+        { table: { head: ["ข้อผิดพลาด", "ผลที่ตามมา", "วิธีแก้"], rows: [
+          ["ไม่ดึง tenaculum ให้ตึง", "โพรงมดลูกงอ เสี่ยงทะลุ", "ดึงตึงสม่ำเสมอตลอดหัตถการ"],
+          ["สอด cannula แรง/ลึกเกิน", "มดลูกทะลุ", "สอดด้วยการหมุนเบา ๆ วัดความลึกก่อน"],
+          ["ดึง cannula พ้น internal os", "สุญญากาศหาย ต้องเริ่มใหม่", "ขยับในระยะสั้น คุมปลายไว้ในโพรง"],
+          ["เลือก cannula เล็กเกินไป", "ท่ออุดตันซ้ำ ๆ ดูดไม่หมด", "เลือกขนาดให้เหมาะกับอายุครรภ์"],
+          ["ดันลูกสูบขณะ cannula อยู่ในมดลูก", "ดันอากาศ/ชิ้นเนื้อกลับเข้ามดลูก", "ถอด cannula ก่อนเทชิ้นเนื้อเสมอ"],
+          ["ไม่ตรวจชิ้นเนื้อ", "พลาด ectopic หรือ molar", "ตรวจทุกราย ก่อนให้ผู้ป่วยกลับ"]
+        ]}}
+      ]}
+  ],
+  pearls: [
+    "4 สัญญาณว่าครบ: ฟองแดงไม่มีเนื้อ / สาก / มดลูกบีบ cannula / ปวดบีบ",
+    "กระบอกเต็ม → ปิดวาล์ว ถอดกระบอก คา cannula ไว้",
+    "ดึง tenaculum ตึงคือการป้องกันมดลูกทะลุ"
+  ]
+},
+{
+  id: "tissue",
+  title: "การตรวจชิ้นเนื้อและการแปลผล",
+  icon: "🔎",
+  minutes: 7,
+  summary: "ต้องตรวจทุกราย ก่อนผู้ป่วยลุกจากเตียง — เพราะเป็นด่านสุดท้ายที่จับ ectopic และ molar ได้",
+  sections: [
+    { h: "วิธีตรวจ",
+      body: [
+        { ol: [
+          "เทชิ้นเนื้อจากกระบอกลงตะแกรงกรอง ล้างน้ำเกลือหรือน้ำสะอาดเพื่อล้างเลือดออก",
+          "ใส่ในภาชนะใสที่มีน้ำหรือน้ำส้มสายชูอ่อน แล้วส่องกับแสงจากด้านล่าง",
+          "มองหาวิลไล (villi) ที่ลอยฟูเป็นพุ่มคล้ายใบเฟิร์นสีขาว และถุงการตั้งครรภ์ (gestational sac)",
+          "ประเมินปริมาณว่าสอดคล้องกับอายุครรภ์หรือไม่",
+          "ส่งชิ้นเนื้อตรวจทางพยาธิวิทยาเมื่อมีข้อสงสัย และในทุกรายตามนโยบายหน่วยงาน"
+        ]}
+      ]},
+    { h: "การแปลผล",
+      body: [
+        { table: { head: ["สิ่งที่พบ", "แปลว่า", "ทำอย่างไรต่อ"], rows: [
+          ["วิลไลชัดเจน ปริมาณเหมาะกับอายุครรภ์", "ดูดครบ", "ดูแลหลังทำตามปกติ"],
+          ["ชิ้นเนื้อน้อยกว่าที่ควร", "อาจดูดไม่ครบ", "ดูดซ้ำ / อัลตราซาวด์ประเมิน"],
+          ["ไม่พบวิลไลเลย", "ectopic / แท้งครบไปแล้ว / ดูดผิดตำแหน่ง", "ติดตาม β-hCG อนุกรม อัลตราซาวด์ ส่งพยาธิ"],
+          ["ถุงน้ำใสคล้ายพวงองุ่น", "ครรภ์ไข่ปลาอุก (molar)", "ส่งพยาธิ ติดตาม β-hCG จนเป็นลบและตามต่อ คุมกำเนิดระหว่างติดตาม"],
+          ["มีไขมันหรือเนื้อเยื่อคล้ายลำไส้", "มดลูกทะลุและดูดโดนอวัยวะในช่องท้อง", "หยุดทันที เปิดเส้น ตามศัลยแพทย์ ผ่าตัดสำรวจ"]
+        ]}},
+        { warn: "การพบไขมันหรือเนื้อเยื่อลำไส้ในชิ้นเนื้อที่ดูดออกมา คือภาวะฉุกเฉินทางศัลยกรรม ต้องเปิดช่องท้องสำรวจเสมอ" }
+      ]}
+  ],
+  pearls: [
+    "ตรวจชิ้นเนื้อทุกราย ทันทีหลังทำ",
+    "ไม่พบวิลไล = คิดถึง ectopic",
+    "พบไขมัน/ลำไส้ = ทะลุ ต้องผ่าตัด"
+  ]
+},
+{
+  id: "complication",
+  title: "ภาวะแทรกซ้อนและการจัดการ",
+  icon: "🚨",
+  minutes: 12,
+  summary: "ตั้งแต่ดูดไม่ครบซึ่งพบบ่อยที่สุด จนถึงมดลูกทะลุและ hematometra ที่ออกสอบบ่อย",
+  sections: [
+    { h: "ตารางสรุปภาวะแทรกซ้อน",
+      body: [
+        { table: { head: ["ภาวะ", "ลักษณะ", "การจัดการ"], rows: [
+          ["ดูดไม่ครบ (พบบ่อยที่สุด)", "เลือดออกต่อเนื่อง ปวด มดลูกไม่ยุบ อัลตราซาวด์เห็นเนื้อค้าง", "ดูดซ้ำ หรือให้ misoprostol ให้ยาปฏิชีวนะถ้ามีการติดเชื้อ"],
+          ["ตั้งครรภ์ต่อ", "อาการตั้งครรภ์คงอยู่ β-hCG ไม่ลด", "ยืนยันด้วยอัลตราซาวด์ แล้วดูดซ้ำ"],
+          ["ตกเลือด", "เสียเลือด > 500 มล. หรือมีอาการช็อก", "นวดมดลูก ให้ oxytocin 10–20 ยูนิต / methylergometrine 0.2 มก. IM / misoprostol 800 มคก. ดูดซ้ำ ตรวจหารอยฉีกขาด ให้สารน้ำและเลือด"],
+          ["มดลูกทะลุ", "เครื่องมือเข้าลึกกว่าที่วัดไว้ ไม่มีแรงต้าน ปวดรุนแรง ท้องแข็ง สัญญาณชีพผิดปกติ", "หยุดทันที ให้ oxytocin และยาปฏิชีวนะ สังเกตอาการอย่างใกล้ชิด; ถ้าสัญญาณชีพไม่คงที่/สงสัยบาดเจ็บลำไส้ → ส่องกล้องหรือเปิดหน้าท้อง"],
+          ["ปากมดลูกฉีกขาด", "เลือดออกจากรอยหนีบ tenaculum", "กดด้วยผ้าก๊อซ ใช้ silver nitrate หรือเย็บซ่อม"],
+          ["การติดเชื้อในอุ้งเชิงกราน", "ไข้ ปวดท้องน้อย ตกขาวมีกลิ่น กดเจ็บมดลูก ภายใน 72 ชม.–2 สัปดาห์", "ยาปฏิชีวนะครอบคลุมเชื้อผสม ประเมินว่ามีเนื้อค้างหรือไม่"],
+          ["Hematometra (post-abortion syndrome)", "เกิดใน 30 นาที–2 ชม. หลังทำ: ปวดบีบรุนแรง มดลูกโตตึงและกดเจ็บ แต่เลือดออกทางช่องคลอดน้อย", "ดูดเลือดออกซ้ำ (re-aspiration) และให้ยากระตุ้นมดลูก"],
+          ["ปฏิกิริยาเวกัส", "หน้าซีด เหงื่อแตก ชีพจรช้า ความดันตก ขณะจับปากมดลูก", "หยุดหัตถการ ยกขาสูง ให้ atropine 0.5 มก. IV ถ้าจำเป็น"],
+          ["ยาชาเป็นพิษ (LAST)", "ชารอบปาก หูอื้อ รสโลหะ ชัก หัวใจเต้นผิดจังหวะ", "หยุดฉีด ให้ออกซิเจน ยากันชัก 20% lipid emulsion กู้ชีพ"],
+          ["ฟองอากาศอุดหลอดเลือด", "หายใจลำบาก เจ็บอก ความดันตกทันที (พบน้อยมาก)", "ป้องกันโดยไม่ดันลูกสูบขณะ cannula อยู่ในมดลูก; รักษาแบบประคับประคอง นอนตะแคงซ้ายศีรษะต่ำ"]
+        ]}}
+      ]},
+    { h: "แนวทางเมื่อสงสัยมดลูกทะลุ",
+      body: [
+        { ol: [
+          "หยุดการดูดทันที ไม่พยายามดูดต่อ",
+          "ประเมินสัญญาณชีพ เปิดเส้นเลือด ให้สารน้ำ ส่ง CBC และจองเลือด",
+          "ให้ยากระตุ้นมดลูกและยาปฏิชีวนะครอบคลุม",
+          "ถ้าสัญญาณชีพคงที่ ทะลุด้วยเครื่องมือเล็ก ไม่มีสัญญาณบาดเจ็บอวัยวะ → สังเกตอาการในโรงพยาบาลอย่างน้อย 24 ชม.",
+          "ถ้าสัญญาณชีพไม่คงที่ ท้องแข็ง สงสัยบาดเจ็บลำไส้ หรือดูดได้ไขมัน/ลำไส้ → ส่องกล้องหรือเปิดหน้าท้องทันที",
+          "ถ้ายังมีชิ้นเนื้อค้าง ให้ทำหัตถการที่เหลือภายใต้การส่องกล้องหรืออัลตราซาวด์นำทาง"
+        ]}
+      ]}
+  ],
+  pearls: [
+    "ภาวะแทรกซ้อนที่พบบ่อยที่สุดคือดูดไม่ครบ",
+    "Hematometra: ปวดมาก มดลูกตึง แต่เลือดออกน้อย → ดูดซ้ำ",
+    "ทะลุแล้วสัญญาณชีพไม่คงที่ หรือได้ไขมัน/ลำไส้ → เปิดหน้าท้อง"
+  ]
+},
+{
+  id: "aftercare",
+  title: "การดูแลหลังหัตถการและการคุมกำเนิด",
+  icon: "🌱",
+  minutes: 8,
+  summary: "เกณฑ์ให้กลับบ้าน สัญญาณอันตรายที่ต้องสอน และการเริ่มคุมกำเนิดทันทีในวันเดียวกัน",
+  sections: [
+    { h: "การเฝ้าระวังหลังทำ",
+      body: [
+        { ul: [
+          "วัดสัญญาณชีพทุก 15 นาทีในชั่วโมงแรก จนคงที่",
+          "ประเมินปริมาณเลือดออก ระดับความปวด และการหดรัดของมดลูก",
+          "สังเกตอาการ hematometra ในช่วง 30 นาที–2 ชั่วโมงแรก",
+          "เกณฑ์กลับบ้าน: สัญญาณชีพปกติ ปวดควบคุมได้ด้วยยารับประทาน เลือดออกไม่มากกว่าประจำเดือน เดินและปัสสาวะได้ ได้รับคำแนะนำและวิธีคุมกำเนิดแล้ว"
+        ]}
+      ]},
+    { h: "คำแนะนำที่ต้องสอนก่อนกลับ",
+      body: [
+        { ul: [
+          "เลือดออกกะปริดกะปรอยได้ 1–2 สัปดาห์ ปวดบีบ 1–3 วัน ใช้ ibuprofen บรรเทา",
+          "ประจำเดือนมักกลับมาใน 4–8 สัปดาห์",
+          "งดสอดสิ่งใดในช่องคลอดตามคำแนะนำหน่วยงาน โดยหลักฐานปัจจุบันไม่ห้ามการมีเพศสัมพันธ์เมื่อพร้อมและไม่มีการติดเชื้อ",
+          "กลับมาตรวจตามนัด 1–2 สัปดาห์"
+        ]},
+        { warn: "สัญญาณอันตรายที่ต้องกลับมาทันที: เลือดออกชุ่มผ้าอนามัยหนา 2 ผืนต่อชั่วโมงติดกัน 2 ชั่วโมง / ไข้สูงเกิน 38°C / ปวดท้องรุนแรงขึ้นเรื่อย ๆ / ตกขาวมีกลิ่นเหม็น / เป็นลมหน้ามืด" }
+      ]},
+    { h: "การคุมกำเนิดหลังแท้ง",
+      body: [
+        "ภาวะเจริญพันธุ์กลับคืนเร็วมาก — อาจตกไข่ได้ตั้งแต่วันที่ 8–11 หลังหัตถการ จึงต้องเริ่มคุมกำเนิดทันทีในวันเดียวกัน ไม่ต้องรอประจำเดือนมา",
+        { table: { head: ["วิธี", "เริ่มได้เมื่อไร", "หมายเหตุ"], rows: [
+          ["ยาเม็ดคุมกำเนิด", "วันเดียวกัน", "คุมได้ทันทีหากเริ่มภายใน 5 วัน"],
+          ["ยาฉีด (DMPA)", "วันเดียวกัน", "ฉีดก่อนกลับบ้านได้"],
+          ["ยาฝัง", "วันเดียวกัน", "ใส่ในห้องหัตถการเดียวกันได้"],
+          ["ห่วงอนามัย (IUD)", "ใส่ได้ทันทีหลังดูดเสร็จ", "ห้ามใส่ถ้ามีการติดเชื้อ หรือสงสัยว่าดูดไม่ครบ"],
+          ["ทำหมันหญิง", "ทำได้ในคราวเดียวกัน", "ต้องเป็นการตัดสินใจที่ไม่ถูกกดดัน มีใบยินยอมแยก"],
+          ["ถุงยางอนามัย", "ทันที", "แนะนำร่วมด้วยเสมอเพื่อป้องกันโรคติดต่อ"]
+        ]}},
+        { tip: "ข้อสอบชอบถามว่า 'ใส่ห่วงอนามัยได้เมื่อไหร่หลัง MVA' — คำตอบคือทันทีหลังดูดเสร็จในรายที่ไม่มีการติดเชื้อและดูดครบ" }
+      ]}
+  ],
+  pearls: [
+    "ตกไข่ได้เร็วสุดวันที่ 8–11 → เริ่มคุมกำเนิดวันเดียวกัน",
+    "IUD ใส่ได้ทันทีถ้าไม่ติดเชื้อและดูดครบ",
+    "สอนสัญญาณอันตราย 5 ข้อก่อนกลับบ้านทุกราย"
+  ]
+},
+{
+  id: "ipc",
+  title: "การป้องกันการติดเชื้อและการล้างอุปกรณ์",
+  icon: "🧼",
+  minutes: 7,
+  summary: "No-touch technique และขั้นตอนล้างกระบอกให้ใช้ซ้ำได้ตามมาตรฐาน",
+  sections: [
+    { h: "หลัก No-touch technique",
+      body: [
+        { ul: [
+          "ส่วนของเครื่องมือที่จะเข้าโพรงมดลูกต้องไม่สัมผัสสิ่งใดที่ไม่ปราศจากเชื้อ รวมถึงผนังช่องคลอดและ speculum",
+          "จับ cannula ที่ปลายด้านนอกเสมอ",
+          "ล้างมือก่อนและหลังทุกครั้ง สวมถุงมือปราศจากเชื้อ",
+          "ไม่โกนขนหัวหน่าว ไม่สวนล้างช่องคลอด — เพิ่มความเสี่ยงติดเชื้อ",
+          "สวมอุปกรณ์ป้องกัน: แว่นตา ผ้าปิดปาก เสื้อกันเปื้อน เพราะมีการกระเด็นของเลือด"
+        ]}
+      ]},
+    { h: "ขั้นตอนการล้างและใช้ซ้ำ",
+      body: [
+        { ol: [
+          "แช่ปนเปื้อน (decontamination): แช่กระบอกและ cannula ในสารละลายคลอรีน 0.5% นาน 10 นาที",
+          "ล้าง (cleaning): ถอดชิ้นส่วนออก ล้างด้วยน้ำและสบู่/ผงซักฟอก แปรงเบา ๆ ทั้งภายในและภายนอก ล้างน้ำสะอาดแล้วผึ่งให้แห้ง",
+          "ทำลายเชื้อระดับสูงหรือทำให้ปราศจากเชื้อ (HLD/sterilization): ต้ม/นึ่ง หรือแช่น้ำยาตามคำแนะนำผู้ผลิต — ห้ามนึ่งไอน้ำความดันสูงกับกระบอกพลาสติกที่ผู้ผลิตไม่ระบุว่าทำได้",
+          "ประกอบและตรวจสอบ: ทาซิลิโคนที่โอริง ประกอบวาล์วให้ถูกทาง ทดสอบการรั่วก่อนเก็บ",
+          "เก็บในที่แห้งสะอาด และบันทึกจำนวนครั้งที่ใช้"
+        ]},
+        { kv: [
+          ["จำนวนครั้งที่ใช้ซ้ำได้ (กระบอก Ipas Plus)", "ประมาณ 25 ครั้ง หรือจนกว่าจะรั่ว/ชำรุด แล้วแต่ว่าอย่างใดถึงก่อน"],
+          ["Cannula", "ปฏิบัติตามฉลากผู้ผลิต — หลายรุ่นออกแบบเพื่อใช้ครั้งเดียว"],
+          ["เกณฑ์ทิ้งทันที", "กระบอกร้าว โอริงเสื่อม ทดสอบแล้วไม่คาสุญญากาศ ซีดหรือแข็งกรอบ"]
+        ]}
+      ]}
+  ],
+  pearls: [
+    "คลอรีน 0.5% แช่ 10 นาที คือขั้นแรกเสมอ",
+    "กระบอก Ipas Plus ใช้ซ้ำได้ประมาณ 25 ครั้ง",
+    "ไม่โกนขน ไม่สวนล้างช่องคลอดก่อนทำ"
+  ]
+},
+{
+  id: "law",
+  title: "กฎหมายไทย จริยธรรม และการให้คำปรึกษา",
+  icon: "⚖️",
+  minutes: 8,
+  summary: "กรอบกฎหมายไทยฉบับปัจจุบัน การให้คำปรึกษาทางเลือก และการรักษาความลับ",
+  sections: [
+    { h: "กรอบกฎหมายไทย (ประมวลกฎหมายอาญา แก้ไข พ.ศ. 2564)",
+      body: [
+        { table: { head: ["อายุครรภ์", "หลักการตามกฎหมาย"], rows: [
+          ["ไม่เกิน 12 สัปดาห์", "หญิงยุติการตั้งครรภ์ได้ โดยผู้ประกอบวิชาชีพเวชกรรมเป็นผู้กระทำ"],
+          ["เกิน 12 แต่ไม่เกิน 20 สัปดาห์", "ทำได้เมื่อได้รับการตรวจและรับคำปรึกษาทางเลือกจากผู้ประกอบวิชาชีพตามหลักเกณฑ์ที่กำหนด แล้วยืนยันจะยุติการตั้งครรภ์"],
+          ["เกิน 20 สัปดาห์", "ทำได้ตามข้อบ่งชี้ในมาตรา 305 เช่น อันตรายต่อสุขภาพกาย/ใจของหญิง ทารกพิการรุนแรง หรือการตั้งครรภ์จากความผิดทางเพศ"]
+        ]}},
+        { warn: "เนื้อหากฎหมายและข้อบังคับอาจมีการแก้ไข ให้ตรวจสอบประกาศกระทรวงสาธารณสุขและข้อบังคับแพทยสภาฉบับล่าสุด รวมถึงระเบียบของหน่วยงานตนเองก่อนปฏิบัติเสมอ" }
+      ]},
+    { h: "หลักการให้คำปรึกษา (GATHER)",
+      body: [
+        { ol: [
+          "G — Greet: ทักทายอย่างให้เกียรติ จัดพื้นที่ที่เป็นส่วนตัว",
+          "A — Ask: ถามถึงสถานการณ์ ความรู้สึก และความต้องการของผู้รับบริการ",
+          "T — Tell: ให้ข้อมูลทางเลือกทั้งหมดอย่างเป็นกลาง ทั้งวิธีใช้ยา หัตถการ และการตั้งครรภ์ต่อ",
+          "H — Help: ช่วยให้ตัดสินใจด้วยตนเอง ไม่ชี้นำ ไม่ตัดสิน",
+          "E — Explain: อธิบายขั้นตอน ความเสี่ยง สิ่งที่จะรู้สึกระหว่างทำ และการดูแลตนเอง",
+          "R — Return: นัดติดตาม และให้ช่องทางติดต่อฉุกเฉิน"
+        ]},
+        { ul: [
+          "การให้ความยินยอมต้องเป็นอิสระ ไม่ผูกกับการยอมรับวิธีคุมกำเนิดใด ๆ",
+          "รักษาความลับอย่างเคร่งครัด โดยเฉพาะในผู้เยาว์และผู้ถูกกระทำความรุนแรง",
+          "คัดกรองความรุนแรงในครอบครัวและความเสี่ยงทางจิตใจ พร้อมส่งต่อหน่วยช่วยเหลือ",
+          "ผู้ให้บริการที่ปฏิเสธด้วยเหตุผลทางมโนธรรม มีหน้าที่ส่งต่อผู้ป่วยไปยังผู้ให้บริการรายอื่นโดยไม่ชักช้า"
+        ]}
+      ]}
+  ],
+  pearls: [
+    "≤12 สัปดาห์ ยุติได้โดยแพทย์; 12–20 สัปดาห์ ต้องผ่านการปรึกษาทางเลือก",
+    "ความยินยอมต้องไม่ผูกกับการยอมรับการคุมกำเนิด",
+    "ปฏิเสธด้วยมโนธรรมได้ แต่ต้องส่งต่อ"
+  ]
+}
+];
+
+
+/* ใบประเมินทักษะหัตถการ MVA (OSCE / DOPS) */
+window.MVA = window.MVA || {};
+window.MVA.checklist = {
+  title: "ใบประเมินทักษะการทำ MVA (OSCE / DOPS)",
+  scale: [
+    { v: 0, label: "ไม่ทำ", desc: "ไม่ได้ทำขั้นตอนนี้เลย" },
+    { v: 1, label: "ทำไม่สมบูรณ์", desc: "ทำแต่ผิดลำดับ ไม่ครบ หรือต้องได้รับการช่วยเหลือ" },
+    { v: 2, label: "ทำถูกต้อง", desc: "ทำได้ครบถ้วน ถูกต้อง ด้วยตนเอง" }
+  ],
+  passPercent: 80,
+  note: "ข้อที่ทำเครื่องหมาย ⚠️ คือข้อวิกฤต (critical step) หากได้ 0 ถือว่าไม่ผ่านทันทีแม้คะแนนรวมจะถึงเกณฑ์",
+  sections: [
+    { name: "1. การเตรียมก่อนหัตถการ", items: [
+      { id: "p1", text: "แนะนำตัว ยืนยันตัวผู้ป่วย และอธิบายหัตถการด้วยภาษาที่เข้าใจง่าย" },
+      { id: "p2", text: "ตรวจสอบใบยินยอมที่ได้รับข้อมูลครบถ้วน", critical: true },
+      { id: "p3", text: "ทบทวนประวัติ อายุครรภ์ ประวัติแพ้ยา และผลตรวจที่จำเป็น (Hb, หมู่เลือด/Rh, อัลตราซาวด์)" },
+      { id: "p4", text: "ประเมินและตัดข้อห้าม โดยเฉพาะการสงสัยตั้งครรภ์นอกมดลูก", critical: true, hint: "ถ้าไม่ได้พูดถึง ectopic เลย ให้ 0" },
+      { id: "p5", text: "ให้ผู้ป่วยปัสสาวะให้หมดและจัดท่า lithotomy อย่างให้เกียรติ มีผ้าคลุมเหมาะสม" },
+      { id: "p6", text: "ให้ยาแก้ปวดกลุ่ม NSAIDs ล่วงหน้า และพิจารณายาปฏิชีวนะตามข้อบ่งชี้" }
+    ]},
+    { name: "2. การเตรียมอุปกรณ์และการป้องกันการติดเชื้อ", items: [
+      { id: "e1", text: "ล้างมือถูกวิธีและสวมถุงมือปราศจากเชื้อ", critical: true },
+      { id: "e2", text: "สวมอุปกรณ์ป้องกันส่วนบุคคล (แว่นตา ผ้าปิดปาก เสื้อกันเปื้อน)" },
+      { id: "e3", text: "จัดโต๊ะเครื่องมือครบถ้วน: speculum, tenaculum, dilator, cannula หลายขนาด, กระบอก MVA, น้ำยาฆ่าเชื้อ, ยาชา" },
+      { id: "e4", text: "เลือกขนาด cannula ให้เหมาะกับขนาดมดลูก/อายุครรภ์ และอธิบายเหตุผลได้" },
+      { id: "e5", text: "ตรวจกระบอก สร้างสุญญากาศ และทดสอบการรั่วก่อนใช้", critical: true, hint: "ต้องกดปุ่มวาล์วฟังเสียงอากาศเข้า" }
+    ]},
+    { name: "3. การเตรียมปากมดลูกและการระงับปวด", items: [
+      { id: "c1", text: "ตรวจภายในซ้ำเพื่อยืนยันขนาดและท่ามดลูก (anteverted / retroverted)", critical: true },
+      { id: "c2", text: "ใส่ speculum อย่างนุ่มนวลและมองเห็นปากมดลูกได้ชัดเจน" },
+      { id: "c3", text: "คีบชิ้นเนื้อที่คาอยู่ที่ปากมดลูกออกด้วย ring forceps ก่อน (ถ้ามี)" },
+      { id: "c4", text: "เช็ดปากมดลูกและช่องคลอดด้วยน้ำยาฆ่าเชื้อจากในออกนอก" },
+      { id: "c5", text: "ทำ paracervical block ที่ตำแหน่งถูกต้อง โดยดูดกลับก่อนฉีดทุกครั้ง", critical: true, hint: "ไม่ aspirate = 0" },
+      { id: "c6", text: "รอให้ยาชาออกฤทธิ์อย่างน้อย 2–3 นาทีก่อนทำต่อ" },
+      { id: "c7", text: "หนีบ tenaculum อย่างถูกตำแหน่งและดึงตึงสม่ำเสมอเพื่อทำให้โพรงมดลูกตรง" },
+      { id: "c8", text: "ถ่างปากมดลูกเท่าที่จำเป็น ไล่ขนาดจากเล็กไปใหญ่อย่างนุ่มนวล" }
+    ]},
+    { name: "4. การดูดชิ้นเนื้อ", items: [
+      { id: "a1", text: "สอด cannula ผ่านปากมดลูกอย่างนุ่มนวลด้วยการหมุนเบา ๆ ไม่ใช้แรงดัน", critical: true },
+      { id: "a2", text: "วัดความลึกโพรงมดลูกจากจุดบน cannula แล้วถอยกลับเล็กน้อย" },
+      { id: "a3", text: "ต่อกระบอกเข้ากับ cannula โดยไม่ทำให้ cannula เลื่อนตำแหน่ง" },
+      { id: "a4", text: "ปล่อยวาล์วเพื่อถ่ายแรงดันลบเข้าสู่โพรงมดลูก" },
+      { id: "a5", text: "ดูดโดยหมุน cannula 180 องศาไป-กลับ ร่วมกับขยับเข้า-ออกสั้น ๆ" },
+      { id: "a6", text: "ไม่ดึงปลาย cannula พ้นปากมดลูกด้านในระหว่างดูด", critical: true },
+      { id: "a7", text: "ไม่ดันลูกสูบขณะ cannula ยังอยู่ในโพรงมดลูก", critical: true, hint: "เสี่ยง air embolism — ทำผิดข้อนี้ถือว่าไม่ผ่าน" },
+      { id: "a8", text: "จัดการอย่างถูกต้องเมื่อกระบอกเต็มหรือ cannula อุดตัน (ปิดวาล์ว ถอดกระบอก คา cannula ไว้)" },
+      { id: "a9", text: "ระบุสัญญาณว่าดูดครบได้ครบทั้ง 4 ข้อ", critical: true },
+      { id: "a10", text: "สื่อสารกับผู้ป่วยและประเมินความปวดเป็นระยะตลอดหัตถการ" }
+    ]},
+    { name: "5. การสิ้นสุดหัตถการและตรวจชิ้นเนื้อ", items: [
+      { id: "f1", text: "ถอน cannula และ tenaculum อย่างถูกลำดับ พร้อมตรวจการห้ามเลือดที่ปากมดลูก" },
+      { id: "f2", text: "กรอง ล้าง และตรวจชิ้นเนื้อในภาชนะใสส่องกับแสง", critical: true },
+      { id: "f3", text: "ระบุวิลไล/ถุงการตั้งครรภ์ และประเมินว่าปริมาณสอดคล้องกับอายุครรภ์" },
+      { id: "f4", text: "อธิบายแผนการดูแลได้เมื่อไม่พบวิลไล (คิดถึง ectopic ติดตาม β-hCG ส่งพยาธิ)", critical: true },
+      { id: "f5", text: "แช่เครื่องมือในสารละลายคลอรีน 0.5% และทิ้งของมีคมอย่างถูกวิธี" }
+    ]},
+    { name: "6. การดูแลหลังหัตถการ", items: [
+      { id: "r1", text: "เฝ้าสัญญาณชีพและปริมาณเลือดออกอย่างน้อย 30–60 นาที" },
+      { id: "r2", text: "ให้ anti-D immunoglobulin ในผู้ป่วย Rh-negative" },
+      { id: "r3", text: "ให้คำปรึกษาและเริ่มวิธีคุมกำเนิดในวันเดียวกัน", critical: true },
+      { id: "r4", text: "สอนสัญญาณอันตรายและช่องทางติดต่อฉุกเฉิน พร้อมนัดติดตาม", critical: true },
+      { id: "r5", text: "บันทึกเวชระเบียนครบถ้วน: ขนาด cannula ปริมาณชิ้นเนื้อ เลือดที่เสีย ภาวะแทรกซ้อน ยาที่ให้" }
+    ]}
+  ]
+};
+
+/* เกมฝึกเรียงลำดับขั้นตอน */
+window.MVA.steps = [
+  "ยืนยันตัวผู้ป่วยและใบยินยอม ให้ปัสสาวะให้หมด จัดท่า lithotomy",
+  "ล้างมือ สวมถุงมือปราศจากเชื้อ และเตรียมโต๊ะเครื่องมือ",
+  "ตรวจกระบอก MVA และสร้างสุญญากาศ พร้อมทดสอบการรั่ว",
+  "ตรวจภายในซ้ำเพื่อยืนยันขนาดและท่ามดลูก",
+  "ใส่ speculum และตรวจปากมดลูก คีบชิ้นเนื้อที่คาอยู่ออก",
+  "เช็ดปากมดลูกและช่องคลอดด้วยน้ำยาฆ่าเชื้อ",
+  "ทำ paracervical block แล้วรอ 2–3 นาที",
+  "หนีบ tenaculum และดึงให้โพรงมดลูกตรง",
+  "ถ่างปากมดลูกเท่าที่จำเป็นด้วย dilator ไล่ขนาด",
+  "สอด cannula จนแตะยอดมดลูก วัดความลึก แล้วถอยกลับเล็กน้อย",
+  "ต่อกระบอกเข้ากับ cannula แล้วปล่อยวาล์ว",
+  "ดูดโดยหมุน 180 องศาไป-กลับ พร้อมขยับเข้า-ออกสั้น ๆ",
+  "ประเมินสัญญาณว่าดูดครบ แล้วถอน cannula และ tenaculum",
+  "ตรวจชิ้นเนื้อ แล้วเฝ้าระวังและให้คำปรึกษาคุมกำเนิด"
+];
+
+
+/* คลังข้อสอบ MVA — MCQ พร้อมคำอธิบาย */
+window.MVA = window.MVA || {};
+window.MVA.quiz = [
+{ id:1, topic:"overview", q:"แรงดันลบที่กระบอก MVA สร้างได้ตามมาตรฐานอยู่ที่ประมาณเท่าใด",
+  choices:["8–10 นิ้วปรอท","15–18 นิ้วปรอท","24–26 นิ้วปรอท","35–40 นิ้วปรอท"], answer:2,
+  why:"กระบอก MVA ที่ประกอบและสร้างสุญญากาศถูกต้องให้แรงดันลบประมาณ 24–26 นิ้วปรอท (≈609–660 mmHg) หรือราว 0.8 บรรยากาศ ซึ่งเพียงพอต่อการดูดชิ้นเนื้อในไตรมาสแรก" },
+{ id:2, topic:"overview", q:"ข้อใดคือคำแนะนำขององค์การอนามัยโลกเกี่ยวกับการขูดมดลูกด้วยโลหะ (sharp curettage)",
+  choices:["ควรถูกแทนที่ด้วย vacuum aspiration หรือการใช้ยา","เป็นวิธีมาตรฐานสำหรับแท้งไม่ครบทุกราย","ใช้ได้เฉพาะอายุครรภ์เกิน 12 สัปดาห์","แนะนำให้ทำร่วมกับ MVA ทุกครั้งเพื่อความมั่นใจ"], answer:0,
+  why:"WHO ระบุว่า sharp curettage เป็นวิธีล้าสมัย มีภาวะแทรกซ้อนสูงกว่า ควรถูกแทนที่ด้วย vacuum aspiration (MVA/EVA) หรือการใช้ยา และการขูดซ้ำหลังดูดเสร็จไม่มีประโยชน์" },
+{ id:3, topic:"overview", q:"ความจุของกระบอก Ipas MVA Plus คือเท่าใด",
+  choices:["20 มล.","30 มล.","60 มล.","100 มล."], answer:2,
+  why:"กระบอก Ipas MVA Plus มีความจุ 60 มล. เป็นแบบวาล์วคู่ (double valve) ในบางรายอาจต้องเทและสร้างสุญญากาศใหม่มากกว่าหนึ่งครั้ง" },
+{ id:4, topic:"indication", q:"ข้อใดเป็นข้อห้ามเด็ดขาดของการทำ MVA",
+  choices:["แท้งติดเชื้อ","สงสัยการตั้งครรภ์นอกมดลูก","ซีด Hb 9 g/dL","มดลูกคว่ำหลัง"], answer:1,
+  why:"MVA ไม่ใช่การรักษาการตั้งครรภ์นอกมดลูก และการทำจะทำให้การวินิจฉัยล่าช้าจนอาจแตกได้ ส่วนแท้งติดเชื้อกลับเป็นข้อบ่งชี้ที่ต้องรีบเอาชิ้นเนื้อออกหลังให้ยาปฏิชีวนะ" },
+{ id:5, topic:"indication", q:"ผู้ป่วยแท้งติดเชื้อ ไข้ 38.8°C ควรทำ MVA เมื่อใด",
+  choices:["รอจนไข้ลงอย่างน้อย 24 ชั่วโมง","รอผลเพาะเชื้อก่อน","ให้ยาปฏิชีวนะทางหลอดเลือดดำแล้วดูดชิ้นเนื้อออกโดยเร็ว (ประมาณ 1–2 ชั่วโมง)","ไม่ทำ MVA ให้ใช้ยาขับอย่างเดียว"], answer:2,
+  why:"เนื้อเยื่อที่ค้างคือแหล่งของการติดเชื้อ การรอให้ไข้ลงจะทำให้ผู้ป่วยเข้าสู่ภาวะติดเชื้อในกระแสเลือด แนวทางคือให้ยาปฏิชีวนะครอบคลุมเชื้อผสมแล้วเอาชิ้นเนื้อออกโดยเร็ว" },
+{ id:6, topic:"equipment", q:"ผู้ป่วยแท้งค้างขนาดมดลูก 8 สัปดาห์ ควรเลือก cannula ขนาดใดเป็นอันดับแรก",
+  choices:["4 มม.","5 มม.","8 มม.","12 มม."], answer:2,
+  why:"หลักการคือเลือกขนาด cannula (มม.) ใกล้เคียงอายุครรภ์ (สัปดาห์) ที่ 8 สัปดาห์จึงเลือกประมาณ 7–9 มม. ขนาดเล็กเกินไปจะอุดตันซ้ำ ๆ ทำให้ดูดไม่หมด" },
+{ id:7, topic:"equipment", q:"ควรใช้สารใดหล่อลื่นโอริงของกระบอก MVA",
+  choices:["ปิโตรเลียมเจล","น้ำมันแร่","กลีเซอรีน","ซิลิโคน"], answer:3,
+  why:"ใช้ซิลิโคนหล่อลื่นเท่านั้น สารกลุ่มปิโตรเลียมและน้ำมันจะทำให้ยางโอริงบวมและเสื่อม ทำให้กระบอกรั่วและเสียสุญญากาศ" },
+{ id:8, topic:"equipment", q:"หลังสร้างสุญญากาศแล้วกดปุ่มวาล์ว แต่ไม่ได้ยินเสียงอากาศพุ่งเข้า ควรทำอย่างไร",
+  choices:["ตรวจการประกอบใหม่หรือเปลี่ยนกระบอก เพราะไม่มีสุญญากาศ","เริ่มดูดแล้วดูว่ามีเลือดออกมาไหม","ใช้ต่อได้ เพราะสุญญากาศยังอยู่","เพิ่มแรงดึงลูกสูบระหว่างดูด"], answer:0,
+  why:"เสียงอากาศพุ่งเข้าเมื่อปล่อยวาล์วคือหลักฐานว่ากระบอกคาสุญญากาศไว้ได้ ถ้าไม่มีเสียงแปลว่ารั่ว ต้องตรวจโอริง การประกอบวาล์ว หรือเปลี่ยนกระบอกก่อนใช้" },
+{ id:9, topic:"analgesia", q:"ตำแหน่งมาตรฐานของการฉีด paracervical block คือข้อใด",
+  choices:["12 นาฬิกาเพียงจุดเดียว","4 และ 8 นาฬิกา","6 นาฬิกาลึก 5 ซม.","ฉีดเข้าโพรงมดลูกโดยตรง"], answer:1,
+  why:"ฉีดที่รอยต่อปากมดลูกกับผนังช่องคลอดตำแหน่ง 4 และ 8 นาฬิกา (บางตำราเพิ่ม 2 และ 10 นาฬิกา) ลึกประมาณ 1.5–3 ซม. ในชั้นใต้เยื่อบุ" },
+{ id:10, topic:"analgesia", q:"ขนาดสูงสุดของ lidocaine ที่ไม่ผสม adrenaline คือข้อใด",
+  choices:["1 มก./กก.","4.5 มก./กก.","7 มก./กก.","10 มก./กก."], answer:1,
+  why:"lidocaine ที่ไม่ผสม adrenaline ใช้ได้สูงสุด 4.5 มก./กก. (ประมาณ 300 มก. ในผู้ใหญ่) ถ้าผสม adrenaline จะเพิ่มเป็น 7 มก./กก." },
+{ id:11, topic:"analgesia", q:"เหตุผลสำคัญที่ต้องดูดกลับ (aspirate) ก่อนฉีดยาชาทุกครั้งคือข้อใด",
+  choices:["เพื่อดูว่ายาชาหมดหรือยัง","เพื่อวัดความลึกของเข็ม","เพื่อป้องกันการฉีดยาชาเข้าหลอดเลือดโดยตรง","เพื่อเก็บตัวอย่างส่งตรวจ"], answer:2,
+  why:"บริเวณข้างปากมดลูกมีหลอดเลือดหนาแน่น การฉีดเข้าหลอดเลือดโดยตรงทำให้เกิดภาวะยาชาเป็นพิษต่อระบบประสาทและหัวใจ (LAST) ซึ่งอาจถึงชีวิต" },
+{ id:12, topic:"analgesia", q:"อาการเริ่มแรกของภาวะยาชาเป็นพิษเข้ากระแสเลือดคือข้อใด",
+  choices:["ปวดศีรษะรุนแรง","ปัสสาวะออกน้อย","ผื่นลมพิษทั่วตัว","ชารอบปาก หูอื้อ และรสโลหะในปาก"], answer:3,
+  why:"อาการทางระบบประสาทมาก่อน ได้แก่ ชารอบปาก ลิ้นชา หูอื้อ เวียนศีรษะ รสโลหะในปาก ก่อนจะดำเนินไปสู่ชักและหัวใจเต้นผิดจังหวะ" },
+{ id:13, topic:"analgesia", q:"ยาแก้ปวดที่ควรให้ก่อนทำ MVA ประมาณ 30–45 นาที คือข้อใด",
+  choices:["Ibuprofen 400–800 มก.","พาราเซตามอล 500 มก.","Morphine 10 มก. IM","Diazepam 5 มก. รับประทาน"], answer:0,
+  why:"หลักฐานแสดงว่ากลุ่ม NSAIDs เช่น ibuprofen ลดปวดจากการบีบตัวของมดลูกได้ดีกว่าพาราเซตามอลอย่างชัดเจน จึงเป็นยาที่แนะนำให้ก่อนหัตถการ" },
+{ id:14, topic:"procedure", q:"ตำแหน่งที่ควรหนีบ tenaculum ในการทำ MVA คือข้อใด",
+  choices:["ริมฝีปากล่าง ตำแหน่ง 6 นาฬิกา ในทุกราย","ริมฝีปากบนของปากมดลูก ตำแหน่ง 10 และ 2 นาฬิกา","ผนังช่องคลอดด้านหน้า","ภายในรูปากมดลูก"], answer:1,
+  why:"โดยทั่วไปหนีบที่ริมฝีปากบน (anterior lip) ตำแหน่ง 10 และ 2 นาฬิกา แล้วดึงตึงเพื่อลดมุมโค้งของโพรงมดลูก ยกเว้นมดลูกคว่ำหลังมากอาจหนีบริมฝีปากล่างแทน" },
+{ id:15, topic:"procedure", q:"ข้อใดไม่ใช่สัญญาณว่าดูดชิ้นเนื้อครบแล้ว",
+  choices:["มีฟองสีแดงหรือชมพูโดยไม่มีชิ้นเนื้อ","รู้สึกสากคล้ายทรายที่ผนังมดลูก","กระบอกเต็มจนดูดต่อไม่ได้","มดลูกหดรัดบีบ cannula ไว้"], answer:2,
+  why:"กระบอกเต็มเป็นเพียงข้อจำกัดของอุปกรณ์ ไม่ใช่สัญญาณว่าดูดครบ ในกรณีนี้ให้ปิดวาล์ว ถอดกระบอกออกโดยคา cannula ไว้ แล้วสร้างสุญญากาศใหม่" },
+{ id:16, topic:"procedure", q:"ขณะดูด กระบอกเต็มก่อนที่จะดูดเสร็จ ควรทำอย่างไร",
+  choices:["ดันลูกสูบเพื่อไล่ชิ้นเนื้อกลับเข้ามดลูก","ดึง cannula ออกพร้อมกระบอกแล้วเริ่มใหม่ทั้งหมด","เปลี่ยนไปใช้เครื่องดูดไฟฟ้าทันที","ปิดวาล์ว ถอดกระบอกออกโดยคา cannula ไว้ในมดลูก เทชิ้นเนื้อ แล้วสร้างสุญญากาศใหม่"], answer:3,
+  why:"การคา cannula ไว้ทำให้ไม่ต้องสอดผ่านปากมดลูกซ้ำ ลดการบาดเจ็บและการปนเปื้อน ส่วนการดันลูกสูบขณะ cannula อยู่ในมดลูกเป็นข้อห้ามเพราะเสี่ยงต่อภาวะฟองอากาศอุดหลอดเลือด" },
+{ id:17, topic:"procedure", q:"เหตุใดจึงห้ามดึงปลาย cannula พ้นปากมดลูกด้านในระหว่างดูด",
+  choices:["จะสูญเสียสุญญากาศ ทำให้ชิ้นเนื้อไหลกลับและต้องเริ่มใหม่","จะทำให้มดลูกทะลุทันที","จะทำให้ผู้ป่วยเจ็บมากกว่าปกติ","ไม่มีผลใด ๆ ทำได้ตามปกติ"], answer:0,
+  why:"เมื่อรูด้านข้างของ cannula พ้นรูปากมดลูกด้านใน อากาศจะเข้าไปในระบบ ทำให้สุญญากาศหายและชิ้นเนื้อในกระบอกอาจไหลย้อน จึงต้องสร้างสุญญากาศใหม่" },
+{ id:18, topic:"procedure", q:"กลไกที่ทำให้เกิดมดลูกทะลุบ่อยที่สุดในการทำหัตถการในโพรงมดลูกคือข้อใด",
+  choices:["ใช้ cannula ขนาดใหญ่เกินไป","ไม่ได้ประเมินท่ามดลูกก่อน แล้วสอดเครื่องมือสวนทางกับแนวโพรงมดลูก","ดูดนานเกิน 10 นาที","ไม่ได้ให้ยาปฏิชีวนะป้องกัน"], answer:1,
+  why:"การไม่ทราบว่ามดลูกคว่ำหน้าหรือคว่ำหลังแล้วสอดเครื่องมือผิดแนว คือกลไกหลักของการทะลุ การตรวจภายในก่อนทำและการดึง tenaculum ให้ตึงจึงเป็นมาตรการป้องกันที่สำคัญที่สุด" },
+{ id:19, topic:"tissue", q:"หลังดูดเสร็จ ตรวจชิ้นเนื้อแล้วไม่พบวิลไลเลย ควรทำอย่างไรเป็นลำดับแรก",
+  choices:["ให้ผู้ป่วยกลับบ้านและนัด 1 เดือน","ดูดซ้ำอีก 3 รอบทันที","คิดถึงการตั้งครรภ์นอกมดลูก ส่งชิ้นเนื้อตรวจ และติดตาม β-hCG แบบอนุกรม","ให้ methotrexate ทันทีโดยไม่ต้องตรวจเพิ่ม"], answer:2,
+  why:"การไม่พบวิลไลอาจหมายถึงการตั้งครรภ์นอกมดลูก แท้งครบไปก่อนแล้ว หรือดูดไม่ถึงชิ้นเนื้อ ต้องถือว่าเป็น ectopic จนพิสูจน์ได้ว่าไม่ใช่ โดยส่งพยาธิและติดตาม β-hCG" },
+{ id:20, topic:"tissue", q:"ดูดชิ้นเนื้อออกมาแล้วพบเนื้อเยื่อไขมันสีเหลืองปน ควรทำอย่างไร",
+  choices:["ล้างชิ้นเนื้อแล้วดูดต่อจนครบ","เป็นเนื้อเยื่อรกปกติ ไม่ต้องทำอะไร","ให้ยาปฏิชีวนะแล้วให้กลับบ้าน","หยุดทันที ประเมินสัญญาณชีพ และเตรียมผ่าตัดสำรวจช่องท้อง"], answer:3,
+  why:"ไขมันหรือเนื้อเยื่อคล้ายลำไส้บ่งชี้ว่ามดลูกทะลุและ cannula ดูดโดนอวัยวะในช่องท้อง ถือเป็นภาวะฉุกเฉินทางศัลยกรรมที่ต้องผ่าตัดสำรวจเสมอ" },
+{ id:21, topic:"tissue", q:"วิธีตรวจชิ้นเนื้อที่ถูกต้องคือข้อใด",
+  choices:["กรอง ล้างเลือดออก แล้วแช่ในภาชนะใสส่องกับแสง","ดูในกระบอกโดยไม่ต้องเท","ส่งพยาธิอย่างเดียวโดยไม่ต้องดูเอง","ชั่งน้ำหนักชิ้นเนื้ออย่างเดียว"], answer:0,
+  why:"ต้องกรองผ่านตะแกรง ล้างเลือดออก แล้วแช่น้ำในภาชนะใสส่องกับแสงจากด้านล่าง เพื่อให้เห็นวิลไลลอยฟูเป็นพุ่มคล้ายใบเฟิร์น และประเมินปริมาณเทียบกับอายุครรภ์" },
+{ id:22, topic:"complication", q:"ภาวะแทรกซ้อนที่พบบ่อยที่สุดของ MVA คือข้อใด",
+  choices:["มดลูกทะลุ","ดูดชิ้นเนื้อไม่ครบ","ยาชาเป็นพิษ","ฟองอากาศอุดหลอดเลือด"], answer:1,
+  why:"การดูดไม่ครบ (incomplete evacuation) พบบ่อยที่สุด แสดงด้วยเลือดออกต่อเนื่อง ปวด และมดลูกไม่ยุบ รักษาโดยดูดซ้ำหรือให้ misoprostol" },
+{ id:23, topic:"complication", q:"ผู้ป่วยหลังทำ MVA 1 ชั่วโมง ปวดท้องน้อยรุนแรงขึ้นเรื่อย ๆ ตรวจพบมดลูกโตตึงและกดเจ็บ แต่เลือดออกทางช่องคลอดน้อย วินิจฉัยใดน่าจะเป็นมากที่สุด",
+  choices:["มดลูกทะลุ","การติดเชื้อในอุ้งเชิงกราน","Hematometra (post-abortion syndrome)","ปฏิกิริยาเวกัส"], answer:2,
+  why:"Hematometra คือเลือดคั่งในโพรงมดลูกจากปากมดลูกหดเกร็ง เกิดใน 30 นาที–2 ชั่วโมงหลังทำ ลักษณะเด่นคือปวดมาก มดลูกตึงและกดเจ็บ แต่เลือดออกทางช่องคลอดกลับน้อย รักษาโดยดูดเลือดออกซ้ำร่วมกับยากระตุ้นมดลูก" },
+{ id:24, topic:"complication", q:"ระหว่างหนีบ tenaculum ผู้ป่วยหน้าซีด เหงื่อแตก ชีพจร 44 ครั้ง/นาที ความดัน 80/50 mmHg ควรทำอะไรเป็นลำดับแรก",
+  choices:["ให้ adrenaline 1 มก. IV","ให้เลือด 2 ยูนิตทันที","รีบดูดชิ้นเนื้อให้เสร็จโดยเร็ว","หยุดหัตถการ ยกขาสูง ประเมินทางเดินหายใจ และพิจารณาให้ atropine"], answer:3,
+  why:"ลักษณะนี้เข้าได้กับปฏิกิริยาเวกัสจากการกระตุ้นปากมดลูก ให้หยุดหัตถการ จัดท่าศีรษะต่ำ ให้ออกซิเจน และให้ atropine 0.5 มก. IV เมื่อหัวใจเต้นช้าอย่างมีนัยสำคัญ" },
+{ id:25, topic:"complication", q:"ขณะสอด cannula รู้สึกว่าเครื่องมือเข้าไปลึกกว่าที่คาดโดยไม่มีแรงต้าน ควรทำอย่างไร",
+  choices:["หยุดหัตถการ ประเมินสัญญาณชีพ ให้ยากระตุ้นมดลูกและยาปฏิชีวนะ พร้อมเฝ้าระวังภาวะทะลุ","ถอนออกแล้วสอดใหม่ในแนวเดิม","ดูดต่ออย่างระมัดระวัง","เพิ่มแรงดันลบเพื่อดูดให้ครบเร็วขึ้น"], answer:0,
+  why:"การเข้าไปลึกเกินความลึกที่วัดไว้โดยไม่มีแรงต้านคือสัญญาณของมดลูกทะลุ ต้องหยุดทันที ประเมินสัญญาณชีพ ให้ oxytocin และยาปฏิชีวนะ และพิจารณาส่องกล้อง/เปิดหน้าท้องเมื่อไม่คงที่หรือสงสัยบาดเจ็บอวัยวะ" },
+{ id:26, topic:"complication", q:"เหตุใดจึงห้ามดันลูกสูบขณะที่ cannula ยังอยู่ในโพรงมดลูก",
+  choices:["ทำให้กระบอกเสียหาย","เสี่ยงต่อการดันอากาศเข้าหลอดเลือดจนเกิดฟองอากาศอุดหลอดเลือด","ทำให้ยาชาหมดฤทธิ์","ทำให้ปากมดลูกปิด"], answer:1,
+  why:"การดันลูกสูบเป็นการอัดอากาศและชิ้นเนื้อกลับเข้าโพรงมดลูกที่มีหลอดเลือดเปิดอยู่ อาจทำให้เกิดภาวะฟองอากาศอุดหลอดเลือดซึ่งถึงแก่ชีวิตได้ จึงต้องถอด cannula ก่อนเทชิ้นเนื้อเสมอ" },
+{ id:27, topic:"complication", q:"ผู้ป่วยตกเลือดหลัง MVA มดลูกนุ่มไม่หดรัด ข้อใดเป็นการจัดการเบื้องต้นที่เหมาะสมที่สุด",
+  choices:["สังเกตอาการอย่างเดียว","ให้ยาปฏิชีวนะขนาดสูงอย่างเดียว","นวดมดลูก ให้ยากระตุ้นมดลูก เปิดเส้นให้สารน้ำ และประเมินว่ามีเนื้อค้างหรือมีรอยฉีกขาดหรือไม่","ให้ผู้ป่วยกลับบ้านพร้อมยาเสริมธาตุเหล็ก"], answer:2,
+  why:"จัดการตามลำดับ: นวดมดลูก ให้ oxytocin/methylergometrine/misoprostol ให้สารน้ำและเลือด แล้วหาสาเหตุ ได้แก่ เนื้อค้าง (ดูดซ้ำ) รอยฉีกขาด (เย็บซ่อม) หรือมดลูกทะลุ" },
+{ id:28, topic:"aftercare", q:"ผู้ป่วยหลัง MVA อาจตกไข่ได้เร็วที่สุดเมื่อใด",
+  choices:["วันที่ 8–11 หลังหัตถการ","หลัง 6 สัปดาห์","หลังประจำเดือนมาแล้ว 1 รอบ","หลัง 3 เดือน"], answer:0,
+  why:"ภาวะเจริญพันธุ์กลับคืนเร็วมาก อาจตกไข่ได้ตั้งแต่วันที่ 8–11 หลังหัตถการ จึงต้องเริ่มวิธีคุมกำเนิดในวันเดียวกัน ไม่ต้องรอประจำเดือน" },
+{ id:29, topic:"aftercare", q:"ผู้ป่วยต้องการใส่ห่วงอนามัยหลัง MVA จากแท้งไม่ครบที่ไม่มีการติดเชื้อและดูดครบแล้ว ควรใส่เมื่อใด",
+  choices:["ทันทีหลังดูดเสร็จในครั้งเดียวกัน","รอ 2 สัปดาห์","รอให้ประจำเดือนมาก่อน","รอ 3 เดือน"], answer:0,
+  why:"สามารถใส่ห่วงอนามัยได้ทันทีหลังการดูดเสร็จ หากไม่มีการติดเชื้อและมั่นใจว่าดูดครบ ซึ่งเพิ่มโอกาสได้รับการคุมกำเนิดที่มีประสิทธิภาพสูงและลดการแท้งซ้ำ" },
+{ id:30, topic:"aftercare", q:"ข้อใดคือสัญญาณอันตรายที่ต้องสอนให้ผู้ป่วยกลับมาโรงพยาบาลทันที",
+  choices:["ปวดบีบเล็กน้อย 1–2 วัน","เลือดออกกะปริดกะปรอย 1 สัปดาห์","ประจำเดือนกลับมาใน 5 สัปดาห์","เลือดชุ่มผ้าอนามัยหนา 2 ผืนต่อชั่วโมงติดกัน 2 ชั่วโมง"], answer:3,
+  why:"เลือดออกมากผิดปกติ ไข้เกิน 38°C ปวดท้องรุนแรงขึ้น ตกขาวมีกลิ่นเหม็น และเป็นลม คือสัญญาณอันตรายที่ต้องกลับมาทันที ส่วนตัวเลือกอื่นเป็นอาการปกติหลังหัตถการ" },
+{ id:31, topic:"aftercare", q:"ผู้ป่วยหมู่เลือด O Rh-negative หลัง MVA ที่อายุครรภ์ 9 สัปดาห์ ควรได้รับสิ่งใด",
+  choices:["Anti-D immunoglobulin ภายใน 72 ชั่วโมง","ไม่ต้องให้อะไรเพิ่ม","เลือด 1 ยูนิต","วัคซีนป้องกันบาดทะยัก"], answer:0,
+  why:"ผู้ป่วย Rh-negative ควรได้รับ anti-D immunoglobulin ภายใน 72 ชั่วโมงเพื่อป้องกันการสร้างภูมิต้าน โดยขนาด 50–120 มคก. หากอายุครรภ์น้อยกว่า 12 สัปดาห์ และ 300 มคก. หากมากกว่านั้น (หมายเหตุ: แนวทางองค์การอนามัยโลก พ.ศ. 2565 ระบุว่าไม่จำเป็นต้องให้ก่อนอายุครรภ์ 12 สัปดาห์ แต่แนวปฏิบัติของหลายหน่วยงานในไทยยังให้อยู่ ให้ตอบตามแนวทางที่หลักสูตรของท่านใช้)" },
+{ id:32, topic:"ipc", q:"ขั้นตอนแรกของการล้างอุปกรณ์ MVA หลังใช้งานคือข้อใด",
+  choices:["นึ่งด้วยหม้อนึ่งความดันทันที","แช่ในสารละลายคลอรีน 0.5% นาน 10 นาที","ล้างด้วยแอลกอฮอล์","ตากแดดให้แห้ง"], answer:1,
+  why:"ขั้นตอนมาตรฐานคือ แช่ปนเปื้อนในคลอรีน 0.5% นาน 10 นาที → ล้างด้วยน้ำและสบู่ → ทำลายเชื้อระดับสูงหรือทำให้ปราศจากเชื้อ → ประกอบและทดสอบ" },
+{ id:33, topic:"ipc", q:"หลักการ no-touch technique หมายถึงข้อใด",
+  choices:["ไม่แตะต้องผู้ป่วยเลยระหว่างทำ","ใช้ถุงมือสองชั้นเสมอ","ส่วนของเครื่องมือที่จะเข้าโพรงมดลูกต้องไม่สัมผัสสิ่งที่ไม่ปราศจากเชื้อ รวมถึงผนังช่องคลอด","ไม่ใช้ tenaculum"], answer:2,
+  why:"no-touch technique คือการไม่ให้ส่วนที่จะเข้าโพรงมดลูกสัมผัสสิ่งที่ไม่ปราศจากเชื้อ เช่น ผนังช่องคลอดหรือ speculum เป็นมาตรการลดการติดเชื้อที่สำคัญที่สุดของหัตถการนี้" },
+{ id:34, topic:"ipc", q:"ข้อใดถูกต้องเกี่ยวกับการเตรียมผู้ป่วยก่อนทำ MVA",
+  choices:["ควรโกนขนหัวหน่าวทุกราย","ควรสวนล้างช่องคลอดด้วยน้ำยาฆ่าเชื้อก่อนทุกราย","ต้องสวนอุจจาระก่อนทุกราย","ไม่ควรโกนขนและไม่ควรสวนล้างช่องคลอด"], answer:3,
+  why:"การโกนขนทำให้เกิดรอยถลอกและเพิ่มการติดเชื้อ ส่วนการสวนล้างช่องคลอดรบกวนแบคทีเรียประจำถิ่น ทั้งสองอย่างไม่แนะนำ เพียงเช็ดปากมดลูกและช่องคลอดด้วยน้ำยาฆ่าเชื้อก็เพียงพอ" },
+{ id:35, topic:"law", q:"ตามประมวลกฎหมายอาญาของไทยฉบับแก้ไข พ.ศ. 2564 หญิงสามารถยุติการตั้งครรภ์ได้โดยผู้ประกอบวิชาชีพเวชกรรม เมื่ออายุครรภ์ไม่เกินกี่สัปดาห์",
+  choices:["8 สัปดาห์","12 สัปดาห์","16 สัปดาห์","20 สัปดาห์"], answer:1,
+  why:"กฎหมายกำหนดว่าอายุครรภ์ไม่เกิน 12 สัปดาห์ยุติได้โดยผู้ประกอบวิชาชีพเวชกรรม ส่วนช่วงเกิน 12 ถึง 20 สัปดาห์ต้องผ่านการตรวจและรับคำปรึกษาทางเลือกตามหลักเกณฑ์ก่อนยืนยัน" },
+{ id:36, topic:"law", q:"แพทย์ที่ปฏิเสธการให้บริการยุติการตั้งครรภ์ด้วยเหตุผลทางมโนธรรม มีหน้าที่ใด",
+  choices:["ต้องส่งต่อผู้ป่วยไปยังผู้ให้บริการรายอื่นโดยไม่ชักช้า","ไม่มีหน้าที่ใดเพิ่มเติม","ต้องโน้มน้าวให้ผู้ป่วยตั้งครรภ์ต่อ","ต้องแจ้งญาติผู้ป่วย"], answer:0,
+  why:"หลักจริยธรรมสากลยอมรับการปฏิเสธด้วยเหตุผลทางมโนธรรม แต่ต้องไม่ทำให้ผู้ป่วยเสียโอกาสหรือเกิดอันตราย จึงมีหน้าที่ส่งต่อโดยไม่ชักช้า และในภาวะฉุกเฉินต้องให้การช่วยเหลือเสมอ" },
+{ id:37, topic:"procedure", q:"เทคนิคการดูดที่ถูกต้องคือข้อใด",
+  choices:["หมุน cannula 360 องศาอย่างรวดเร็ว","หมุน 180 องศาไป-กลับ พร้อมขยับเข้า-ออกสั้น ๆ","ดันเข้าออกเต็มความลึกโพรงมดลูกอย่างแรง","คา cannula นิ่ง ๆ โดยไม่ขยับจนกว่าจะเต็มกระบอก"], answer:1,
+  why:"การหมุน 180 องศาไป-กลับพร้อมขยับเข้า-ออกระยะสั้นทำให้รูด้านข้างของ cannula กวาดผนังมดลูกได้ทั่ว โดยไม่ดึงปลายพ้นรูปากมดลูกด้านในและไม่ดันจนทะลุ" },
+{ id:38, topic:"equipment", q:"ผู้ป่วยปากมดลูกไม่เปิด อายุครรภ์ 11 สัปดาห์ วิธีเตรียมปากมดลูกที่เหมาะสมคือข้อใด",
+  choices:["ใช้ dilator ขนาดใหญ่ถ่างทันทีด้วยแรง","ให้ยาปฏิชีวนะ 3 วันแล้วค่อยนัดมาใหม่","ให้ oxytocin หยดทางหลอดเลือดดำ","ให้ misoprostol 400 มคก. อมใต้ลิ้นหรือเหน็บช่องคลอดก่อนทำ"], answer:3,
+  why:"Misoprostol 400 มคก. อมใต้ลิ้นประมาณ 1–3 ชั่วโมง หรือเหน็บช่องคลอดประมาณ 3 ชั่วโมงก่อนทำ ช่วยให้ปากมดลูกนุ่มและเปิด ลดการบาดเจ็บจากการถ่างและลดการทะลุ" },
+{ id:39, topic:"indication", q:"ผู้ป่วยแท้งไม่ครบ Hb 6.2 g/dL ความดัน 90/60 mmHg ชีพจร 118 ครั้ง/นาที ควรทำอย่างไร",
+  choices:["กู้ชีพด้วยสารน้ำ จองและให้เลือด พร้อมทำ MVA เพื่อหยุดต้นเหตุของการเสียเลือด","ทำ MVA ทันทีโดยไม่ต้องเตรียมอะไร","รอให้ Hb ขึ้นถึง 10 g/dL ก่อนจึงทำ","ให้ยาเสริมธาตุเหล็กแล้วนัดมาใหม่ 1 เดือน"], answer:0,
+  why:"เนื้อเยื่อที่ค้างคือสาเหตุที่ทำให้เลือดออกต่อเนื่อง การรอให้ Hb ขึ้นโดยไม่เอาชิ้นเนื้อออกจะทำให้เสียเลือดต่อไป จึงต้องกู้ชีพไปพร้อมกับการทำหัตถการเพื่อหยุดต้นเหตุ" },
+{ id:40, topic:"indication", q:"ข้อใดเป็นข้อบ่งชี้ของ MVA ที่พบบ่อยที่สุดในโรงพยาบาลชุมชนไทย",
+  choices:["ครรภ์ไข่ปลาอุก","แท้งไม่ครบ","การเก็บชิ้นเนื้อเยื่อบุโพรงมดลูก","เศษรกค้างหลังคลอดครบกำหนด"], answer:1,
+  why:"แท้งไม่ครบ (incomplete abortion) เป็นข้อบ่งชี้ที่พบบ่อยที่สุด และเป็นเหตุผลหลักที่ MVA ถูกผลักดันให้เป็นบริการมาตรฐานในระดับโรงพยาบาลชุมชน" },
+{ id:41, topic:"overview", q:"ข้อได้เปรียบของ MVA เหนือ EVA ในบริบทโรงพยาบาลชุมชนคือข้อใด",
+  choices:["ดูดได้เร็วกว่าอย่างมีนัยสำคัญ","ใช้ได้ที่อายุครรภ์สูงกว่ามาก","ไม่ต้องใช้ยาชาเลย","ไม่ต้องใช้ไฟฟ้า เงียบ และต้นทุนต่ำ"], answer:3,
+  why:"MVA ไม่ต้องใช้ไฟฟ้า ทำงานเงียบ พกพาได้ ต้นทุนต่ำ และอุปกรณ์นำกลับมาใช้ซ้ำได้ จึงเหมาะกับหน่วยบริการที่ทรัพยากรจำกัด ส่วนประสิทธิภาพในไตรมาสแรกใกล้เคียงกับ EVA" },
+{ id:42, topic:"complication", q:"ผู้ป่วยกลับมาด้วยไข้ 38.5°C ปวดท้องน้อย ตกขาวมีกลิ่นเหม็น 5 วันหลัง MVA ควรประเมินและจัดการอย่างไร",
+  choices:["ให้ยาปฏิชีวนะครอบคลุมเชื้อผสม และประเมินว่ามีชิ้นเนื้อค้างที่ต้องดูดซ้ำหรือไม่","ให้ยาลดไข้และนัดติดตาม 1 สัปดาห์","ทำ MVA ซ้ำทันทีโดยไม่ต้องให้ยาปฏิชีวนะ","ส่งผ่าตัดมดลูกออก"], answer:0,
+  why:"ภาพนี้คือการติดเชื้อหลังหัตถการ ต้องให้ยาปฏิชีวนะครอบคลุมเชื้อผสม และประเมินด้วยอัลตราซาวด์ว่ามีเนื้อค้างซึ่งเป็นแหล่งเชื้อหรือไม่ หากมีต้องดูดซ้ำหลังเริ่มยาปฏิชีวนะแล้ว" },
+{ id:43, topic:"procedure", q:"เหตุผลของการดึง tenaculum ให้ตึงสม่ำเสมอระหว่างทำหัตถการคือข้อใด",
+  choices:["เพื่อลดปริมาณเลือดออก","เพื่อยึด speculum ไม่ให้เลื่อน","เพื่อให้ยาชาออกฤทธิ์เร็วขึ้น","เพื่อทำให้แนวปากมดลูกและโพรงมดลูกตรง ลดโอกาสทะลุ"], answer:3,
+  why:"การดึงตึงช่วยลดมุมโค้งระหว่างปากมดลูกกับตัวมดลูก ทำให้สอดเครื่องมือตามแนวโพรงมดลูกได้ตรง ซึ่งเป็นวิธีป้องกันการทะลุที่สำคัญที่สุดวิธีหนึ่ง" },
+{ id:44, topic:"ipc", q:"กระบอก Ipas MVA Plus โดยทั่วไปนำกลับมาใช้ซ้ำได้ประมาณกี่ครั้ง",
+  choices:["1 ครั้ง","5 ครั้ง","25 ครั้ง","100 ครั้ง"], answer:2,
+  why:"ผู้ผลิตระบุว่านำกลับมาใช้ซ้ำได้ประมาณ 25 ครั้ง หรือจนกว่าจะรั่ว แตกร้าว หรือทดสอบแล้วคาสุญญากาศไม่ได้ แล้วแต่ว่าอย่างใดถึงก่อน จึงควรมีระบบบันทึกจำนวนครั้งที่ใช้" },
+{ id:45, topic:"aftercare", q:"ข้อใดเป็นเกณฑ์ที่เหมาะสมในการอนุญาตให้ผู้ป่วยกลับบ้านหลัง MVA",
+  choices:["เมื่อผลพยาธิวิทยาออกแล้วเท่านั้น","หลังทำเสร็จทันทีในทุกราย","เมื่อเลือดหยุดสนิทเท่านั้น","สัญญาณชีพคงที่ ปวดควบคุมได้ด้วยยารับประทาน เลือดออกไม่มากกว่าประจำเดือน และได้รับคำแนะนำพร้อมวิธีคุมกำเนิดแล้ว"], answer:3,
+  why:"เกณฑ์กลับบ้านคือสัญญาณชีพคงที่ ปวดควบคุมได้ เลือดออกไม่มาก เดินและปัสสาวะได้ และได้รับคำแนะนำ สัญญาณอันตราย และวิธีคุมกำเนิดแล้ว โดยไม่ต้องรอผลพยาธิ" }
+];
+
+
+/* กรณีศึกษาแบบตัดสินใจทีละขั้น */
+window.MVA = window.MVA || {};
+window.MVA.cases = [
+{
+  id:"c1", title:"หญิง 24 ปี เลือดออกทางช่องคลอด ขาดประจำเดือน 9 สัปดาห์", level:"พื้นฐาน",
+  stem:"มาที่ห้องฉุกเฉินด้วยเลือดออกทางช่องคลอดมา 2 วัน ปวดบีบท้องน้อย ตรวจภายในพบปากมดลูกเปิด 1 ซม. มีชิ้นเนื้อคาที่ปากมดลูก มดลูกโตประมาณ 8 สัปดาห์",
+  info:[["ความดัน","110/70 mmHg"],["ชีพจร","92 ครั้ง/นาที"],["อุณหภูมิ","37.0°C"],["Hb","10.8 g/dL"],["หมู่เลือด","B Rh-positive"]],
+  steps:[
+    { q:"ขั้นตอนต่อไปที่เหมาะสมที่สุดคือข้อใด",
+      choices:[
+        {t:"อัลตราซาวด์ยืนยันตำแหน่งการตั้งครรภ์และปริมาณชิ้นเนื้อค้าง แล้ววางแผน MVA",ok:true,fb:"ถูกต้อง ควรยืนยันว่าเป็นการตั้งครรภ์ในมดลูกและประเมินชิ้นเนื้อค้างก่อนวางแผน แม้ภาพทางคลินิกจะชัดเจน"},
+        {t:"ให้ยาปฏิชีวนะ 5 วันแล้วนัดมาใหม่",ok:false,fb:"ไม่เหมาะสม ผู้ป่วยยังมีเลือดออกจากเนื้อเยื่อค้าง การเลื่อนออกไปทำให้เสียเลือดต่อเนื่อง"},
+        {t:"ส่งผ่าตัดขูดมดลูกด้วยโลหะในห้องผ่าตัด",ok:false,fb:"WHO แนะนำให้เลิกใช้ sharp curettage และใช้ vacuum aspiration แทน อีกทั้งกรณีนี้ทำที่ห้องหัตถการได้"},
+        {t:"ให้กลับบ้านและติดตามอาการเอง",ok:false,fb:"มีชิ้นเนื้อคาที่ปากมดลูกและเลือดออก จำเป็นต้องได้รับการเอาชิ้นเนื้อออก"}
+      ]},
+    { q:"ก่อนทำหัตถการ ควรเลือกขนาด cannula และวางแผนระงับปวดอย่างไร",
+      choices:[
+        {t:"Cannula 8 มม. + ibuprofen ก่อนทำ + paracervical block ด้วย 1% lidocaine",ok:true,fb:"ถูกต้อง ขนาด cannula ใกล้เคียงอายุครรภ์ และการระงับปวดสามเสาคือคำพูด NSAIDs และยาชาเฉพาะที่"},
+        {t:"Cannula 4 มม. + ยาสลบทั่วไป",ok:false,fb:"cannula เล็กเกินไปจะอุดตันซ้ำ ๆ และการดมยาสลบเพิ่มความเสี่ยงโดยไม่จำเป็น"},
+        {t:"Cannula 12 มม. โดยไม่ต้องให้ยาชา",ok:false,fb:"ใหญ่เกินความจำเป็นทำให้ต้องถ่างปากมดลูกมาก และการไม่ให้ยาชาไม่เป็นที่ยอมรับ"},
+        {t:"ไม่ต้องใช้ยาใด ๆ เพราะปากมดลูกเปิดแล้ว",ok:false,fb:"แม้ปากมดลูกเปิด การดูดยังทำให้ปวดบีบมาก ต้องระงับปวดเสมอ"}
+      ]},
+    { q:"ดูดเสร็จ ตรวจชิ้นเนื้อพบวิลไลชัดเจนปริมาณเหมาะกับ 8 สัปดาห์ ขั้นตอนสุดท้ายก่อนกลับบ้านคือข้อใด",
+      choices:[
+        {t:"เฝ้าสัญญาณชีพ 30–60 นาที ให้คำปรึกษาและเริ่มคุมกำเนิดวันเดียวกัน สอนสัญญาณอันตราย",ok:true,fb:"ถูกต้อง ครบทั้งการเฝ้าระวัง การคุมกำเนิดทันที และการสอนสัญญาณอันตราย"},
+        {t:"ให้ anti-D immunoglobulin",ok:false,fb:"ผู้ป่วยรายนี้ Rh-positive จึงไม่มีข้อบ่งชี้"},
+        {t:"นัดคุมกำเนิดหลังประจำเดือนมา",ok:false,fb:"ตกไข่ได้เร็วสุดวันที่ 8–11 การรอประจำเดือนทำให้เสี่ยงตั้งครรภ์ซ้ำ"},
+        {t:"ให้กลับบ้านทันทีหลังทำเสร็จ",ok:false,fb:"ต้องเฝ้าระวังภาวะเลือดออกและ hematometra อย่างน้อย 30–60 นาที"}
+      ]}
+  ],
+  takeaway:"แท้งไม่ครบที่สัญญาณชีพคงที่คือกรณีต้นแบบของ MVA ที่ OPD — ยืนยันการวินิจฉัย เลือก cannula ตามอายุครรภ์ ระงับปวดครบสามเสา ตรวจชิ้นเนื้อ และเริ่มคุมกำเนิดวันเดียวกัน"
+},
+{
+  id:"c2", title:"หญิง 30 ปี ไข้สูง ตกขาวมีกลิ่น หลังทำแท้งเถื่อน 3 วัน", level:"ปานกลาง",
+  stem:"มาด้วยไข้ ปวดท้องน้อยมาก ตกขาวเป็นหนองมีกลิ่นเหม็น ตรวจภายในพบปากมดลูกเปิด กดเจ็บมดลูกและปีกมดลูกทั้งสองข้าง",
+  info:[["ความดัน","100/60 mmHg"],["ชีพจร","118 ครั้ง/นาที"],["อุณหภูมิ","39.0°C"],["WBC","19,800/µL"],["Hb","9.5 g/dL"]],
+  steps:[
+    { q:"ลำดับการจัดการที่ถูกต้องที่สุดคือข้อใด",
+      choices:[
+        {t:"เปิดเส้นให้สารน้ำ เก็บเพาะเชื้อ ให้ยาปฏิชีวนะทางหลอดเลือดดำครอบคลุมเชื้อผสม แล้วดูดชิ้นเนื้อออกภายใน 1–2 ชั่วโมง",ok:true,fb:"ถูกต้อง เนื้อเยื่อที่ค้างคือแหล่งเชื้อ ต้องเอาออกโดยเร็วหลังเริ่มยาปฏิชีวนะ ไม่ต้องรอไข้ลง"},
+        {t:"ให้ยาปฏิชีวนะจนไข้ลง 48 ชั่วโมงแล้วค่อยทำ MVA",ok:false,fb:"การรอทำให้ผู้ป่วยเสี่ยงเข้าสู่ภาวะติดเชื้อในกระแสเลือด เพราะแหล่งเชื้อยังอยู่"},
+        {t:"ทำ MVA ทันทีโดยยังไม่ให้ยาปฏิชีวนะ",ok:false,fb:"ควรเริ่มยาปฏิชีวนะก่อนหัตถการเพื่อลดการกระจายเชื้อเข้ากระแสเลือด"},
+        {t:"ผ่าตัดมดลูกออกทันที",ok:false,fb:"สงวนไว้สำหรับกรณีเนื้อตายจากเชื้อ clostridium หรือรักษาด้วยวิธีอื่นแล้วไม่ตอบสนอง"}
+      ]},
+    { q:"ระหว่างดูด รู้สึกว่า cannula เข้าไปลึกกว่าที่วัดไว้อย่างมากโดยไม่มีแรงต้าน ควรทำอย่างไร",
+      choices:[
+        {t:"หยุดทันที ประเมินสัญญาณชีพ ให้ oxytocin และยาปฏิชีวนะ เฝ้าระวังภาวะทะลุอย่างใกล้ชิด",ok:true,fb:"ถูกต้อง นี่คือสัญญาณของมดลูกทะลุ มดลูกที่ติดเชื้อจะนุ่มและทะลุง่ายเป็นพิเศษ"},
+        {t:"ดูดต่อให้เสร็จอย่างรวดเร็ว",ok:false,fb:"อันตรายมาก อาจดูดโดนลำไส้หรือหลอดเลือดในช่องท้อง"},
+        {t:"เพิ่มแรงดันลบเพื่อให้เสร็จเร็วขึ้น",ok:false,fb:"ยิ่งเพิ่มความเสี่ยงต่อการดูดอวัยวะข้างเคียง"},
+        {t:"เปลี่ยนไปใช้ curette โลหะ",ok:false,fb:"เพิ่มความเสี่ยงต่อการบาดเจ็บซ้ำอย่างมาก"}
+      ]},
+    { q:"หลังหยุดหัตถการ ผู้ป่วยความดัน 80/50 mmHg ชีพจร 130 ครั้ง/นาที ท้องแข็งตึงทั่ว ควรทำอย่างไร",
+      choices:[
+        {t:"กู้ชีพด้วยสารน้ำและเลือด พร้อมส่งผ่าตัดเปิดหน้าท้องสำรวจ",ok:true,fb:"ถูกต้อง สัญญาณชีพไม่คงที่ร่วมกับอาการทางช่องท้องคือข้อบ่งชี้ของการผ่าตัดสำรวจทันที"},
+        {t:"สังเกตอาการที่หอผู้ป่วย 24 ชั่วโมง",ok:false,fb:"การสังเกตใช้ได้เฉพาะรายที่สัญญาณชีพคงที่และไม่มีอาการทางช่องท้อง"},
+        {t:"ให้ยาแก้ปวดแล้วประเมินซ้ำเช้าวันรุ่งขึ้น",ok:false,fb:"ล่าช้าเกินไปในภาวะที่อาจมีเลือดออกในช่องท้องหรือลำไส้ทะลุ"},
+        {t:"ทำอัลตราซาวด์ซ้ำแล้วรอผล",ok:false,fb:"ไม่ควรทำให้การผ่าตัดล่าช้าในผู้ป่วยที่สัญญาณชีพไม่คงที่"}
+      ]}
+  ],
+  takeaway:"แท้งติดเชื้อ: ยาปฏิชีวนะก่อนแล้วรีบเอาชิ้นเนื้อออก มดลูกที่ติดเชื้อนุ่มและทะลุง่าย — สัญญาณชีพไม่คงที่ร่วมกับอาการทางช่องท้อง = เปิดหน้าท้อง"
+},
+{
+  id:"c3", title:"หญิง 21 ปี ปวดท้องรุนแรง 1 ชั่วโมงหลังทำ MVA", level:"ปานกลาง",
+  stem:"ทำ MVA จากแท้งค้างเมื่อ 1 ชั่วโมงก่อน ระหว่างทำราบรื่น ตรวจชิ้นเนื้อพบวิลไลเหมาะกับอายุครรภ์ ขณะนี้ปวดบีบท้องน้อยรุนแรงขึ้นเรื่อย ๆ",
+  info:[["ความดัน","112/72 mmHg"],["ชีพจร","96 ครั้ง/นาที"],["เลือดออกทางช่องคลอด","น้อยมาก"],["ตรวจท้อง","คลำมดลูกได้โตตึงและกดเจ็บ"]],
+  steps:[
+    { q:"การวินิจฉัยที่น่าจะเป็นมากที่สุดคือข้อใด",
+      choices:[
+        {t:"Hematometra (post-abortion syndrome)",ok:true,fb:"ถูกต้อง เอกลักษณ์คือปวดมาก มดลูกโตตึงกดเจ็บ แต่เลือดออกทางช่องคลอดกลับน้อย เกิดใน 30 นาที–2 ชั่วโมงแรก"},
+        {t:"มดลูกทะลุ",ok:false,fb:"มักมีอาการทางช่องท้องและสัญญาณชีพเปลี่ยน ไม่ใช่มดลูกโตตึงแบบนี้"},
+        {t:"การติดเชื้อในอุ้งเชิงกราน",ok:false,fb:"เร็วเกินไป การติดเชื้อมักปรากฏหลัง 24–72 ชั่วโมงพร้อมไข้"},
+        {t:"ปฏิกิริยาเวกัส",ok:false,fb:"เกิดขณะกระตุ้นปากมดลูกและมีชีพจรช้า ความดันตก ไม่ใช่ภาพนี้"}
+      ]},
+    { q:"การรักษาที่เหมาะสมคือข้อใด",
+      choices:[
+        {t:"ดูดเลือดออกจากโพรงมดลูกซ้ำ ร่วมกับให้ยากระตุ้นมดลูก",ok:true,fb:"ถูกต้อง การระบายเลือดคั่งออกทำให้อาการดีขึ้นทันที และยากระตุ้นมดลูกช่วยให้มดลูกหดรัด"},
+        {t:"ให้มอร์ฟีนแล้วสังเกตอาการ",ok:false,fb:"บรรเทาอาการชั่วคราวแต่ไม่แก้ต้นเหตุ มดลูกยังคงคั่งเลือด"},
+        {t:"ส่งผ่าตัดเปิดหน้าท้อง",ok:false,fb:"ไม่จำเป็น ภาวะนี้รักษาได้ด้วยการดูดซ้ำ"},
+        {t:"ให้ยาปฏิชีวนะทางหลอดเลือดดำ",ok:false,fb:"ไม่ใช่การรักษาหลักของภาวะนี้"}
+      ]}
+  ],
+  takeaway:"ปวดมาก + มดลูกตึงกดเจ็บ + เลือดออกน้อย ภายใน 2 ชั่วโมงหลัง MVA = hematometra → ดูดซ้ำ + ยากระตุ้นมดลูก"
+},
+{
+  id:"c4", title:"หญิง 28 ปี ดูดแล้วไม่พบชิ้นเนื้อรก", level:"ยาก",
+  stem:"ขาดประจำเดือน 7 สัปดาห์ เลือดออกกะปริดกะปรอย ปวดท้องน้อยข้างขวา ทดสอบการตั้งครรภ์ให้ผลบวก ทำ MVA เพราะคิดว่าแท้งไม่ครบ แต่ดูดได้เพียงเลือดและเยื่อบุโพรงมดลูก ตรวจในภาชนะใสไม่พบวิลไลเลย",
+  info:[["ความดัน","104/64 mmHg"],["ชีพจร","104 ครั้ง/นาที"],["β-hCG","3,200 mIU/mL"],["อัลตราซาวด์ก่อนทำ","ไม่เห็นถุงการตั้งครรภ์ในโพรงมดลูก"]],
+  steps:[
+    { q:"สิ่งที่ต้องคิดถึงเป็นอันดับแรกคือข้อใด",
+      choices:[
+        {t:"การตั้งครรภ์นอกมดลูก",ok:true,fb:"ถูกต้อง ไม่พบวิลไลร่วมกับ β-hCG สูงกว่าระดับที่ควรเห็นถุงในมดลูก คือภาพคลาสสิกของ ectopic pregnancy"},
+        {t:"แท้งครบไปแล้วก่อนมา",ok:false,fb:"เป็นไปได้แต่ต้องตัด ectopic ออกก่อนเสมอ เพราะพลาดแล้วอันตรายถึงชีวิต"},
+        {t:"ครรภ์ไข่ปลาอุก",ok:false,fb:"มักมีมดลูกโตกว่าอายุครรภ์ β-hCG สูงมาก และเห็นลักษณะเฉพาะจากอัลตราซาวด์"},
+        {t:"ผลตรวจการตั้งครรภ์บวกลวง",ok:false,fb:"พบได้น้อยมากและไม่ควรใช้เป็นคำอธิบายแรกในผู้ป่วยที่มีอาการ"}
+      ]},
+    { q:"แผนการดูแลต่อที่เหมาะสมที่สุดคือข้อใด",
+      choices:[
+        {t:"ส่งชิ้นเนื้อตรวจพยาธิ ติดตาม β-hCG แบบอนุกรม อัลตราซาวด์ซ้ำ และให้คำแนะนำสัญญาณอันตรายพร้อมช่องทางฉุกเฉิน",ok:true,fb:"ถูกต้อง เป็นแนวทางมาตรฐานของ pregnancy of unknown location หลังการดูด"},
+        {t:"ให้กลับบ้านและนัดตรวจอีก 1 เดือน",ok:false,fb:"อันตราย ท่อนำไข่อาจแตกได้ภายในไม่กี่วัน"},
+        {t:"ดูดซ้ำอีกครั้งทันที",ok:false,fb:"ไม่ช่วยอะไร เพราะการตั้งครรภ์ไม่ได้อยู่ในโพรงมดลูก"},
+        {t:"เริ่ม methotrexate ทันทีโดยไม่ต้องรอผลใด ๆ",ok:false,fb:"ควรยืนยันด้วยผลพยาธิและระดับ β-hCG อนุกรมก่อน เพื่อไม่ให้ยาผู้ป่วยที่ตั้งครรภ์ในมดลูกจริง"}
+      ]}
+  ],
+  takeaway:"การตรวจชิ้นเนื้อคือด่านสุดท้ายที่จับ ectopic ได้ — ไม่พบวิลไล ให้ถือว่าเป็น ectopic จนกว่าจะพิสูจน์ได้ว่าไม่ใช่"
+},
+{
+  id:"c5", title:"หญิง 19 ปี ตั้งครรภ์ 10 สัปดาห์ ขอยุติการตั้งครรภ์", level:"ปานกลาง",
+  stem:"มาที่คลินิกด้วยตนเอง ยืนยันไม่พร้อมตั้งครรภ์ต่อ ตรวจอัลตราซาวด์ยืนยันการตั้งครรภ์ในมดลูก อายุครรภ์ 10 สัปดาห์ ไม่มีโรคประจำตัว",
+  info:[["ความดัน","118/74 mmHg"],["Hb","12.0 g/dL"],["หมู่เลือด","O Rh-negative"],["ตรวจภายใน","มดลูกคว่ำหน้า ปากมดลูกยังปิดสนิท"]],
+  steps:[
+    { q:"ขั้นตอนก่อนตัดสินใจทำหัตถการที่จำเป็นที่สุดคือข้อใด",
+      choices:[
+        {t:"ให้คำปรึกษาทางเลือกอย่างเป็นกลาง ครบทุกทางเลือก และได้ความยินยอมที่เป็นอิสระ",ok:true,fb:"ถูกต้อง การให้ข้อมูลครบถ้วนเป็นกลางและความยินยอมที่ไม่ถูกกดดัน เป็นเงื่อนไขพื้นฐานทั้งทางจริยธรรมและกฎหมาย"},
+        {t:"ขอความยินยอมจากบิดามารดาในทุกกรณี",ok:false,fb:"ผู้ป่วยอายุ 19 ปี เป็นผู้บรรลุนิติภาวะและตัดสินใจได้ด้วยตนเอง ต้องรักษาความลับ"},
+        {t:"ให้เลือกวิธีที่โรงพยาบาลสะดวกที่สุด",ok:false,fb:"ต้องเสนอทางเลือกที่มีตามความเหมาะสมทางการแพทย์ และให้ผู้ป่วยร่วมตัดสินใจ"},
+        {t:"บันทึกเหตุผลโดยไม่ต้องอธิบายความเสี่ยง",ok:false,fb:"ความยินยอมต้องมาพร้อมข้อมูลความเสี่ยง ประโยชน์ และทางเลือก"}
+      ]},
+    { q:"ปากมดลูกยังปิดสนิทที่อายุครรภ์ 10 สัปดาห์ ควรเตรียมอย่างไร",
+      choices:[
+        {t:"ให้ misoprostol 400 มคก. อมใต้ลิ้น 1–3 ชั่วโมงก่อนทำ",ok:true,fb:"ถูกต้อง ช่วยให้ปากมดลูกนุ่มและเปิด ลดการบาดเจ็บจากการถ่างและลดโอกาสทะลุ"},
+        {t:"ถ่างด้วย dilator ขนาดใหญ่ทันทีโดยไม่ต้องเตรียม",ok:false,fb:"เพิ่มความเสี่ยงต่อการฉีกขาดของปากมดลูกและการทะลุ"},
+        {t:"ให้ oxytocin หยดทางหลอดเลือดดำ",ok:false,fb:"ไม่ได้ทำให้ปากมดลูกนุ่มในไตรมาสแรก ไม่ใช่ยาสำหรับข้อบ่งชี้นี้"},
+        {t:"เลื่อนออกไปอีก 4 สัปดาห์",ok:false,fb:"การเลื่อนเพิ่มอายุครรภ์และเพิ่มความเสี่ยงของหัตถการ รวมถึงข้อจำกัดทางกฎหมาย"}
+      ]},
+    { q:"หลังทำเสร็จ สิ่งใดที่ต้องไม่ลืมในผู้ป่วยรายนี้เป็นพิเศษ",
+      choices:[
+        {t:"ให้ anti-D immunoglobulin ภายใน 72 ชั่วโมง และเริ่มคุมกำเนิดวันเดียวกัน",ok:true,fb:"ถูกต้อง ผู้ป่วย Rh-negative ต้องได้รับ anti-D และการคุมกำเนิดควรเริ่มทันทีในวันเดียวกัน"},
+        {t:"ให้เลือด 1 ยูนิต",ok:false,fb:"ไม่มีข้อบ่งชี้ ผู้ป่วย Hb ปกติและเสียเลือดไม่มาก"},
+        {t:"งดคุมกำเนิดจนกว่าประจำเดือนจะมา",ok:false,fb:"ตกไข่ได้เร็วสุดวันที่ 8–11 หลังหัตถการ"},
+        {t:"นัดตรวจ β-hCG ทุกสัปดาห์เป็นเวลา 6 เดือน",ok:false,fb:"ไม่จำเป็นในการตั้งครรภ์ปกติ การติดตามแบบนี้ใช้ในครรภ์ไข่ปลาอุก"}
+      ]}
+  ],
+  takeaway:"งานยุติการตั้งครรภ์ที่ดีคือการปรึกษาเป็นกลาง + เตรียมปากมดลูกเมื่อมีข้อบ่งชี้ + ไม่ลืม anti-D ในผู้ป่วย Rh-negative + คุมกำเนิดวันเดียวกัน"
+},
+{
+  id:"c6", title:"หญิง 33 ปี มดลูกโตกว่าอายุครรภ์ อาเจียนรุนแรง", level:"ยาก",
+  stem:"ขาดประจำเดือน 11 สัปดาห์ คลื่นไส้อาเจียนมาก เลือดออกทางช่องคลอด ตรวจพบมดลูกโตประมาณ 16 สัปดาห์ อัลตราซาวด์เห็นลักษณะคล้ายพวงองุ่นเต็มโพรงมดลูก ไม่พบทารก",
+  info:[["ความดัน","140/90 mmHg"],["ชีพจร","110 ครั้ง/นาที"],["β-hCG","480,000 mIU/mL"],["Hb","9.8 g/dL"]],
+  steps:[
+    { q:"การเตรียมผู้ป่วยก่อนดูดในกรณีนี้ต่างจากรายทั่วไปอย่างไร",
+      choices:[
+        {t:"เปิดเส้นเลือดขนาดใหญ่ จองเลือด เตรียม oxytocin ให้ระหว่างดูด และประเมินภาวะแทรกซ้อนของครรภ์ไข่ปลาอุก",ok:true,fb:"ถูกต้อง ครรภ์ไข่ปลาอุกเสี่ยงตกเลือดมาก และอาจมีภาวะความดันสูง ไทรอยด์เป็นพิษ หรือหายใจล้มเหลว ต้องทำโดยผู้ชำนาญและเตรียมพร้อม"},
+        {t:"ทำเหมือนแท้งไม่ครบทั่วไปโดยไม่ต้องเตรียมพิเศษ",ok:false,fb:"อันตราย ครรภ์ไข่ปลาอุกมีปริมาณเนื้อเยื่อมากและหลอดเลือดหนาแน่น เสี่ยงตกเลือดรุนแรง"},
+        {t:"ให้ misoprostol กระตุ้นให้ขับออกเองที่บ้าน",ok:false,fb:"ไม่แนะนำ ควรใช้การดูดเป็นวิธีหลักและทำในโรงพยาบาล"},
+        {t:"ผ่าตัดมดลูกออกในทุกราย",ok:false,fb:"สงวนไว้เฉพาะรายที่ไม่ต้องการมีบุตรแล้วหรือมีข้อบ่งชี้เฉพาะ"}
+      ]},
+    { q:"หลังดูดเสร็จ การติดตามที่จำเป็นคือข้อใด",
+      choices:[
+        {t:"ส่งชิ้นเนื้อตรวจพยาธิ และติดตาม β-hCG เป็นระยะจนเป็นลบและติดตามต่อ พร้อมคุมกำเนิดที่มีประสิทธิภาพระหว่างติดตาม",ok:true,fb:"ถูกต้อง เพื่อเฝ้าระวังการเกิดเนื้องอกของรก (GTN) และการตั้งครรภ์ใหม่จะทำให้แปลผล β-hCG ไม่ได้"},
+        {t:"ไม่ต้องติดตามหาก β-hCG ลดลงหลังทำ",ok:false,fb:"ต้องติดตามจนเป็นลบและต่อเนื่องอีกระยะตามแนวทาง"},
+        {t:"แนะนำให้ตั้งครรภ์ใหม่ทันทีเพื่อฟื้นฟูจิตใจ",ok:false,fb:"การตั้งครรภ์ใหม่ทำให้ติดตาม β-hCG ไม่ได้ ต้องคุมกำเนิดระหว่างช่วงติดตาม"},
+        {t:"ให้เคมีบำบัดป้องกันในทุกราย",ok:false,fb:"ไม่ใช่แนวทางมาตรฐาน ให้เฉพาะเมื่อวินิจฉัย GTN หรือมีความเสี่ยงสูงตามเกณฑ์"}
+      ]}
+  ],
+  takeaway:"ครรภ์ไข่ปลาอุกดูดได้แต่ต้องทำโดยผู้ชำนาญ เตรียมเลือดและ oxytocin — และงานยังไม่จบที่ห้องหัตถการ ต้องติดตาม β-hCG พร้อมคุมกำเนิด"
+}
+];
+
+
+/* การ์ดอ้างอิงเร็ว + แฟลชการ์ด */
+window.MVA = window.MVA || {};
+window.MVA.reference = [
+{ title:"ตัวเลขที่ต้องจำ", icon:"🔢", kv:[
+  ["แรงดันลบของกระบอก","24–26 นิ้วปรอท (≈ 0.8 บรรยากาศ)"],
+  ["ความจุกระบอก","60 มล."],
+  ["ขนาด cannula","4, 5, 6, 7, 8, 9, 10, 12 มม."],
+  ["อายุครรภ์ที่เหมาะสม","ขนาดมดลูก ≤ 12 สัปดาห์"],
+  ["ใช้กระบอกซ้ำได้","ประมาณ 25 ครั้ง"],
+  ["แช่คลอรีน 0.5%","10 นาที"],
+  ["รอยาชาออกฤทธิ์","2–3 นาที"],
+  ["เฝ้าระวังหลังทำ","30–60 นาที"],
+  ["ตกไข่ได้เร็วสุด","วันที่ 8–11 หลังหัตถการ"],
+  ["ให้ anti-D ภายใน","72 ชั่วโมง"]
+]},
+{ title:"เลือกขนาด cannula", icon:"📏", table:{ head:["ขนาดมดลูก","cannula"], rows:[
+  ["Endometrial biopsy","4–5 มม."],["4–6 สัปดาห์","4–7 มม."],["7–9 สัปดาห์","5–10 มม."],["9–12 สัปดาห์","8–12 มม."]
+]}, note:"กฎง่าย: ขนาด cannula (มม.) ≈ อายุครรภ์ (สัปดาห์)" },
+{ title:"ยาที่ใช้บ่อย", icon:"💊", table:{ head:["ยา","ขนาด","ข้อบ่งชี้"], rows:[
+  ["Ibuprofen","400–800 มก. รับประทาน 30–45 นาทีก่อนทำ","ลดปวดจากการบีบตัวของมดลูก"],
+  ["1% Lidocaine","10–20 มล. รวม (สูงสุด 4.5 มก./กก.)","Paracervical block"],
+  ["Misoprostol (เตรียมปากมดลูก)","400 มคก. อมใต้ลิ้น 1–3 ชม. หรือเหน็บช่องคลอด 3 ชม. ก่อนทำ","ปากมดลูกปิด/อายุครรภ์มาก"],
+  ["Misoprostol (ตกเลือด)","800 มคก. เหน็บทวารหนัก","มดลูกไม่หดรัด"],
+  ["Oxytocin","10–20 ยูนิต IM หรือหยดทางหลอดเลือดดำ","ตกเลือด / ระหว่างดูดครรภ์ไข่ปลาอุก"],
+  ["Methylergometrine","0.2 มก. IM","ตกเลือด (เลี่ยงในผู้ป่วยความดันสูง)"],
+  ["Doxycycline","200 มก. ก่อนทำ","ยาปฏิชีวนะป้องกันในการยุติการตั้งครรภ์"],
+  ["Anti-D immunoglobulin","50–120 มคก. (<12 สัปดาห์) / 300 มคก. (≥12 สัปดาห์)","ผู้ป่วย Rh-negative"],
+  ["Atropine","0.5 มก. IV","ปฏิกิริยาเวกัสที่มีหัวใจเต้นช้า"]
+]}},
+{ title:"4 สัญญาณว่าดูดครบ", icon:"✅", list:[
+  "ฟองสีแดง/ชมพูโดยไม่มีชิ้นเนื้อปน",
+  "รู้สึกสากคล้ายทรายที่ผนังมดลูก",
+  "มดลูกหดรัดบีบ cannula",
+  "ผู้ป่วยรู้สึกปวดบีบมดลูกมากขึ้น"
+]},
+{ title:"ห้ามทำเด็ดขาด", icon:"⛔", list:[
+  "ทำ MVA ทั้งที่สงสัยการตั้งครรภ์นอกมดลูก",
+  "ดันลูกสูบขณะ cannula อยู่ในโพรงมดลูก (เสี่ยง air embolism)",
+  "ดึงปลาย cannula พ้นปากมดลูกด้านในระหว่างดูด",
+  "ใช้กระบอกที่ทดสอบแล้วไม่คาสุญญากาศ",
+  "หล่อลื่นด้วยปิโตรเลียมเจลหรือน้ำมัน",
+  "ให้ผู้ป่วยกลับบ้านโดยไม่ตรวจชิ้นเนื้อ",
+  "ขูดซ้ำด้วยโลหะหลังดูดเสร็จ 'เพื่อความมั่นใจ'"
+]},
+{ title:"สัญญาณอันตรายที่ต้องสอนผู้ป่วย", icon:"🚩", list:[
+  "เลือดชุ่มผ้าอนามัยหนา 2 ผืนต่อชั่วโมง ติดกัน 2 ชั่วโมง",
+  "ไข้สูงเกิน 38°C",
+  "ปวดท้องรุนแรงขึ้นเรื่อย ๆ ที่ยาแก้ปวดไม่ช่วย",
+  "ตกขาวมีกลิ่นเหม็นหรือเป็นหนอง",
+  "เป็นลม หน้ามืด ใจสั่น"
+]},
+{ title:"เมื่อสงสัยมดลูกทะลุ", icon:"🚨", list:[
+  "หยุดหัตถการทันที ไม่ดูดต่อ",
+  "ประเมินสัญญาณชีพ เปิดเส้น ให้สารน้ำ ส่ง CBC จองเลือด",
+  "ให้ยากระตุ้นมดลูกและยาปฏิชีวนะครอบคลุม",
+  "สัญญาณชีพคงที่ + ไม่มีอาการทางช่องท้อง → สังเกตอาการในโรงพยาบาล ≥ 24 ชม.",
+  "สัญญาณชีพไม่คงที่ / ท้องแข็ง / ดูดได้ไขมันหรือลำไส้ → ส่องกล้องหรือเปิดหน้าท้องทันที"
+]},
+{ title:"สิ่งที่ต้องบันทึกในเวชระเบียน", icon:"🗒️", list:[
+  "ข้อบ่งชี้ อายุครรภ์ และขนาดมดลูกจากการตรวจภายใน",
+  "การยืนยันความยินยอมที่ได้รับข้อมูลครบถ้วน",
+  "ผลตรวจก่อนทำ: Hb หมู่เลือดและ Rh ผลอัลตราซาวด์",
+  "ยาที่ให้: ชนิด ขนาด เวลา รวมยาชาและปริมาณที่ใช้จริง",
+  "ขนาด cannula ที่ใช้ ความลึกโพรงมดลูก และจำนวนกระบอกที่ดูด",
+  "ปริมาณเลือดที่เสีย และลักษณะ/ปริมาณชิ้นเนื้อที่ได้ พร้อมระบุว่าส่งพยาธิหรือไม่",
+  "ภาวะแทรกซ้อนที่เกิดขึ้นและการจัดการ",
+  "สัญญาณชีพหลังทำและระยะเวลาที่เฝ้าระวัง",
+  "การให้ anti-D immunoglobulin (หรือเหตุผลที่ไม่ให้)",
+  "วิธีคุมกำเนิดที่เริ่มให้ในวันเดียวกัน",
+  "คำแนะนำสัญญาณอันตรายที่ให้ และวันนัดติดตาม",
+  "ชื่อผู้ทำหัตถการและผู้ช่วย"
+]},
+{ title:"ขั้นตอนล้างอุปกรณ์", icon:"🧼", list:[
+  "แช่คลอรีน 0.5% นาน 10 นาที",
+  "ถอดชิ้นส่วน ล้างด้วยน้ำและสบู่ แปรงทั้งในและนอก",
+  "ทำลายเชื้อระดับสูงหรือทำให้ปราศจากเชื้อตามคำแนะนำผู้ผลิต",
+  "ทาซิลิโคนที่โอริง ประกอบ แล้วทดสอบสุญญากาศ",
+  "เก็บในที่แห้งสะอาด บันทึกจำนวนครั้งที่ใช้"
+]}
+];
+
+window.MVA.flashcards = [
+{f:"แรงดันลบของกระบอก MVA", b:"24–26 นิ้วปรอท (≈609–660 mmHg หรือ 0.8 บรรยากาศ)", topic:"equipment"},
+{f:"ความจุกระบอก Ipas MVA Plus", b:"60 มล. แบบ double valve", topic:"equipment"},
+{f:"ขนาด cannula ที่มีให้เลือก", b:"4, 5, 6, 7, 8, 9, 10, 12 มม.", topic:"equipment"},
+{f:"กฎการเลือกขนาด cannula", b:"ขนาด (มม.) ≈ อายุครรภ์ (สัปดาห์)", topic:"equipment"},
+{f:"หล่อลื่นโอริงด้วยอะไร", b:"ซิลิโคนเท่านั้น ห้ามใช้ปิโตรเลียมเจลหรือน้ำมัน", topic:"equipment"},
+{f:"ทดสอบกระบอกอย่างไรว่ามีสุญญากาศ", b:"สร้างสุญญากาศ ทิ้งไว้ 1 นาที กดปุ่มวาล์ว ต้องได้ยินเสียงอากาศพุ่งเข้า", topic:"equipment"},
+{f:"ข้อห้ามเด็ดขาดของ MVA", b:"สงสัยการตั้งครรภ์นอกมดลูก (และผู้ป่วยไม่ยินยอม)", topic:"indication"},
+{f:"ข้อบ่งชี้ที่พบบ่อยที่สุด", b:"แท้งไม่ครบ (incomplete abortion)", topic:"indication"},
+{f:"แท้งติดเชื้อควรทำ MVA เมื่อใด", b:"ให้ยาปฏิชีวนะทางหลอดเลือดดำแล้วดูดออกภายใน 1–2 ชั่วโมง ไม่ต้องรอไข้ลง", topic:"indication"},
+{f:"ตำแหน่งฉีด paracervical block", b:"4 และ 8 นาฬิกา (บางตำราเพิ่ม 2 และ 10) ลึก 1.5–3 ซม.", topic:"analgesia"},
+{f:"ขนาดสูงสุดของ lidocaine", b:"4.5 มก./กก. (ผสม adrenaline ได้ถึง 7 มก./กก.)", topic:"analgesia"},
+{f:"อาการเริ่มแรกของยาชาเป็นพิษ", b:"ชารอบปาก หูอื้อ รสโลหะในปาก เวียนศีรษะ ก่อนชักและหัวใจเต้นผิดจังหวะ", topic:"analgesia"},
+{f:"ยาแก้ปวดก่อนทำ MVA", b:"NSAIDs เช่น ibuprofen 400–800 มก. 30–45 นาทีก่อนทำ", topic:"analgesia"},
+{f:"3 เสาของการจัดการความปวด", b:"คำพูดให้กำลังใจ + NSAIDs + paracervical block", topic:"analgesia"},
+{f:"ตำแหน่งหนีบ tenaculum", b:"ริมฝีปากบนของปากมดลูก 10 และ 2 นาฬิกา แล้วดึงตึงให้โพรงมดลูกตรง", topic:"procedure"},
+{f:"4 สัญญาณว่าดูดครบ", b:"ฟองแดงไม่มีเนื้อ / รู้สึกสาก / มดลูกบีบ cannula / ผู้ป่วยปวดบีบมากขึ้น", topic:"procedure"},
+{f:"เทคนิคการดูดที่ถูกต้อง", b:"หมุน cannula 180 องศาไป-กลับ พร้อมขยับเข้า-ออกสั้น ๆ", topic:"procedure"},
+{f:"กระบอกเต็มก่อนดูดเสร็จ ทำอย่างไร", b:"ปิดวาล์ว ถอดกระบอกโดยคา cannula ไว้ เทชิ้นเนื้อ สร้างสุญญากาศใหม่ แล้วต่อกลับ", topic:"procedure"},
+{f:"ทำไมห้ามดันลูกสูบขณะ cannula อยู่ในมดลูก", b:"เสี่ยงดันอากาศเข้าหลอดเลือดจนเกิดฟองอากาศอุดหลอดเลือด", topic:"procedure"},
+{f:"ทำไมห้ามดึง cannula พ้น internal os", b:"สุญญากาศจะหาย ต้องสร้างใหม่ และชิ้นเนื้ออาจไหลย้อน", topic:"procedure"},
+{f:"กลไกหลักของมดลูกทะลุ", b:"ไม่ประเมินท่ามดลูกก่อน แล้วสอดเครื่องมือสวนแนวโพรงมดลูก", topic:"complication"},
+{f:"ตรวจชิ้นเนื้อไม่พบวิลไล แปลว่าอะไร", b:"คิดถึง ectopic จนกว่าจะพิสูจน์ได้ว่าไม่ใช่ — ส่งพยาธิ ติดตาม β-hCG อนุกรม", topic:"tissue"},
+{f:"ดูดได้ไขมันหรือเนื้อเยื่อลำไส้", b:"มดลูกทะลุและดูดโดนอวัยวะในช่องท้อง = ต้องผ่าตัดสำรวจทันที", topic:"tissue"},
+{f:"ภาวะแทรกซ้อนที่พบบ่อยที่สุด", b:"ดูดชิ้นเนื้อไม่ครบ (incomplete evacuation)", topic:"complication"},
+{f:"Hematometra มีลักษณะอย่างไร", b:"30 นาที–2 ชม.หลังทำ ปวดมาก มดลูกโตตึงกดเจ็บ แต่เลือดออกทางช่องคลอดน้อย → ดูดซ้ำ + ยากระตุ้นมดลูก", topic:"complication"},
+{f:"จัดการตกเลือดหลัง MVA", b:"นวดมดลูก + oxytocin/methylergometrine/misoprostol + สารน้ำ/เลือด + หาสาเหตุ (เนื้อค้าง ฉีกขาด ทะลุ)", topic:"complication"},
+{f:"ข้อบ่งชี้ผ่าตัดเมื่อมดลูกทะลุ", b:"สัญญาณชีพไม่คงที่ ท้องแข็ง สงสัยบาดเจ็บลำไส้ หรือดูดได้ไขมัน/ลำไส้", topic:"complication"},
+{f:"ตกไข่ได้เร็วสุดหลัง MVA", b:"วันที่ 8–11 → ต้องเริ่มคุมกำเนิดในวันเดียวกัน", topic:"aftercare"},
+{f:"ใส่ห่วงอนามัยหลัง MVA ได้เมื่อไร", b:"ทันทีหลังดูดเสร็จ ถ้าไม่มีการติดเชื้อและดูดครบ", topic:"aftercare"},
+{f:"ให้ anti-D เมื่อไรและขนาดเท่าไร", b:"ผู้ป่วย Rh-negative ภายใน 72 ชม. — 50–120 มคก. (<12 สัปดาห์), 300 มคก. (≥12 สัปดาห์)", topic:"aftercare"},
+{f:"สัญญาณอันตราย 5 ข้อหลังกลับบ้าน", b:"เลือดชุ่มผ้าอนามัยหนา 2 ผืน/ชม. นาน 2 ชม. / ไข้ >38°C / ปวดรุนแรงขึ้น / ตกขาวมีกลิ่น / เป็นลม", topic:"aftercare"},
+{f:"ขั้นแรกของการล้างอุปกรณ์", b:"แช่คลอรีน 0.5% นาน 10 นาที", topic:"ipc"},
+{f:"กระบอก Ipas Plus ใช้ซ้ำได้กี่ครั้ง", b:"ประมาณ 25 ครั้ง หรือจนกว่าจะรั่ว/ชำรุด", topic:"ipc"},
+{f:"No-touch technique คืออะไร", b:"ส่วนที่จะเข้าโพรงมดลูกต้องไม่สัมผัสสิ่งที่ไม่ปราศจากเชื้อ รวมถึงผนังช่องคลอดและ speculum", topic:"ipc"},
+{f:"เตรียมปากมดลูกด้วยอะไรเมื่อปากมดลูกปิด", b:"Misoprostol 400 มคก. อมใต้ลิ้น 1–3 ชม. หรือเหน็บช่องคลอด 3 ชม. ก่อนทำ", topic:"equipment"},
+{f:"กฎหมายไทย: ยุติการตั้งครรภ์ได้เองถึงอายุครรภ์เท่าใด", b:"ไม่เกิน 12 สัปดาห์ โดยผู้ประกอบวิชาชีพเวชกรรม; 12–20 สัปดาห์ ต้องผ่านการปรึกษาทางเลือกตามหลักเกณฑ์", topic:"law"},
+{f:"WHO ว่าอย่างไรกับการขูดมดลูกด้วยโลหะ", b:"ล้าสมัย ควรถูกแทนที่ด้วย vacuum aspiration หรือการใช้ยา", topic:"overview"},
+{f:"ข้อได้เปรียบของ MVA เหนือ EVA", b:"ไม่ใช้ไฟฟ้า เงียบ พกพาได้ ต้นทุนต่ำ อุปกรณ์ใช้ซ้ำได้", topic:"overview"}
+];
+
+
+/* MVA Trainer — ตัวควบคุมแอปทั้งหมด (ไม่พึ่งไลบรารีภายนอก ทำงานออฟไลน์ได้) */
+(function () {
+  "use strict";
+  var D = window.MVA;
+  var KEY = "mva-trainer-v1";
+
+  /* ---------- state ---------- */
+  function defaults() {
+    return { read: {}, quiz: { seen: {}, wrong: {}, best: 0, attempts: [] },
+             checklist: { scores: {}, attempts: [], meta: { student: "", rater: "", date: "" } },
+             cards: {}, cases: {}, theme: null, hideInstall: 0 };
+  }
+  var S = (function () {
+    var d = defaults(), o = {};
+    try { o = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { o = {}; }
+    var st = Object.assign(d, o);
+    /* ทำให้โครงสร้างย่อยสมบูรณ์เสมอ แม้ข้อมูลเดิมจะไม่มีคีย์เหล่านี้ */
+    st.read = st.read && typeof st.read === "object" ? st.read : {};
+    st.cards = st.cards && typeof st.cards === "object" ? st.cards : {};
+    st.cases = st.cases && typeof st.cases === "object" ? st.cases : {};
+    st.quiz = Object.assign({ seen: {}, wrong: {}, best: 0, attempts: [] }, st.quiz || {});
+    if (!Array.isArray(st.quiz.attempts)) st.quiz.attempts = [];
+    st.checklist = Object.assign({ scores: {}, attempts: [], meta: {} }, st.checklist || {});
+    if (!Array.isArray(st.checklist.attempts)) st.checklist.attempts = [];
+    st.checklist.meta = Object.assign({ student: "", rater: "", date: "" }, st.checklist.meta || {});
+    return st;
+  })();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function el(id) { return document.getElementById(id); }
+  function on(sel, ev, fn) {
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function (n) { n.addEventListener(ev, fn); });
+  }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+  function todayStr() {
+    var d = new Date();
+    return d.toLocaleDateString("th-TH", { year: "numeric", month: "short", day: "numeric" }) +
+           " " + d.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+  }
+  function topicName(t) {
+    var l = D.lessons.filter(function (x) { return x.id === t; })[0];
+    return l ? l.title : t;
+  }
+
+  /* ---------- content block renderer ---------- */
+  function block(b) {
+    if (typeof b === "string") return "<p>" + esc(b) + "</p>";
+    if (b.ul) return "<ul>" + b.ul.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>";
+    if (b.ol) return "<ol>" + b.ol.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>";
+    if (b.warn) return '<div class="note warn"><b>⚠️ ข้อควรระวัง</b>' + esc(b.warn) + "</div>";
+    if (b.tip) return '<div class="note tip"><b>💡 เคล็ดลับสอบ</b>' + esc(b.tip) + "</div>";
+    if (b.kv) return '<div class="kv">' + b.kv.map(function (r) {
+      return "<div><span>" + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("") + "</div>";
+    if (b.table) return '<div class="tablewrap"><table><thead><tr>' +
+      b.table.head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      b.table.rows.map(function (r) {
+        return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>"; }).join("") +
+      "</tbody></table></div>";
+    return "";
+  }
+
+  /* ---------- การติดตั้งลงหน้าจอมือถือ ---------- */
+  var installPrompt = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    installPrompt = e;
+    if ((location.hash || "#/home").indexOf("home") >= 0) route();
+  });
+  window.addEventListener("appinstalled", function () { installPrompt = null; route(); });
+
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+           window.navigator.standalone === true;
+  }
+  function isIOS() {
+    var ua = navigator.userAgent || "";
+    return /iPad|iPhone|iPod/.test(ua) ||
+           (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+  function isTouch() {
+    return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
+  function isEmbedded() {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  }
+  function installCard() {
+    if (S.hideInstall || isStandalone() || isEmbedded()) return "";
+    if (!installPrompt && !isIOS() && !isTouch()) return "";
+    var how = installPrompt
+      ? '<div class="btn-row"><button class="btn primary" id="installBtn">ติดตั้งลงหน้าจอ</button></div>'
+      : isIOS()
+        ? '<div class="note tip"><b>บน iPhone และ iPad</b>กดปุ่มแชร์ที่แถบล่างของ Safari แล้วเลื่อนหาเมนู “เพิ่มไปยังหน้าจอโฮม” (Add to Home Screen)</div>'
+        : '<div class="note tip"><b>บน Android</b>กดปุ่มเมนูสามจุดมุมขวาบนของ Chrome แล้วเลือก “ติดตั้งแอป” หรือ “เพิ่มไปยังหน้าจอหลัก”</div>';
+    return '<div class="card soft no-print"><h3 style="font-size:15px">📲 ไม่บังคับ — ติดตั้งลงหน้าจอก็ได้</h3>' +
+      '<p style="margin:0 0 10px;font-size:14px;color:var(--muted)">ใช้ในเบราว์เซอร์แบบนี้ได้เลยตามปกติ ' +
+      "ถ้าติดตั้งลงหน้าจอเพิ่ม จะเปิดได้แม้ไม่มีสัญญาณ และไม่ต้องเปิดลิงก์ใหม่ทุกครั้ง</p>" +
+      how +
+      '<div class="btn-row">' +
+        '<button class="btn ghost" id="hideInstall">ไม่ต้องแสดงอีก</button>' +
+      "</div></div>";
+  }
+
+  /* ---------- tabs / router ---------- */
+  var TABS = [
+    { r: "home", t: "หน้าแรก" }, { r: "learn", t: "บทเรียน" }, { r: "steps", t: "ลำดับขั้นตอน" },
+    { r: "checklist", t: "เช็กลิสต์ OSCE" }, { r: "quiz", t: "คลังข้อสอบ" }, { r: "cases", t: "กรณีศึกษา" },
+    { r: "flash", t: "แฟลชการ์ด" }, { r: "ref", t: "อ้างอิงเร็ว" }
+  ];
+  function renderTabs(active) {
+    el("tabs").innerHTML = TABS.map(function (t) {
+      var on = t.r === active;
+      return '<button class="tab' + (on ? " active" : "") + '" data-go="#/' + t.r + '"' +
+        (on ? ' aria-current="page"' : "") + ">" + esc(t.t) + "</button>";
+    }).join("");
+  }
+  function go(hash) { location.hash = hash; }
+
+  var lastKey = null;
+  function route() {
+    if (!D || !D.lessons || !D.quiz || !D.checklist || !D.cases || !D.reference) {
+      el("view").innerHTML = '<div class="card"><h3>โหลดข้อมูลไม่สำเร็จ</h3>' +
+        "<p>ไฟล์เนื้อหาในโฟลเดอร์ assets/js/data/ โหลดไม่ครบ กรุณาตรวจว่าไฟล์ทั้ง 5 ไฟล์อยู่ครบ และเปิดหน้านี้จากโฟลเดอร์เดียวกับ index.html</p></div>";
+      return;
+    }
+    var h = (location.hash || "#/home").replace(/^#\/?/, "");
+    h = h.split("?")[0];
+    var parts = h.split("/");
+    var page = parts[0] || "home";
+    renderTabs(page);
+    var v = el("view");
+    var fn = {
+      home: viewHome, learn: function () { return parts[1] ? viewLesson(parts[1]) : viewLearn(); },
+      steps: viewSteps, checklist: viewChecklist, quiz: viewQuiz,
+      cases: function () { return parts[1] ? viewCase(parts[1]) : viewCases(); },
+      flash: viewFlash, ref: viewRef
+    }[page] || viewHome;
+    v.innerHTML = fn();
+    bindCommon();
+    if (page === "steps") bindSteps();
+    if (page === "checklist") bindChecklist();
+    if (page === "quiz") bindQuiz();
+    if (page === "cases" && parts[1]) bindCase(parts[1]);
+    if (page === "flash") bindFlash();
+    if (page === "learn" && parts[1]) bindLesson(parts[1]);
+    var key = page + "/" + (parts[1] || "");
+    if (key !== lastKey) { window.scrollTo(0, 0); lastKey = key; }
+  }
+  function bindCommon() {
+    on("[data-go]", "click", function (e) { go(e.currentTarget.getAttribute("data-go")); });
+    var ib = el("installBtn");
+    if (ib) ib.addEventListener("click", function () {
+      if (!installPrompt) return;
+      installPrompt.prompt();
+      var p = installPrompt.userChoice;
+      installPrompt = null;
+      if (p && p.then) p.then(function () { route(); }, function () { route(); });
+      else route();
+    });
+    var hb = el("hideInstall");
+    if (hb) hb.addEventListener("click", function () { S.hideInstall = 1; save(); route(); });
+  }
+
+  /* ---------- HOME ---------- */
+  function progress() {
+    var readN = D.lessons.filter(function (l) { return S.read[l.id]; }).length;
+    var seenN = Object.keys(S.quiz.seen).length;
+    var wrongN = Object.keys(S.quiz.wrong).length;
+    var caseN = Object.keys(S.cases).length;
+    var cardN = D.flashcards.filter(function (c) { return S.cards[c.f]; }).length;
+    return { readN: readN, seenN: seenN, wrongN: wrongN, caseN: caseN, cardN: cardN };
+  }
+  function viewHome() {
+    var p = progress();
+    var last = S.checklist.attempts[S.checklist.attempts.length - 1];
+    var lastQ = S.quiz.attempts[S.quiz.attempts.length - 1];
+    function statCard(label, now, total, sub) {
+      return '<div class="card"><div class="stat"><span>' + esc(label) + "</span><b>" + now + " / " + total + "</b></div>" +
+        '<div class="bar"><i style="width:' + pct(now, total) + '%"></i></div>' +
+        (sub ? '<p style="margin:8px 0 0;font-size:13px;color:var(--muted)">' + esc(sub) + "</p>" : "") + "</div>";
+    }
+    return '<div class="page-head"><h2>สวัสดี พร้อมฝึก MVA แล้วหรือยัง</h2>' +
+      "<p>แอปนี้รวมทุกอย่างที่ต้องใช้: บทเรียน 10 บท ข้อสอบ " + D.quiz.length + " ข้อ เช็กลิสต์ประเมินทักษะ กรณีศึกษา " +
+      D.cases.length + " เคส และการ์ดอ้างอิงหน้างาน</p></div>" +
+      '<div class="grid two">' +
+        statCard("บทเรียนที่อ่านแล้ว", p.readN, D.lessons.length) +
+        statCard("ข้อสอบที่เคยทำ", p.seenN, D.quiz.length, p.wrongN ? "มีข้อที่เคยตอบผิดค้างอยู่ " + p.wrongN + " ข้อ" : "ยังไม่มีข้อที่ค้างผิด") +
+        statCard("กรณีศึกษาที่ผ่าน", p.caseN, D.cases.length) +
+        statCard("แฟลชการ์ดที่จำได้", p.cardN, D.flashcards.length) +
+      "</div>" +
+      '<div class="card"><h3>เริ่มตรงนี้</h3><div class="grid two">' +
+        tile("📚", "อ่านบทเรียนตามลำดับ", "เริ่มจากภาพรวมจนถึงกฎหมายและการให้คำปรึกษา", "#/learn") +
+        tile("🧩", "ฝึกเรียงลำดับ 14 ขั้นตอน", "จำลำดับการทำหัตถการให้ขึ้นใจก่อนลงมือจริง", "#/steps") +
+        tile("📝", "สอบจับเวลา", "โหมดเสมือนสอบ พร้อมเฉลยและคำอธิบายรายข้อ", "#/quiz") +
+        tile("🩻", "เดินเคสผู้ป่วย", "ตัดสินใจทีละขั้นในสถานการณ์จริง", "#/cases") +
+        tile("✅", "ประเมินทักษะด้วยเช็กลิสต์", "ใช้ประเมินตนเองหรือให้อาจารย์ประเมิน พิมพ์เก็บได้", "#/checklist") +
+        tile("⚡", "การ์ดอ้างอิงเร็ว", "ตัวเลข ขนาดยา และแนวทางฉุกเฉินที่ต้องใช้หน้างาน", "#/ref") +
+      "</div></div>" +
+      (lastQ ? '<div class="card"><h3>ผลสอบครั้งล่าสุด</h3><p>' + esc(lastQ.when) + " — ได้ " + lastQ.score + " / " + lastQ.total +
+        " (" + pct(lastQ.score, lastQ.total) + "%) โหมด " + esc(lastQ.mode) + "</p>" +
+        "<p style=\"color:var(--muted);font-size:13px;margin:0\">คะแนนสูงสุดที่เคยทำได้ " + S.quiz.best + "%</p></div>" : "") +
+      (last ? '<div class="card"><h3>ผลประเมินทักษะครั้งล่าสุด</h3><p>' + esc(last.when) + " — " + last.score + " / " + last.max +
+        " (" + last.percent + "%) " + (last.passed ? '<span class="pill ok">ผ่าน</span>' : '<span class="pill bad">ยังไม่ผ่าน</span>') + "</p></div>" : "") +
+      installCard() +
+      '<div class="card no-print"><h3>จัดการข้อมูล</h3><p style="font-size:14px;color:var(--muted);margin:0">' +
+      "ความก้าวหน้าถูกบันทึกในเครื่องนี้เท่านั้น หากต้องการเริ่มใหม่ทั้งหมดให้กดปุ่มด้านล่าง</p>" +
+      '<div class="btn-row"><button class="btn" id="resetAll">ล้างความก้าวหน้าทั้งหมด</button></div></div>';
+  }
+  function tile(em, title, sub, href) {
+    return '<button class="tile" data-go="' + href + '"><div class="row"><span class="em">' + em +
+      "</span><span><b>" + esc(title) + "</b><small>" + esc(sub) + "</small></span></div></button>";
+  }
+
+  /* ---------- LEARN ---------- */
+  function viewLearn() {
+    return '<div class="page-head"><h2>บทเรียน</h2><p>อ่านตามลำดับเพื่อปูพื้น หรือกดเข้าบทที่ต้องการทบทวนก่อนออกตรวจ</p></div>' +
+      '<div class="grid two">' + D.lessons.map(function (l) {
+        var done = S.read[l.id];
+        return '<button class="tile" data-go="#/learn/' + l.id + '"><div class="row"><span class="em">' + l.icon +
+          "</span><span><b>" + esc(l.title) + " " + (done ? '<span class="pill ok">อ่านแล้ว</span>' : '<span class="pill gray">' + l.minutes + " นาที</span>") +
+          "</b><small>" + esc(l.summary) + "</small></span></div></button>";
+      }).join("") + "</div>";
+  }
+  function viewLesson(id) {
+    var i = D.lessons.map(function (l) { return l.id; }).indexOf(id);
+    if (i < 0) return '<div class="empty"><p>ไม่พบบทเรียนนี้</p>' +
+      '<div class="btn-row" style="justify-content:center"><button class="btn primary" data-go="#/learn">กลับสารบัญบทเรียน</button></div></div>';
+    var l = D.lessons[i], prev = D.lessons[i - 1], next = D.lessons[i + 1];
+    var related = D.quiz.filter(function (q) { return q.topic === l.id; }).length;
+    return '<div class="page-head"><h2>' + l.icon + " " + esc(l.title) + "</h2><p>" + esc(l.summary) + "</p></div>" +
+      '<div class="card"><div class="body">' +
+        l.sections.map(function (s) {
+          return '<div class="h4">' + esc(s.h) + "</div>" + s.body.map(block).join("");
+        }).join("") +
+        '<div class="pearls"><b>🔑 จุดที่ต้องจำให้ได้</b><ul>' +
+          l.pearls.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ul></div>" +
+      "</div>" +
+      '<div class="btn-row no-print">' +
+        '<button class="btn ' + (S.read[l.id] ? "" : "primary") + '" id="markRead" data-id="' + l.id + '">' +
+          (S.read[l.id] ? "✓ อ่านแล้ว (กดเพื่อยกเลิก)" : "ทำเครื่องหมายว่าอ่านแล้ว") + "</button>" +
+        (related ? '<button class="btn" data-go="#/quiz?topic=' + l.id + '">ทำข้อสอบบทนี้ ' + related + " ข้อ</button>" : "") +
+        (prev ? '<button class="btn ghost" data-go="#/learn/' + prev.id + '">← ' + esc(prev.title) + "</button>" : "") +
+        (next ? '<button class="btn ghost" data-go="#/learn/' + next.id + '">' + esc(next.title) + " →</button>" : "") +
+        '<button class="btn ghost" data-go="#/learn">กลับสารบัญ</button>' +
+      "</div></div>";
+  }
+  function bindLesson() {
+    var b = el("markRead");
+    if (!b) return;
+    b.addEventListener("click", function () {
+      var id = b.getAttribute("data-id");
+      if (S.read[id]) delete S.read[id]; else S.read[id] = 1;
+      save(); route();
+    });
+  }
+
+  /* ---------- STEPS (ordering drill) ---------- */
+  var ORD = null;
+  function viewSteps() {
+    if (!ORD) ORD = { pool: shuffle(D.steps.map(function (s, i) { return i; })), placed: [], checked: false };
+    var done = ORD.placed.length === D.steps.length;
+    return '<div class="page-head"><h2>ฝึกเรียงลำดับขั้นตอน MVA</h2>' +
+      "<p>กดเลือกขั้นตอนจากกองด้านล่างทีละข้อให้เรียงถูกต้องตั้งแต่ต้นจนจบ กดที่ช่องที่วางแล้วเพื่อเอาออก</p></div>" +
+      '<div class="card"><h3>ลำดับที่วางแล้ว (' + ORD.placed.length + " / " + D.steps.length + ")</h3>" +
+        (ORD.placed.length ? ORD.placed.map(function (idx, pos) {
+          var cls = ORD.checked ? (idx === pos ? " correct" : " wrong") : "";
+          return '<div class="slot' + cls + '" data-un="' + pos + '"><span class="n">' + (pos + 1) + "</span><span>" +
+            esc(D.steps[idx]) + (ORD.checked && idx !== pos ? '<br><small style="color:var(--bad)">ตำแหน่งที่ถูกต้องคือขั้นที่ ' + (idx + 1) + "</small>" : "") + "</span></div>";
+        }).join("") : '<p style="color:var(--muted)">ยังไม่ได้วางขั้นตอนใด</p>') +
+        '<div class="btn-row no-print">' +
+          '<button class="btn primary" id="checkOrder"' + (done ? "" : " disabled") + ">ตรวจคำตอบ</button>" +
+          '<button class="btn" id="resetOrder">เริ่มใหม่</button>' +
+          '<button class="btn ghost" id="showOrder">ดูลำดับที่ถูกต้อง</button>' +
+        "</div>" +
+        (ORD.checked ? '<div class="why"><b>ได้ ' + ORD.placed.filter(function (v, i) { return v === i; }).length +
+          " / " + D.steps.length + " ตำแหน่ง</b> — ช่องสีเขียวคือวางถูก ช่องสีแดงมีคำใบ้บอกตำแหน่งที่ควรอยู่</div>" : "") +
+      "</div>" +
+      (ORD.pool.length ? '<div class="card pool"><h3>กองขั้นตอนที่เหลือ</h3>' +
+        ORD.pool.map(function (idx) { return '<button data-pick="' + idx + '">' + esc(D.steps[idx]) + "</button>"; }).join("") + "</div>" : "");
+  }
+  function bindSteps() {
+    on("[data-pick]", "click", function (e) {
+      var idx = +e.currentTarget.getAttribute("data-pick");
+      ORD.pool = ORD.pool.filter(function (x) { return x !== idx; });
+      ORD.placed.push(idx); ORD.checked = false; route();
+    });
+    on("[data-un]", "click", function (e) {
+      var pos = +e.currentTarget.getAttribute("data-un");
+      var idx = ORD.placed.splice(pos, 1)[0];
+      ORD.pool.push(idx); ORD.checked = false; route();
+    });
+    var c = el("checkOrder"); if (c) c.addEventListener("click", function () { ORD.checked = true; route(); });
+    var r = el("resetOrder"); if (r) r.addEventListener("click", function () { ORD = null; route(); });
+    var s = el("showOrder"); if (s) s.addEventListener("click", function () {
+      ORD = { pool: [], placed: D.steps.map(function (_, i) { return i; }), checked: true }; route();
+    });
+  }
+
+  /* ---------- CHECKLIST ---------- */
+  function checklistTotals() {
+    var C = D.checklist, max = 0, score = 0, criticalFail = [];
+    C.sections.forEach(function (sec) {
+      sec.items.forEach(function (it) {
+        max += 2;
+        var v = S.checklist.scores[it.id];
+        if (typeof v === "number") score += v;
+        if (it.critical && v === 0) criticalFail.push(it.text);
+      });
+    });
+    var percent = pct(score, max);
+    return { max: max, score: score, percent: percent, criticalFail: criticalFail,
+             passed: percent >= C.passPercent && criticalFail.length === 0 };
+  }
+  function metaField(k, label) {
+    return "<label><span>" + esc(label) + '</span><input class="inp" type="text" data-meta="' + k +
+      '" value="' + esc(S.checklist.meta[k] || "") + '" autocomplete="off"></label>';
+  }
+  function viewChecklist() {
+    var C = D.checklist, t = checklistTotals();
+    var scored = Object.keys(S.checklist.scores).length;
+    var totalItems = C.sections.reduce(function (a, s) { return a + s.items.length; }, 0);
+    return '<div class="page-head"><h2>' + esc(C.title) + "</h2>" +
+      "<p>ให้คะแนนแต่ละข้อ 0–2 คะแนน เกณฑ์ผ่าน " + C.passPercent + "% และต้องไม่ได้ 0 ในข้อวิกฤต — ใช้ประเมินตนเองหรือให้ผู้ประเมินกรอกแล้วสั่งพิมพ์เก็บ</p></div>" +
+      '<div class="card"><h3>ข้อมูลการประเมิน</h3><div class="metagrid">' +
+        metaField("student", "ผู้รับการประเมิน") + metaField("rater", "ผู้ประเมิน") +
+        metaField("date", "วันที่ / หน่วยงาน") + "</div></div>" +
+      '<div class="card"><div class="stat"><span>คะแนนรวม (ให้คะแนนแล้ว ' + scored + " / " + totalItems + " ข้อ)</span><b>" +
+        t.score + " / " + t.max + " = " + t.percent + "%</b></div>" +
+        '<div class="bar"><i style="width:' + t.percent + '%"></i></div>' +
+        '<p style="margin:10px 0 0">' + (t.passed ? '<span class="pill ok">ผ่านเกณฑ์</span>' :
+          '<span class="pill bad">ยังไม่ผ่านเกณฑ์</span>') +
+        (t.criticalFail.length ? ' <span class="pill warn">ตกข้อวิกฤต ' + t.criticalFail.length + " ข้อ</span>" : "") + "</p>" +
+        '<p style="font-size:13px;color:var(--muted);margin:8px 0 0">' + esc(C.note) + "</p>" +
+        '<div class="btn-row no-print"><button class="btn primary" id="saveAttempt">บันทึกผลการประเมิน</button>' +
+        '<button class="btn" id="printCl">พิมพ์ / บันทึกเป็น PDF</button>' +
+        '<button class="btn ghost" id="clearCl">ล้างคะแนน</button></div></div>' +
+      C.sections.map(function (sec) {
+        return '<div class="card"><h3>' + esc(sec.name) + "</h3>" + sec.items.map(function (it) {
+          var v = S.checklist.scores[it.id];
+          return '<div class="ci"><div class="t">' + (it.critical ? "⚠️ " : "") + esc(it.text) + "</div>" +
+            '<div class="seg">' + C.scale.map(function (sc) {
+              return '<button data-item="' + it.id + '" data-val="' + sc.v + '" class="' +
+                (v === sc.v ? "on" + (sc.v === 0 ? " z" : "") : "") + '">' + sc.v + " · " + esc(sc.label) + "</button>";
+            }).join("") + "</div>" +
+            (it.hint ? '<div class="hintline">' + esc(it.hint) + "</div>" : "") + "</div>";
+        }).join("") + "</div>";
+      }).join("") +
+      (S.checklist.attempts.length ? '<div class="card no-print"><h3>ประวัติการประเมิน</h3>' +
+        '<div class="tablewrap"><table><thead><tr><th>วันที่</th><th>ผู้รับการประเมิน</th><th>คะแนน</th><th>ร้อยละ</th><th>ผล</th></tr></thead><tbody>' +
+        S.checklist.attempts.slice().reverse().map(function (a) {
+          return "<tr><td>" + esc(a.when) + "</td><td>" + esc(a.student || "—") + "</td><td>" + a.score + " / " + a.max + "</td><td>" + a.percent + "%</td><td>" +
+            (a.passed ? '<span class="pill ok">ผ่าน</span>' : '<span class="pill bad">ไม่ผ่าน</span>') + "</td></tr>";
+        }).join("") + "</tbody></table></div></div>" : "");
+  }
+  function bindChecklist() {
+    on("[data-meta]", "input", function (e) {
+      S.checklist.meta[e.currentTarget.getAttribute("data-meta")] = e.currentTarget.value;
+      save();
+    });
+    on("[data-item]", "click", function (e) {
+      var id = e.currentTarget.getAttribute("data-item"), v = +e.currentTarget.getAttribute("data-val");
+      if (S.checklist.scores[id] === v) delete S.checklist.scores[id]; else S.checklist.scores[id] = v;
+      save(); route();
+    });
+    var s = el("saveAttempt"); if (s) s.addEventListener("click", function () {
+      var t = checklistTotals();
+      S.checklist.attempts.push({ when: todayStr(), score: t.score, max: t.max, percent: t.percent,
+                                  passed: t.passed, student: S.checklist.meta.student, rater: S.checklist.meta.rater });
+      if (S.checklist.attempts.length > 50) S.checklist.attempts = S.checklist.attempts.slice(-50);
+      save(); route();
+    });
+    var p = el("printCl"); if (p) p.addEventListener("click", function () { window.print(); });
+    var c = el("clearCl"); if (c) c.addEventListener("click", function () {
+      if (confirm("ล้างคะแนนทั้งหมดในใบประเมินนี้?")) { S.checklist.scores = {}; save(); route(); }
+    });
+  }
+
+  /* ---------- QUIZ ---------- */
+  var QZ = null, TIMER = null;
+  function stopTimer() { if (TIMER) { clearInterval(TIMER); TIMER = null; } }
+  function viewQuiz() {
+    if (QZ && QZ.state === "run") return quizRun();
+    if (QZ && QZ.state === "done") return quizResult();
+    var preset = (location.hash.split("?")[1] || "").replace("topic=", "");
+    if (preset && D.lessons.some(function (l) { return l.id === preset; })) SEL = preset;
+    var wrongN = Object.keys(S.quiz.wrong).length;
+    if (SEL === "wrong" && !wrongN) SEL = "all";
+    if (SEL !== "all" && SEL !== "wrong" && !D.lessons.some(function (l) { return l.id === SEL; })) SEL = "all";
+    var topics = D.lessons.map(function (l) {
+      var n = D.quiz.filter(function (q) { return q.topic === l.id; }).length;
+      return { id: l.id, t: l.title, n: n };
+    }).filter(function (x) { return x.n; });
+    return '<div class="page-head"><h2>คลังข้อสอบ</h2><p>' + D.quiz.length +
+      " ข้อ พร้อมคำอธิบายรายข้อ เลือกโหมดฝึกเพื่อดูเฉลยทันที หรือโหมดสอบเพื่อจับเวลาแล้วเฉลยตอนท้าย</p></div>" +
+      '<div class="card"><h3>เลือกหัวข้อ</h3>' +
+      '<div class="btn-row"><button class="btn' + (preset ? "" : " primary") + '" data-topic="all">ทุกหัวข้อ (' + D.quiz.length + ")</button>" +
+      (wrongN ? '<button class="btn" data-topic="wrong">ทบทวนข้อที่เคยผิด (' + wrongN + ")</button>" : "") +
+      topics.map(function (t) {
+        return '<button class="btn' + (preset === t.id ? " primary" : "") + '" data-topic="' + t.id + '">' + esc(t.t) + " (" + t.n + ")</button>";
+      }).join("") + "</div>" +
+      '<p style="font-size:13px;color:var(--muted);margin:12px 0 0">เลือกหัวข้อก่อน แล้วจึงเลือกโหมดด้านล่าง</p>' +
+      '<div class="btn-row"><button class="btn primary" id="startPractice">เริ่มโหมดฝึก (เฉลยทันที)</button>' +
+      '<button class="btn" id="startExam">เริ่มโหมดสอบจับเวลา</button></div>' +
+      '<p id="selInfo" style="font-size:13.5px;margin:10px 0 0"><b>หัวข้อที่เลือก:</b> ' +
+      esc(preset ? topicName(preset) : "ทุกหัวข้อ") + "</p></div>" +
+      (S.quiz.attempts.length ? '<div class="card"><h3>ประวัติการทำข้อสอบ</h3><div class="tablewrap"><table>' +
+        "<thead><tr><th>วันที่</th><th>โหมด</th><th>หัวข้อ</th><th>คะแนน</th></tr></thead><tbody>" +
+        S.quiz.attempts.slice(-10).reverse().map(function (a) {
+          return "<tr><td>" + esc(a.when) + "</td><td>" + esc(a.mode) + "</td><td>" + esc(a.topic) + "</td><td>" +
+            a.score + " / " + a.total + " (" + pct(a.score, a.total) + "%)</td></tr>";
+        }).join("") + "</tbody></table></div></div>" : "");
+  }
+  var SEL = "all";
+  function startQuiz(mode) {
+    stopTimer();
+    var pool;
+    if (SEL === "wrong") pool = D.quiz.filter(function (q) { return S.quiz.wrong[q.id]; });
+    else if (SEL === "all") pool = D.quiz.slice();
+    else pool = D.quiz.filter(function (q) { return q.topic === SEL; });
+    if (!pool.length) { alert("ไม่มีข้อสอบในหัวข้อนี้"); return; }
+    var qs = shuffle(pool);
+    if (mode === "exam") qs = qs.slice(0, Math.min(20, qs.length));
+    QZ = { state: "run", mode: mode, topic: SEL === "all" ? "ทุกหัวข้อ" : (SEL === "wrong" ? "ข้อที่เคยผิด" : topicName(SEL)),
+           qs: qs, i: 0, ans: [], left: mode === "exam" ? qs.length * 60 : 0 };
+    route();
+    if (mode === "exam") tick();
+  }
+  function tick() {
+    stopTimer();
+    TIMER = setInterval(function () {
+      if (!QZ || QZ.state !== "run") { stopTimer(); return; }
+      QZ.left--;
+      var t = el("clock");
+      if (t) t.textContent = fmtTime(QZ.left);
+      if (QZ.left <= 0) { stopTimer(); finishQuiz(); }
+    }, 1000);
+  }
+  function fmtTime(s) {
+    s = Math.max(0, s);
+    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }
+  function quizRun() {
+    var q = QZ.qs[QZ.i], picked = QZ.ans[QZ.i];
+    var showAns = QZ.mode === "practice" && picked != null;
+    return '<div class="page-head"><h2>' + (QZ.mode === "exam" ? "โหมดสอบจับเวลา" : "โหมดฝึก") + "</h2>" +
+      "<p>" + esc(QZ.topic) + "</p></div>" +
+      '<div class="card"><div class="qmeta"><span>ข้อ ' + (QZ.i + 1) + " จาก " + QZ.qs.length + "</span>" +
+        (QZ.mode === "exam" ? '<span class="pill warn">เหลือเวลา <b id="clock">' + fmtTime(QZ.left) + "</b></span>" :
+          '<span class="pill gray">' + esc(topicName(q.topic)) + "</span>") + "</div>" +
+      '<div class="bar" style="margin-bottom:14px"><i style="width:' + pct(QZ.i, QZ.qs.length) + '%"></i></div>' +
+      "<h3>" + esc(q.q) + "</h3>" +
+      q.choices.map(function (c, i) {
+        var cls = "choice";
+        if (showAns) { if (i === q.answer) cls += " correct"; else if (i === picked) cls += " wrong"; }
+        else if (picked === i) cls += " picked";
+        return '<button class="' + cls + '" data-pick="' + i + '"' + (showAns ? " disabled" : "") + ">" +
+          "<b>" + "กขคง".charAt(i) + ".</b> " + esc(c) + "</button>";
+      }).join("") +
+      (showAns ? '<div class="why"><b>' + (picked === q.answer ? "✅ ถูกต้อง" : "❌ ยังไม่ถูก คำตอบคือข้อ " + "กขคง".charAt(q.answer)) +
+        "</b><br>" + esc(q.why) + "</div>" : "") +
+      '<div class="btn-row">' +
+        (QZ.i > 0 ? '<button class="btn ghost" id="prevQ">ข้อก่อนหน้า</button>' : "") +
+        (QZ.mode === "exam" || showAns ?
+          '<button class="btn primary" id="nextQ"' + (picked == null ? " disabled" : "") + ">" +
+          (QZ.i === QZ.qs.length - 1 ? "ส่งคำตอบและดูผล" : "ข้อถัดไป") + "</button>" : "") +
+        '<button class="btn ghost" id="quitQ">ออกจากชุดนี้</button>' +
+      "</div></div>";
+  }
+  function finishQuiz() {
+    stopTimer();
+    var score = 0;
+    QZ.qs.forEach(function (q, i) {
+      var a = QZ.ans[i];
+      S.quiz.seen[q.id] = 1;
+      if (a === q.answer) { score++; delete S.quiz.wrong[q.id]; }
+      else S.quiz.wrong[q.id] = 1;
+    });
+    QZ.state = "done"; QZ.score = score;
+    var p = pct(score, QZ.qs.length);
+    if (p > S.quiz.best) S.quiz.best = p;
+    S.quiz.attempts.push({ when: todayStr(), mode: QZ.mode === "exam" ? "สอบจับเวลา" : "ฝึก",
+                           topic: QZ.topic, score: score, total: QZ.qs.length });
+    if (S.quiz.attempts.length > 50) S.quiz.attempts = S.quiz.attempts.slice(-50);
+    save(); route();
+  }
+  function quizResult() {
+    var p = pct(QZ.score, QZ.qs.length);
+    var verdict = p >= 80 ? { c: "ok", t: "ยอดเยี่ยม พร้อมสอบ" } : p >= 60 ? { c: "warn", t: "พอใช้ ควรทบทวนเพิ่ม" } : { c: "bad", t: "ต้องทบทวนบทเรียนก่อน" };
+    return '<div class="page-head"><h2>ผลการทำข้อสอบ</h2><p>' + esc(QZ.topic) + " · โหมด" + (QZ.mode === "exam" ? "สอบจับเวลา" : "ฝึก") + "</p></div>" +
+      '<div class="card"><div class="stat"><span>คะแนน</span><b>' + QZ.score + " / " + QZ.qs.length + " = " + p + "%</b></div>" +
+      '<div class="bar"><i style="width:' + p + '%"></i></div>' +
+      '<p style="margin:10px 0 0"><span class="pill ' + verdict.c + '">' + esc(verdict.t) + "</span></p>" +
+      '<div class="btn-row"><button class="btn primary" id="againQ">ทำชุดใหม่</button>' +
+      '<button class="btn" data-go="#/learn">กลับไปอ่านบทเรียน</button></div></div>' +
+      '<div class="card"><h3>เฉลยและคำอธิบายรายข้อ</h3>' +
+      QZ.qs.map(function (q, i) {
+        var a = QZ.ans[i], ok = a === q.answer;
+        return '<div style="padding:12px 0;border-bottom:1px solid var(--line)">' +
+          "<b>" + (i + 1) + ". " + esc(q.q) + "</b><br>" +
+          '<span class="pill ' + (ok ? "ok" : "bad") + '">' + (ok ? "ตอบถูก" : "ตอบผิด") + "</span> " +
+          '<span style="font-size:14px">คำตอบที่ถูกคือ <b>' + esc(q.choices[q.answer]) + "</b>" +
+          (a != null && !ok ? " · ท่านตอบ " + esc(q.choices[a]) : (a == null ? " · ไม่ได้ตอบ" : "")) + "</span>" +
+          '<div class="why">' + esc(q.why) + "</div></div>";
+      }).join("") + "</div>";
+  }
+  function bindQuiz() {
+    on("[data-topic]", "click", function (e) {
+      SEL = e.currentTarget.getAttribute("data-topic");
+      Array.prototype.forEach.call(document.querySelectorAll("[data-topic]"), function (n) { n.classList.remove("primary"); });
+      e.currentTarget.classList.add("primary");
+      var info = el("selInfo");
+      if (info) info.innerHTML = "<b>หัวข้อที่เลือก:</b> " +
+        esc(SEL === "all" ? "ทุกหัวข้อ" : SEL === "wrong" ? "ข้อที่เคยตอบผิด" : topicName(SEL));
+    });
+    var sp = el("startPractice"); if (sp) sp.addEventListener("click", function () { startQuiz("practice"); });
+    var se = el("startExam"); if (se) se.addEventListener("click", function () { startQuiz("exam"); });
+    on("[data-pick]", "click", function (e) {
+      var i = +e.currentTarget.getAttribute("data-pick");
+      QZ.ans[QZ.i] = i;
+      if (QZ.mode === "practice") route();
+      else if (QZ.i < QZ.qs.length - 1) { QZ.i++; route(); } else route();
+    });
+    var n = el("nextQ"); if (n) n.addEventListener("click", function () {
+      if (QZ.i === QZ.qs.length - 1) finishQuiz(); else { QZ.i++; route(); }
+    });
+    var pv = el("prevQ"); if (pv) pv.addEventListener("click", function () { QZ.i--; route(); });
+    var qt = el("quitQ"); if (qt) qt.addEventListener("click", function () {
+      if (confirm("ออกจากชุดนี้โดยไม่บันทึกคะแนน?")) { stopTimer(); QZ = null; route(); }
+    });
+    var ag = el("againQ"); if (ag) ag.addEventListener("click", function () { QZ = null; route(); });
+  }
+
+  /* ---------- CASES ---------- */
+  var CS = null;
+  function viewCases() {
+    return '<div class="page-head"><h2>กรณีศึกษา</h2><p>ตัดสินใจทีละขั้นเหมือนอยู่หน้าเตียงผู้ป่วย ทุกตัวเลือกมีคำอธิบายว่าทำไมถูกหรือผิด</p></div>' +
+      '<div class="grid two">' + D.cases.map(function (c) {
+        var done = S.cases[c.id];
+        return '<button class="tile" data-go="#/cases/' + c.id + '"><div class="row"><span class="em">🩻</span><span><b>' +
+          esc(c.title) + " " + (done ? '<span class="pill ok">ผ่านแล้ว</span>' : '<span class="pill gray">' + esc(c.level) + "</span>") +
+          "</b><small>" + esc(c.stem.slice(0, 90)) + "…</small></span></div></button>";
+      }).join("") + "</div>";
+  }
+  function viewCase(id) {
+    var c = D.cases.filter(function (x) { return x.id === id; })[0];
+    if (!c) return '<div class="empty"><p>ไม่พบกรณีศึกษานี้</p>' +
+      '<div class="btn-row" style="justify-content:center"><button class="btn primary" data-go="#/cases">กลับรายการกรณีศึกษา</button></div></div>';
+    if (!CS || CS.id !== id) CS = { id: id, i: 0, picks: [] };
+    var step = c.steps[CS.i];
+    var finished = CS.i >= c.steps.length;
+    var head = '<div class="page-head"><h2>' + esc(c.title) + '</h2><p><span class="pill gray">' + esc(c.level) + "</span></p></div>" +
+      '<div class="card"><h3>ข้อมูลผู้ป่วย</h3><p>' + esc(c.stem) + "</p>" +
+      '<div class="kv">' + c.info.map(function (r) {
+        return "<div><span>" + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("") + "</div></div>";
+    if (finished) {
+      var right = CS.picks.filter(function (p) { return p.ok; }).length;
+      return head + '<div class="card"><h3>สรุปผล</h3><p>ตอบถูกในครั้งแรก ' + right + " จาก " + c.steps.length + " ขั้นตอน</p>" +
+        '<div class="note tip"><b>💡 บทเรียนจากเคสนี้</b>' + esc(c.takeaway) + "</div>" +
+        '<div class="btn-row"><button class="btn primary" id="againCase">เล่นเคสนี้ใหม่</button>' +
+        '<button class="btn" data-go="#/cases">เลือกเคสอื่น</button></div></div>';
+    }
+    var picked = CS.picks[CS.i];
+    return head + '<div class="card"><div class="qmeta"><span>ขั้นตอนที่ ' + (CS.i + 1) + " จาก " + c.steps.length + "</span></div>" +
+      "<h3>" + esc(step.q) + "</h3>" +
+      step.choices.map(function (ch, i) {
+        var cls = "choice";
+        if (picked) { if (ch.ok) cls += " correct"; else if (picked.i === i) cls += " wrong"; }
+        return '<button class="' + cls + '" data-cpick="' + i + '"' + (picked ? " disabled" : "") + ">" + esc(ch.t) + "</button>";
+      }).join("") +
+      (picked ? '<div class="why"><b>' + (picked.ok ? "✅ ถูกต้อง" : "❌ ยังไม่ใช่ตัวเลือกที่ดีที่สุด") + "</b><br>" +
+        esc(step.choices[picked.i].fb) + (picked.ok ? "" : "<br><br><b>คำตอบที่ถูก:</b> " +
+        esc(step.choices.filter(function (x) { return x.ok; })[0].t) + " — " +
+        esc(step.choices.filter(function (x) { return x.ok; })[0].fb)) + "</div>" +
+        '<div class="btn-row"><button class="btn primary" id="nextCase">' +
+        (CS.i === c.steps.length - 1 ? "ดูสรุปเคส" : "ขั้นตอนถัดไป") + "</button></div>" : "") +
+      "</div>";
+  }
+  function bindCase(id) {
+    var c = D.cases.filter(function (x) { return x.id === id; })[0];
+    on("[data-cpick]", "click", function (e) {
+      var i = +e.currentTarget.getAttribute("data-cpick");
+      CS.picks[CS.i] = { i: i, ok: !!c.steps[CS.i].choices[i].ok };
+      route();
+    });
+    var n = el("nextCase"); if (n) n.addEventListener("click", function () {
+      CS.i++;
+      if (CS.i >= c.steps.length) { S.cases[id] = 1; save(); }
+      route();
+    });
+    var a = el("againCase"); if (a) a.addEventListener("click", function () { CS = { id: id, i: 0, picks: [] }; route(); });
+  }
+
+  /* ---------- FLASHCARDS ---------- */
+  var FC = null;
+  function viewFlash() {
+    if (!FC) FC = { order: shuffle(D.flashcards.map(function (_, i) { return i; })), i: 0, show: false };
+    var idx = FC.order[FC.i], card = D.flashcards[idx];
+    var known = S.cards[card.f];
+    var knownCount = D.flashcards.filter(function (c) { return S.cards[c.f]; }).length;
+    return '<div class="page-head"><h2>แฟลชการ์ด</h2><p>กดที่การ์ดเพื่อพลิกดูคำตอบ แล้วบอกว่าจำได้หรือยัง — ระบบจะจำไว้ให้</p></div>' +
+      '<div class="card"><div class="qmeta"><span>ใบที่ ' + (FC.i + 1) + " จาก " + FC.order.length + "</span>" +
+      '<span class="pill gray">' + esc(topicName(card.topic)) + "</span></div>" +
+      '<div class="flash" id="flashCard"><div><div class="q">' + esc(card.f) + "</div>" +
+      (FC.show ? '<div class="a">' + esc(card.b) + "</div>" : "<small>กดเพื่อดูคำตอบ</small>") +
+      (known ? "<small>✓ เคยทำเครื่องหมายว่าจำได้แล้ว</small>" : "") + "</div></div>" +
+      '<div class="btn-row"><button class="btn primary" id="knowIt">จำได้</button>' +
+      '<button class="btn" id="againIt">ยังไม่ได้ ขอทวนอีก</button>' +
+      '<button class="btn ghost" id="shuffleIt">สลับสำรับใหม่</button></div>' +
+      '<div class="bar" style="margin-top:14px"><i style="width:' + pct(knownCount, D.flashcards.length) + '%"></i></div>' +
+      '<p style="font-size:13px;color:var(--muted);margin:6px 0 0">จำได้แล้ว ' + knownCount + " จาก " + D.flashcards.length + " ใบ</p></div>";
+  }
+  function nextCard() { FC.i = (FC.i + 1) % FC.order.length; FC.show = false; route(); }
+  function bindFlash() {
+    var f = el("flashCard"); if (f) f.addEventListener("click", function () { FC.show = !FC.show; route(); });
+    var k = el("knowIt"); if (k) k.addEventListener("click", function () {
+      S.cards[D.flashcards[FC.order[FC.i]].f] = 1; save(); nextCard();
+    });
+    var a = el("againIt"); if (a) a.addEventListener("click", function () {
+      delete S.cards[D.flashcards[FC.order[FC.i]].f]; save(); nextCard();
+    });
+    var s = el("shuffleIt"); if (s) s.addEventListener("click", function () { FC = null; route(); });
+  }
+
+  /* ---------- REFERENCE ---------- */
+  function viewRef() {
+    return '<div class="page-head"><h2>การ์ดอ้างอิงเร็ว</h2><p>เปิดดูหน้างานได้ทันที กดปุ่มพิมพ์เพื่อทำเป็นการ์ดพกติดกระเป๋าเสื้อกาวน์</p>' +
+      '<div class="btn-row no-print"><button class="btn" onclick="window.print()">พิมพ์ / บันทึกเป็น PDF</button></div></div>' +
+      D.reference.map(function (r) {
+        return '<div class="card"><h3>' + r.icon + " " + esc(r.title) + "</h3>" +
+          (r.kv ? block({ kv: r.kv }) : "") +
+          (r.table ? block({ table: r.table }) : "") +
+          (r.list ? block({ ul: r.list }) : "") +
+          (r.note ? '<p style="font-size:13.5px;color:var(--muted);margin:0">' + esc(r.note) + "</p>" : "") + "</div>";
+      }).join("");
+  }
+
+  /* ---------- theme + boot ---------- */
+  function applyTheme() {
+    if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
+    else document.documentElement.removeAttribute("data-theme");
+  }
+  function sharePage(btn) {
+    var data = { title: "MVA Trainer", text: "แอปทบทวนหัตถการ MVA", url: location.href };
+    if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+    var done = function (ok) {
+      var old = btn.textContent;
+      btn.textContent = ok ? "✓" : "!";
+      setTimeout(function () { btn.textContent = old; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).then(function () { done(true); }, function () { done(false); });
+    } else { window.prompt("คัดลอกลิงก์นี้ไปส่งให้นักเรียน", location.href); }
+  }
+  if (isEmbedded()) el("shareTop").style.display = "none";
+  else el("shareTop").addEventListener("click", function () { sharePage(el("shareTop")); });
+
+  function updateThemeBtn() {
+    var b = el("themeBtn");
+    b.textContent = S.theme === "dark" ? "🌙" : S.theme === "light" ? "☀️" : "◐";
+    b.title = "ธีมปัจจุบัน: " + (S.theme === "dark" ? "มืด" : S.theme === "light" ? "สว่าง" : "ตามระบบ") + " — กดเพื่อเปลี่ยน";
+  }
+  el("themeBtn").addEventListener("click", function () {
+    S.theme = S.theme === "dark" ? "light" : S.theme === "light" ? null : "dark";
+    save(); applyTheme(); updateThemeBtn();
+  });
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.id === "resetAll") {
+      if (confirm("ล้างความก้าวหน้าทั้งหมด (บทเรียน คะแนนสอบ เช็กลิสต์ แฟลชการ์ด)?")) {
+        S = defaults(); save(); QZ = null; CS = null; FC = null; ORD = null; SEL = "all";
+        stopTimer(); applyTheme(); updateThemeBtn(); lastKey = null; route();
+      }
+    }
+  });
+  window.addEventListener("hashchange", route);
+  applyTheme();
+  updateThemeBtn();
+  route();
+})();
+
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap">

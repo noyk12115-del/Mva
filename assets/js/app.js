@@ -91,8 +91,11 @@
   function isTouch() {
     return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
   }
+  function isEmbedded() {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  }
   function installCard() {
-    if (S.hideInstall || isStandalone()) return "";
+    if (S.hideInstall || isStandalone() || isEmbedded()) return "";
     if (!installPrompt && !isIOS() && !isTouch()) return "";
     var how = installPrompt
       ? '<div class="btn-row"><button class="btn primary" id="installBtn">ติดตั้งลงหน้าจอ</button></div>'
@@ -658,7 +661,8 @@
       navigator.clipboard.writeText(location.href).then(function () { done(true); }, function () { done(false); });
     } else { window.prompt("คัดลอกลิงก์นี้ไปส่งให้นักเรียน", location.href); }
   }
-  el("shareTop").addEventListener("click", function () { sharePage(el("shareTop")); });
+  if (isEmbedded()) el("shareTop").style.display = "none";
+  else el("shareTop").addEventListener("click", function () { sharePage(el("shareTop")); });
 
   function updateThemeBtn() {
     var b = el("themeBtn");
