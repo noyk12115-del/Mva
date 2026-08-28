@@ -188,6 +188,8 @@ footer.disc{max-width:960px;margin:0 auto;padding:18px 16px 40px;color:var(--mut
 }
 
 /* ช่องกรอกหัวใบประเมิน */
+.card.soft{background:var(--surface-2);box-shadow:none}
+.topbar-in .icon-btn+.icon-btn{margin-inline-start:6px}
 .metagrid{display:grid;gap:10px}
 @media(min-width:640px){.metagrid{grid-template-columns:repeat(3,1fr)}}
 .metagrid label{display:block}
