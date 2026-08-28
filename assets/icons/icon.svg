@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVA Trainer">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0d7a72"/><stop offset="1" stop-color="#7b4bd6"/></linearGradient></defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <g fill="#ffffff">
+    <rect x="150" y="118" width="150" height="228" rx="26"/>
+    <rect x="186" y="70" width="78" height="56" rx="16"/>
+    <rect x="300" y="196" width="86" height="30" rx="15"/>
+    <rect x="205" y="346" width="40" height="96" rx="18"/>
+  </g>
+  <g fill="#0d7a72" opacity=".85">
+    <rect x="172" y="150" width="106" height="16" rx="8"/>
+    <rect x="172" y="190" width="106" height="16" rx="8"/>
+    <rect x="172" y="230" width="106" height="16" rx="8"/>
+  </g>
+</svg>

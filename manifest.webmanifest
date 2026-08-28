@@ -1,0 +1,17 @@
+{
+  "name": "MVA Trainer — ฝึกหัตถการดูดชิ้นเนื้อในโพรงมดลูกด้วยมือ",
+  "short_name": "MVA Trainer",
+  "description": "บทเรียน เช็กลิสต์ OSCE คลังข้อสอบ กรณีศึกษา และการ์ดอ้างอิงเร็วสำหรับหัตถการ Manual Vacuum Aspiration",
+  "lang": "th",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7f9",
+  "theme_color": "#0d7a72",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
