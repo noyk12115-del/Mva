@@ -7,11 +7,23 @@
   /* ---------- state ---------- */
   function defaults() {
     return { read: {}, quiz: { seen: {}, wrong: {}, best: 0, attempts: [] },
-             checklist: { scores: {}, attempts: [] }, cards: {}, cases: {}, theme: null };
+             checklist: { scores: {}, attempts: [], meta: { student: "", rater: "", date: "" } },
+             cards: {}, cases: {}, theme: null };
   }
   var S = (function () {
-    try { var o = JSON.parse(localStorage.getItem(KEY) || "{}"); return Object.assign(defaults(), o); }
-    catch (e) { return defaults(); }
+    var d = defaults(), o = {};
+    try { o = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { o = {}; }
+    var st = Object.assign(d, o);
+    /* ทำให้โครงสร้างย่อยสมบูรณ์เสมอ แม้ข้อมูลเดิมจะไม่มีคีย์เหล่านี้ */
+    st.read = st.read && typeof st.read === "object" ? st.read : {};
+    st.cards = st.cards && typeof st.cards === "object" ? st.cards : {};
+    st.cases = st.cases && typeof st.cases === "object" ? st.cases : {};
+    st.quiz = Object.assign({ seen: {}, wrong: {}, best: 0, attempts: [] }, st.quiz || {});
+    if (!Array.isArray(st.quiz.attempts)) st.quiz.attempts = [];
+    st.checklist = Object.assign({ scores: {}, attempts: [], meta: {} }, st.checklist || {});
+    if (!Array.isArray(st.checklist.attempts)) st.checklist.attempts = [];
+    st.checklist.meta = Object.assign({ student: "", rater: "", date: "" }, st.checklist.meta || {});
+    return st;
   })();
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
@@ -66,12 +78,20 @@
   ];
   function renderTabs(active) {
     el("tabs").innerHTML = TABS.map(function (t) {
-      return '<button class="tab' + (t.r === active ? " active" : "") + '" data-go="#/' + t.r + '">' + esc(t.t) + "</button>";
+      var on = t.r === active;
+      return '<button class="tab' + (on ? " active" : "") + '" data-go="#/' + t.r + '"' +
+        (on ? ' aria-current="page"' : "") + ">" + esc(t.t) + "</button>";
     }).join("");
   }
   function go(hash) { location.hash = hash; }
 
+  var lastKey = null;
   function route() {
+    if (!D || !D.lessons || !D.quiz || !D.checklist || !D.cases || !D.reference) {
+      el("view").innerHTML = '<div class="card"><h3>โหลดข้อมูลไม่สำเร็จ</h3>' +
+        "<p>ไฟล์เนื้อหาในโฟลเดอร์ assets/js/data/ โหลดไม่ครบ กรุณาตรวจว่าไฟล์ทั้ง 5 ไฟล์อยู่ครบ และเปิดหน้านี้จากโฟลเดอร์เดียวกับ index.html</p></div>";
+      return;
+    }
     var h = (location.hash || "#/home").replace(/^#\/?/, "");
     h = h.split("?")[0];
     var parts = h.split("/");
@@ -92,7 +112,8 @@
     if (page === "cases" && parts[1]) bindCase(parts[1]);
     if (page === "flash") bindFlash();
     if (page === "learn" && parts[1]) bindLesson(parts[1]);
-    window.scrollTo(0, 0);
+    var key = page + "/" + (parts[1] || "");
+    if (key !== lastKey) { window.scrollTo(0, 0); lastKey = key; }
   }
   function bindCommon() { on("[data-go]", "click", function (e) { go(e.currentTarget.getAttribute("data-go")); }); }
 
@@ -102,7 +123,7 @@
     var seenN = Object.keys(S.quiz.seen).length;
     var wrongN = Object.keys(S.quiz.wrong).length;
     var caseN = Object.keys(S.cases).length;
-    var cardN = Object.keys(S.cards).length;
+    var cardN = D.flashcards.filter(function (c) { return S.cards[c.f]; }).length;
     return { readN: readN, seenN: seenN, wrongN: wrongN, caseN: caseN, cardN: cardN };
   }
   function viewHome() {
@@ -157,7 +178,8 @@
   }
   function viewLesson(id) {
     var i = D.lessons.map(function (l) { return l.id; }).indexOf(id);
-    if (i < 0) return '<div class="empty">ไม่พบบทเรียนนี้</div>';
+    if (i < 0) return '<div class="empty"><p>ไม่พบบทเรียนนี้</p>' +
+      '<div class="btn-row" style="justify-content:center"><button class="btn primary" data-go="#/learn">กลับสารบัญบทเรียน</button></div></div>';
     var l = D.lessons[i], prev = D.lessons[i - 1], next = D.lessons[i + 1];
     var related = D.quiz.filter(function (q) { return q.topic === l.id; }).length;
     return '<div class="page-head"><h2>' + l.icon + " " + esc(l.title) + "</h2><p>" + esc(l.summary) + "</p></div>" +
@@ -244,12 +266,19 @@
     return { max: max, score: score, percent: percent, criticalFail: criticalFail,
              passed: percent >= C.passPercent && criticalFail.length === 0 };
   }
+  function metaField(k, label) {
+    return "<label><span>" + esc(label) + '</span><input class="inp" type="text" data-meta="' + k +
+      '" value="' + esc(S.checklist.meta[k] || "") + '" autocomplete="off"></label>';
+  }
   function viewChecklist() {
     var C = D.checklist, t = checklistTotals();
     var scored = Object.keys(S.checklist.scores).length;
     var totalItems = C.sections.reduce(function (a, s) { return a + s.items.length; }, 0);
     return '<div class="page-head"><h2>' + esc(C.title) + "</h2>" +
       "<p>ให้คะแนนแต่ละข้อ 0–2 คะแนน เกณฑ์ผ่าน " + C.passPercent + "% และต้องไม่ได้ 0 ในข้อวิกฤต — ใช้ประเมินตนเองหรือให้ผู้ประเมินกรอกแล้วสั่งพิมพ์เก็บ</p></div>" +
+      '<div class="card"><h3>ข้อมูลการประเมิน</h3><div class="metagrid">' +
+        metaField("student", "ผู้รับการประเมิน") + metaField("rater", "ผู้ประเมิน") +
+        metaField("date", "วันที่ / หน่วยงาน") + "</div></div>" +
       '<div class="card"><div class="stat"><span>คะแนนรวม (ให้คะแนนแล้ว ' + scored + " / " + totalItems + " ข้อ)</span><b>" +
         t.score + " / " + t.max + " = " + t.percent + "%</b></div>" +
         '<div class="bar"><i style="width:' + t.percent + '%"></i></div>' +
@@ -272,13 +301,17 @@
         }).join("") + "</div>";
       }).join("") +
       (S.checklist.attempts.length ? '<div class="card no-print"><h3>ประวัติการประเมิน</h3>' +
-        '<div class="tablewrap"><table><thead><tr><th>วันที่</th><th>คะแนน</th><th>ร้อยละ</th><th>ผล</th></tr></thead><tbody>' +
+        '<div class="tablewrap"><table><thead><tr><th>วันที่</th><th>ผู้รับการประเมิน</th><th>คะแนน</th><th>ร้อยละ</th><th>ผล</th></tr></thead><tbody>' +
         S.checklist.attempts.slice().reverse().map(function (a) {
-          return "<tr><td>" + esc(a.when) + "</td><td>" + a.score + " / " + a.max + "</td><td>" + a.percent + "%</td><td>" +
+          return "<tr><td>" + esc(a.when) + "</td><td>" + esc(a.student || "—") + "</td><td>" + a.score + " / " + a.max + "</td><td>" + a.percent + "%</td><td>" +
             (a.passed ? '<span class="pill ok">ผ่าน</span>' : '<span class="pill bad">ไม่ผ่าน</span>') + "</td></tr>";
         }).join("") + "</tbody></table></div></div>" : "");
   }
   function bindChecklist() {
+    on("[data-meta]", "input", function (e) {
+      S.checklist.meta[e.currentTarget.getAttribute("data-meta")] = e.currentTarget.value;
+      save();
+    });
     on("[data-item]", "click", function (e) {
       var id = e.currentTarget.getAttribute("data-item"), v = +e.currentTarget.getAttribute("data-val");
       if (S.checklist.scores[id] === v) delete S.checklist.scores[id]; else S.checklist.scores[id] = v;
@@ -286,7 +319,9 @@
     });
     var s = el("saveAttempt"); if (s) s.addEventListener("click", function () {
       var t = checklistTotals();
-      S.checklist.attempts.push({ when: todayStr(), score: t.score, max: t.max, percent: t.percent, passed: t.passed });
+      S.checklist.attempts.push({ when: todayStr(), score: t.score, max: t.max, percent: t.percent,
+                                  passed: t.passed, student: S.checklist.meta.student, rater: S.checklist.meta.rater });
+      if (S.checklist.attempts.length > 50) S.checklist.attempts = S.checklist.attempts.slice(-50);
       save(); route();
     });
     var p = el("printCl"); if (p) p.addEventListener("click", function () { window.print(); });
@@ -304,6 +339,8 @@
     var preset = (location.hash.split("?")[1] || "").replace("topic=", "");
     if (preset && D.lessons.some(function (l) { return l.id === preset; })) SEL = preset;
     var wrongN = Object.keys(S.quiz.wrong).length;
+    if (SEL === "wrong" && !wrongN) SEL = "all";
+    if (SEL !== "all" && SEL !== "wrong" && !D.lessons.some(function (l) { return l.id === SEL; })) SEL = "all";
     var topics = D.lessons.map(function (l) {
       var n = D.quiz.filter(function (q) { return q.topic === l.id; }).length;
       return { id: l.id, t: l.title, n: n };
@@ -330,6 +367,7 @@
   }
   var SEL = "all";
   function startQuiz(mode) {
+    stopTimer();
     var pool;
     if (SEL === "wrong") pool = D.quiz.filter(function (q) { return S.quiz.wrong[q.id]; });
     else if (SEL === "all") pool = D.quiz.slice();
@@ -397,6 +435,7 @@
     if (p > S.quiz.best) S.quiz.best = p;
     S.quiz.attempts.push({ when: todayStr(), mode: QZ.mode === "exam" ? "สอบจับเวลา" : "ฝึก",
                            topic: QZ.topic, score: score, total: QZ.qs.length });
+    if (S.quiz.attempts.length > 50) S.quiz.attempts = S.quiz.attempts.slice(-50);
     save(); route();
   }
   function quizResult() {
@@ -459,7 +498,8 @@
   }
   function viewCase(id) {
     var c = D.cases.filter(function (x) { return x.id === id; })[0];
-    if (!c) return '<div class="empty">ไม่พบกรณีศึกษานี้</div>';
+    if (!c) return '<div class="empty"><p>ไม่พบกรณีศึกษานี้</p>' +
+      '<div class="btn-row" style="justify-content:center"><button class="btn primary" data-go="#/cases">กลับรายการกรณีศึกษา</button></div></div>';
     if (!CS || CS.id !== id) CS = { id: id, i: 0, picks: [] };
     var step = c.steps[CS.i];
     var finished = CS.i >= c.steps.length;
@@ -510,7 +550,8 @@
   function viewFlash() {
     if (!FC) FC = { order: shuffle(D.flashcards.map(function (_, i) { return i; })), i: 0, show: false };
     var idx = FC.order[FC.i], card = D.flashcards[idx];
-    var known = S.cards[idx];
+    var known = S.cards[card.f];
+    var knownCount = D.flashcards.filter(function (c) { return S.cards[c.f]; }).length;
     return '<div class="page-head"><h2>แฟลชการ์ด</h2><p>กดที่การ์ดเพื่อพลิกดูคำตอบ แล้วบอกว่าจำได้หรือยัง — ระบบจะจำไว้ให้</p></div>' +
       '<div class="card"><div class="qmeta"><span>ใบที่ ' + (FC.i + 1) + " จาก " + FC.order.length + "</span>" +
       '<span class="pill gray">' + esc(topicName(card.topic)) + "</span></div>" +
@@ -520,14 +561,18 @@
       '<div class="btn-row"><button class="btn primary" id="knowIt">จำได้</button>' +
       '<button class="btn" id="againIt">ยังไม่ได้ ขอทวนอีก</button>' +
       '<button class="btn ghost" id="shuffleIt">สลับสำรับใหม่</button></div>' +
-      '<div class="bar" style="margin-top:14px"><i style="width:' + pct(Object.keys(S.cards).length, D.flashcards.length) + '%"></i></div>' +
-      '<p style="font-size:13px;color:var(--muted);margin:6px 0 0">จำได้แล้ว ' + Object.keys(S.cards).length + " จาก " + D.flashcards.length + " ใบ</p></div>";
+      '<div class="bar" style="margin-top:14px"><i style="width:' + pct(knownCount, D.flashcards.length) + '%"></i></div>' +
+      '<p style="font-size:13px;color:var(--muted);margin:6px 0 0">จำได้แล้ว ' + knownCount + " จาก " + D.flashcards.length + " ใบ</p></div>";
   }
   function nextCard() { FC.i = (FC.i + 1) % FC.order.length; FC.show = false; route(); }
   function bindFlash() {
     var f = el("flashCard"); if (f) f.addEventListener("click", function () { FC.show = !FC.show; route(); });
-    var k = el("knowIt"); if (k) k.addEventListener("click", function () { S.cards[FC.order[FC.i]] = 1; save(); nextCard(); });
-    var a = el("againIt"); if (a) a.addEventListener("click", function () { delete S.cards[FC.order[FC.i]]; save(); nextCard(); });
+    var k = el("knowIt"); if (k) k.addEventListener("click", function () {
+      S.cards[D.flashcards[FC.order[FC.i]].f] = 1; save(); nextCard();
+    });
+    var a = el("againIt"); if (a) a.addEventListener("click", function () {
+      delete S.cards[D.flashcards[FC.order[FC.i]].f]; save(); nextCard();
+    });
     var s = el("shuffleIt"); if (s) s.addEventListener("click", function () { FC = null; route(); });
   }
 
@@ -549,19 +594,26 @@
     if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
     else document.documentElement.removeAttribute("data-theme");
   }
+  function updateThemeBtn() {
+    var b = el("themeBtn");
+    b.textContent = S.theme === "dark" ? "🌙" : S.theme === "light" ? "☀️" : "◐";
+    b.title = "ธีมปัจจุบัน: " + (S.theme === "dark" ? "มืด" : S.theme === "light" ? "สว่าง" : "ตามระบบ") + " — กดเพื่อเปลี่ยน";
+  }
   el("themeBtn").addEventListener("click", function () {
     S.theme = S.theme === "dark" ? "light" : S.theme === "light" ? null : "dark";
-    save(); applyTheme();
+    save(); applyTheme(); updateThemeBtn();
   });
   document.addEventListener("click", function (e) {
     if (e.target && e.target.id === "resetAll") {
       if (confirm("ล้างความก้าวหน้าทั้งหมด (บทเรียน คะแนนสอบ เช็กลิสต์ แฟลชการ์ด)?")) {
-        S = defaults(); save(); QZ = null; CS = null; FC = null; ORD = null; applyTheme(); route();
+        S = defaults(); save(); QZ = null; CS = null; FC = null; ORD = null; SEL = "all";
+        stopTimer(); applyTheme(); updateThemeBtn(); lastKey = null; route();
       }
     }
   });
   window.addEventListener("hashchange", route);
   applyTheme();
+  updateThemeBtn();
   route();
 
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
