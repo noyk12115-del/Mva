@@ -8,7 +8,7 @@
   function defaults() {
     return { read: {}, quiz: { seen: {}, wrong: {}, best: 0, attempts: [] },
              checklist: { scores: {}, attempts: [], meta: { student: "", rater: "", date: "" } },
-             cards: {}, cases: {}, theme: null };
+             cards: {}, cases: {}, theme: null, hideInstall: 0 };
   }
   var S = (function () {
     var d = defaults(), o = {};
@@ -70,6 +70,44 @@
     return "";
   }
 
+  /* ---------- การติดตั้งลงหน้าจอมือถือ ---------- */
+  var installPrompt = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    installPrompt = e;
+    if ((location.hash || "#/home").indexOf("home") >= 0) route();
+  });
+  window.addEventListener("appinstalled", function () { installPrompt = null; route(); });
+
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+           window.navigator.standalone === true;
+  }
+  function isIOS() {
+    var ua = navigator.userAgent || "";
+    return /iPad|iPhone|iPod/.test(ua) ||
+           (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+  function isTouch() {
+    return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
+  function installCard() {
+    if (S.hideInstall || isStandalone()) return "";
+    if (!installPrompt && !isIOS() && !isTouch()) return "";
+    var how = installPrompt
+      ? '<div class="btn-row"><button class="btn primary" id="installBtn">ติดตั้งลงหน้าจอ</button></div>'
+      : isIOS()
+        ? '<div class="note tip"><b>บน iPhone และ iPad</b>กดปุ่มแชร์ที่แถบล่างของ Safari แล้วเลื่อนหาเมนู “เพิ่มไปยังหน้าจอโฮม” (Add to Home Screen)</div>'
+        : '<div class="note tip"><b>บน Android</b>กดปุ่มเมนูสามจุดมุมขวาบนของ Chrome แล้วเลือก “ติดตั้งแอป” หรือ “เพิ่มไปยังหน้าจอหลัก”</div>';
+    return '<div class="card no-print"><h3>📲 ใช้บนมือถือให้เหมือนแอป</h3>' +
+      "<p style=\"margin:0 0 10px\">ติดตั้งลงหน้าจอแล้วจะเปิดได้เต็มจอ ใช้ได้แม้ไม่มีสัญญาณ และไม่ต้องพิมพ์ลิงก์ใหม่ทุกครั้ง</p>" +
+      how +
+      '<div class="btn-row">' +
+        (navigator.share || navigator.clipboard ? '<button class="btn" id="shareBtn">ส่งลิงก์ให้เพื่อน</button>' : "") +
+        '<button class="btn ghost" id="hideInstall">ไม่ต้องแสดงอีก</button>' +
+      "</div></div>";
+  }
+
   /* ---------- tabs / router ---------- */
   var TABS = [
     { r: "home", t: "หน้าแรก" }, { r: "learn", t: "บทเรียน" }, { r: "steps", t: "ลำดับขั้นตอน" },
@@ -115,7 +153,30 @@
     var key = page + "/" + (parts[1] || "");
     if (key !== lastKey) { window.scrollTo(0, 0); lastKey = key; }
   }
-  function bindCommon() { on("[data-go]", "click", function (e) { go(e.currentTarget.getAttribute("data-go")); }); }
+  function bindCommon() {
+    on("[data-go]", "click", function (e) { go(e.currentTarget.getAttribute("data-go")); });
+    var ib = el("installBtn");
+    if (ib) ib.addEventListener("click", function () {
+      if (!installPrompt) return;
+      installPrompt.prompt();
+      var p = installPrompt.userChoice;
+      installPrompt = null;
+      if (p && p.then) p.then(function () { route(); }, function () { route(); });
+      else route();
+    });
+    var sb = el("shareBtn");
+    if (sb) sb.addEventListener("click", function () {
+      var data = { title: "MVA Trainer", text: "แอปฝึกหัตถการ MVA สำหรับการทำงานและการสอบ", url: location.href };
+      if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(location.href).then(function () {
+          sb.textContent = "คัดลอกลิงก์แล้ว";
+        }, function () { sb.textContent = location.href; });
+      }
+    });
+    var hb = el("hideInstall");
+    if (hb) hb.addEventListener("click", function () { S.hideInstall = 1; save(); route(); });
+  }
 
   /* ---------- HOME ---------- */
   function progress() {
@@ -138,6 +199,7 @@
     return '<div class="page-head"><h2>สวัสดี พร้อมฝึก MVA แล้วหรือยัง</h2>' +
       "<p>แอปนี้รวมทุกอย่างที่ต้องใช้: บทเรียน 10 บท ข้อสอบ " + D.quiz.length + " ข้อ เช็กลิสต์ประเมินทักษะ กรณีศึกษา " +
       D.cases.length + " เคส และการ์ดอ้างอิงหน้างาน</p></div>" +
+      installCard() +
       '<div class="grid two">' +
         statCard("บทเรียนที่อ่านแล้ว", p.readN, D.lessons.length) +
         statCard("ข้อสอบที่เคยทำ", p.seenN, D.quiz.length, p.wrongN ? "มีข้อที่เคยตอบผิดค้างอยู่ " + p.wrongN + " ข้อ" : "ยังไม่มีข้อที่ค้างผิด") +
