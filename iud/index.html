@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b3235c">
+<meta name="description" content="แอปสอนหัตถการการใส่ห่วงอนามัย (IUD) สำหรับนักศึกษาแพทย์ ใช้งานบนมือถือ ทำงานออฟไลน์ได้">
+<title>ใส่ห่วงอนามัย — คู่มือหัตถการ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ใส่ห่วงอนามัย">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="mark">⚕️</div>
+  <div class="ttl">
+    <h1>การใส่ห่วงอนามัย (IUD)</h1>
+    <p>คู่มือหัตถการสำหรับนักศึกษาแพทย์</p>
+  </div>
+  <button class="iconbtn" id="themeBtn" aria-label="สลับธีมสว่าง/มืด">🌓</button>
+</header>
+
+<main>
+  <section class="view on" id="v-learn"></section>
+  <section class="view" id="v-steps"></section>
+  <section class="view" id="v-trouble"></section>
+  <section class="view" id="v-rubric"></section>
+  <section class="view" id="v-quiz"></section>
+</main>
+
+<nav class="tabbar" id="tabbar" aria-label="เมนูหลัก">
+  <button data-v="learn"   class="on"><span class="ti">📚</span>เรียนรู้</button>
+  <button data-v="steps"><span class="ti">🩺</span>หัตถการ</button>
+  <button data-v="trouble"><span class="ti">⚠️</span>ปัญหา</button>
+  <button data-v="rubric"><span class="ti">✅</span>ประเมิน</button>
+  <button data-v="quiz"><span class="ti">🧠</span>ควิซ</button>
+</nav>
+
+<script src="assets/js/content.js"></script>
+<script src="assets/js/diagrams.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
