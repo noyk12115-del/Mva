@@ -21,7 +21,8 @@ self.addEventListener("install", function (e) {
 self.addEventListener("activate", function (e) {
   e.waitUntil(
     caches.keys().then(function (ks) {
-      return Promise.all(ks.filter(function (k) { return k !== CACHE; })
+      /* ลบเฉพาะแคชรุ่นเก่าของแอปนี้ ไม่แตะแคชของแอปอื่นที่อยู่บน origin เดียวกัน */
+      return Promise.all(ks.filter(function (k) { return k !== CACHE && k.indexOf("mva-") === 0; })
         .map(function (k) { return caches.delete(k); }));
     }).then(function () { return self.clients.claim(); })
   );

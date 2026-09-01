@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b3235c">
+<title>ใส่ห่วงอนามัย — คู่มือหัตถการ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   สอนใส่ห่วงอนามัย — mobile-first stylesheet
+   ========================================================= */
+
+:root{
+  --bg:#f6f7f9;
+  --surface:#ffffff;
+  --surface-2:#eef1f5;
+  --text:#111827;
+  --text-dim:#5b6472;
+  --line:#dfe3e9;
+  --brand:#b3235c;
+  --brand-soft:#fce7f0;
+  --accent:#0e7490;
+  --accent-soft:#e0f2fe;
+  --warn:#b45309;
+  --warn-soft:#fef3c7;
+  --danger:#b91c1c;
+  --danger-soft:#fee2e2;
+  --good:#15803d;
+  --good-soft:#dcfce7;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06);
+  --r:14px;
+  --tabh:62px;
+  --font:"Noto Sans Thai","Sarabun",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1216;
+    --surface:#171b21;
+    --surface-2:#1e242c;
+    --text:#e7eaee;
+    --text-dim:#9aa4b2;
+    --line:#2a313a;
+    --brand:#f472b6;
+    --brand-soft:#3b1729;
+    --accent:#38bdf8;
+    --accent-soft:#0c2a3a;
+    --warn:#fbbf24;
+    --warn-soft:#3a2c0a;
+    --danger:#f87171;
+    --danger-soft:#3b1414;
+    --good:#4ade80;
+    --good-soft:#0f2e1c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1216; --surface:#171b21; --surface-2:#1e242c;
+  --text:#e7eaee; --text-dim:#9aa4b2; --line:#2a313a;
+  --brand:#f472b6; --brand-soft:#3b1729;
+  --accent:#38bdf8; --accent-soft:#0c2a3a;
+  --warn:#fbbf24; --warn-soft:#3a2c0a;
+  --danger:#f87171; --danger-soft:#3b1414;
+  --good:#4ade80; --good-soft:#0f2e1c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{ -webkit-text-size-adjust:100% }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font); font-size:16px; line-height:1.65;
+  padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom));
+  overscroll-behavior-y:none;
+}
+h1,h2,h3,h4{line-height:1.35;margin:0}
+b,strong{font-weight:700;color:var(--text)}
+a{color:var(--accent)}
+button{font-family:inherit;font-size:inherit;color:inherit}
+
+/* ---------- app bar ---------- */
+.appbar{
+  position:sticky; top:0; z-index:40;
+  background:var(--surface); border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;
+  display:flex; align-items:center; gap:10px;
+}
+.appbar .mark{
+  width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  background:var(--brand-soft); color:var(--brand);
+  display:grid;place-items:center;font-size:18px;
+}
+.appbar .ttl{flex:1;min-width:0}
+.appbar .ttl h1{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appbar .ttl p{margin:0;font-size:11.5px;color:var(--text-dim)}
+.iconbtn{
+  border:1px solid var(--line); background:var(--surface-2);
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  font-size:17px;cursor:pointer;flex:0 0 auto;
+}
+.iconbtn:active{transform:scale(.94)}
+
+/* ---------- layout ---------- */
+main{padding:14px 14px 26px;max-width:820px;margin:0 auto}
+.view{display:none;animation:fade .18s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;
+}
+.card-pad{padding:14px}
+.sec-title{
+  font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--text-dim);
+  text-transform:uppercase;margin:20px 2px 8px;
+}
+.sec-title:first-child{margin-top:2px}
+
+/* ---------- accordion ---------- */
+.acc-head{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:14px;background:none;border:0;text-align:right;cursor:pointer;
+}
+.acc-head .ic{font-size:20px;flex:0 0 auto}
+.acc-head .tx{flex:1;font-weight:700;font-size:15.5px;text-align:left}
+.acc-head .ch{color:var(--text-dim);transition:transform .2s;font-size:13px}
+.acc.open .acc-head .ch{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 14px 14px;border-top:1px solid var(--line)}
+.acc.open .acc-body{display:block}
+.acc-body>*:first-child{margin-top:12px}
+
+/* ---------- content blocks ---------- */
+.blk{margin:12px 0}
+.blk ul{margin:0;padding-inline-start:20px}
+.blk li{margin:7px 0}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:440px;font-size:14px}
+th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:700;font-size:13px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+
+.callout{border-radius:12px;padding:12px 13px;font-size:14.5px;border:1px solid transparent}
+.callout .ct{font-weight:700;display:block;margin-bottom:3px;font-size:14px}
+.callout.info{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+.callout.warn{background:var(--warn-soft);border-color:var(--warn)}
+.callout.good{background:var(--good-soft);border-color:var(--good)}
+.callout.danger{background:var(--danger-soft);border-color:var(--danger)}
+
+.mini-check{list-style:none;padding:0;margin:0}
+.mini-check li{padding-inline-start:26px;position:relative;margin:8px 0;font-size:14.5px}
+.mini-check li::before{
+  content:"✓";position:absolute;inset-inline-start:0;top:0;
+  color:var(--good);font-weight:700;
+}
+
+/* ---------- step list ---------- */
+.phasebar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.phasebar::-webkit-scrollbar{display:none}
+.chip{
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:7px 13px;font-size:13.5px;white-space:nowrap;cursor:pointer;font-weight:600;
+}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+.step{margin-bottom:10px}
+.step .acc-head{align-items:flex-start}
+.num{
+  width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;
+  font-weight:700;font-size:14px;background:var(--surface-2);color:var(--text-dim);
+}
+.step.done .num{background:var(--good);color:#fff}
+.step .tx{font-size:15px;line-height:1.45}
+.phase-tag{
+  display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:var(--surface-2);color:var(--text-dim);margin-bottom:5px;
+}
+.do-list{list-style:none;padding:0;margin:0;counter-reset:d}
+.do-list li{
+  counter-increment:d;position:relative;padding-inline-start:28px;margin:9px 0;font-size:15px;
+}
+.do-list li::before{
+  content:counter(d);position:absolute;inset-inline-start:0;top:2px;
+  width:20px;height:20px;border-radius:6px;background:var(--brand-soft);color:var(--brand);
+  font-size:11.5px;font-weight:700;display:grid;place-items:center;
+}
+.why,.pit{border-radius:11px;padding:11px 12px;font-size:14px;margin-top:11px}
+.why{background:var(--accent-soft);border:1px solid var(--accent)}
+.pit{background:var(--danger-soft);border:1px solid var(--danger)}
+.why .lb,.pit .lb{font-weight:700;display:block;margin-bottom:2px;font-size:13px}
+.stepfoot{display:flex;gap:8px;margin-top:13px}
+.btn{
+  flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:11px;
+  padding:11px;font-weight:700;font-size:14.5px;cursor:pointer;
+}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.ghost{background:var(--surface)}
+.btn:active{transform:scale(.98)}
+
+/* ---------- diagrams ---------- */
+.figure{margin:13px 0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px}
+.figure svg{width:100%;height:auto;display:block}
+.dg-organ{fill:var(--brand-soft);stroke:var(--brand);stroke-width:2}
+.dg-cavity{fill:var(--surface);stroke:var(--brand);stroke-width:1.4}
+.dg-cervix{fill:var(--surface-2);stroke:var(--brand);stroke-width:2}
+.dg-canal{fill:none;stroke:var(--brand);stroke-width:1.4;stroke-dasharray:3 3}
+.dg-os{fill:var(--brand);opacity:.85}
+.dg-tool,.dg-tube{fill:none;stroke:var(--text-dim);stroke-width:3.4;stroke-linecap:round}
+.dg-rod{stroke:var(--accent);stroke-width:1.8;stroke-linecap:round}
+.dg-toolTip{fill:var(--accent)}
+.dg-iud{fill:none;stroke:var(--accent);stroke-width:3.2;stroke-linecap:round}
+.dg-flange{fill:var(--accent)}
+.dg-mark{fill:var(--danger);opacity:.9}
+.dg-marklabel{fill:#fff;font-size:9px;font-weight:700}
+.dg-measure{stroke:var(--text-dim);stroke-width:1.2}
+.dg-arrow{fill:none;stroke:var(--good);stroke-width:2.2}
+.dg-arrowhead{fill:var(--good)}
+.dg-div{stroke:var(--line);stroke-width:1.4;stroke-dasharray:4 4}
+.dg-title{fill:var(--text);font-size:11px;font-weight:700}
+.dg-note{fill:var(--text-dim);font-size:10.5px}
+.dg-tick{fill:var(--text-dim);font-size:10px}
+.dg-strong{fill:var(--text);font-weight:700}
+.dg-warn{fill:var(--danger);font-size:10.5px;font-weight:700}
+svg text{font-family:var(--font)}
+
+/* ---------- progress ---------- */
+.prog{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.bar{flex:1;height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.prog .pct{font-size:13px;font-weight:700;color:var(--text-dim);flex:0 0 auto}
+
+/* ---------- quiz ---------- */
+.qmeta{display:flex;justify-content:space-between;font-size:13px;color:var(--text-dim);margin-bottom:8px}
+.qtext{font-size:16px;font-weight:700;margin-bottom:12px;line-height:1.55}
+.opt{
+  display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface-2);
+  border-radius:12px;padding:12px 13px;margin-bottom:9px;cursor:pointer;font-size:15px;line-height:1.5;
+}
+.opt:disabled{cursor:default}
+.opt.correct{background:var(--good-soft);border-color:var(--good);font-weight:700}
+.opt.wrong{background:var(--danger-soft);border-color:var(--danger)}
+.exp{margin-top:6px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:12px;font-size:14.5px}
+.exp .lb{font-weight:700;display:block;margin-bottom:3px}
+.score{text-align:center;padding:22px 14px}
+.score .big{font-size:44px;font-weight:800;color:var(--brand);line-height:1.1}
+.score .sub{color:var(--text-dim);font-size:14px;margin:6px 0 16px}
+
+/* ---------- rubric ---------- */
+.rub-item{padding:12px 14px;border-bottom:1px solid var(--line)}
+.rub-item:last-child{border-bottom:0}
+.rub-item .lbl{font-size:14.5px;margin-bottom:9px;display:flex;gap:7px;align-items:flex-start}
+.crit{font-size:10px;font-weight:800;color:var(--danger);border:1px solid var(--danger);
+  border-radius:5px;padding:1px 5px;flex:0 0 auto;margin-top:3px}
+.rate{display:flex;gap:6px}
+.rate button{
+  flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;
+  padding:8px 4px;font-size:12.5px;font-weight:600;cursor:pointer;
+}
+.rate button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.rate button[data-v="2"].on{background:var(--good);border-color:var(--good)}
+.rate button[data-v="0"].on{background:var(--danger);border-color:var(--danger)}
+.group-head{
+  padding:11px 14px;background:var(--surface-2);font-weight:700;font-size:14px;
+  border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;
+}
+.group-head span{color:var(--text-dim);font-weight:600;font-size:13px}
+
+/* ---------- trouble cards ---------- */
+.tag{
+  display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;
+  background:var(--warn-soft);color:var(--warn);margin-bottom:6px;
+}
+.sub-lb{font-weight:700;font-size:13.5px;margin:11px 0 4px;color:var(--text-dim)}
+.pains{list-style:none;padding:0;margin:0}
+.pains li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+.pains li:last-child{border-bottom:0}
+.pains .k{
+  width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--danger);color:#fff;font-weight:800;
+}
+.pains .en{font-size:12px;color:var(--text-dim)}
+
+/* ---------- tabbar ---------- */
+.tabbar{
+  position:fixed;inset-inline:0;bottom:0;z-index:50;
+  background:var(--surface);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar button{
+  border:0;background:none;padding:8px 2px 9px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10.5px;color:var(--text-dim);font-weight:600;
+}
+.tabbar button .ti{font-size:20px;line-height:1}
+.tabbar button.on{color:var(--brand)}
+
+.note{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.ref{font-size:12.5px;color:var(--text-dim);margin:6px 0}
+.hidden{display:none !important}
+
+.btn.small{flex:0 0 auto;padding:8px 13px;font-size:13px;font-weight:600;color:var(--text-dim)}
+
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="mark">⚕️</div>
+  <div class="ttl">
+    <h1>การใส่ห่วงอนามัย (IUD)</h1>
+    <p>คู่มือหัตถการสำหรับนักศึกษาแพทย์</p>
+  </div>
+  <button class="iconbtn" id="themeBtn" aria-label="สลับธีมสว่าง/มืด">🌓</button>
+</header>
+
+<main>
+  <section class="view on" id="v-learn"></section>
+  <section class="view" id="v-steps"></section>
+  <section class="view" id="v-trouble"></section>
+  <section class="view" id="v-rubric"></section>
+  <section class="view" id="v-quiz"></section>
+</main>
+
+<nav class="tabbar" id="tabbar" aria-label="เมนูหลัก">
+  <button data-v="learn"   class="on"><span class="ti">📚</span>เรียนรู้</button>
+  <button data-v="steps"><span class="ti">🩺</span>หัตถการ</button>
+  <button data-v="trouble"><span class="ti">⚠️</span>ปัญหา</button>
+  <button data-v="rubric"><span class="ti">✅</span>ประเมิน</button>
+  <button data-v="quiz"><span class="ti">🧠</span>ควิซ</button>
+</nav>
+<script>
+/* ------------------------------------------------------------------
+ * content.js — เนื้อหาทั้งหมดของแอปสอนหัตถการ "การใส่ห่วงอนามัย (IUD)"
+ * สำหรับนักศึกษาแพทย์ / แพทย์ใช้ทุน
+ * อ้างอิงหลัก: WHO MEC 5th ed., WHO Selected Practice Recommendations,
+ *              CDC US-SPR 2024, แนวทางกรมอนามัย กระทรวงสาธารณสุข
+ * ------------------------------------------------------------------ */
+
+const CONTENT = {};
+
+/* ============ 1. เรียนรู้พื้นฐาน ============ */
+CONTENT.learn = [
+  {
+    id: "types",
+    title: "ชนิดของห่วงอนามัย",
+    icon: "🧩",
+    blocks: [
+      {
+        type: "table",
+        head: ["หัวข้อ", "Cu-IUD (ห่วงทองแดง)", "LNG-IUS (ห่วงฮอร์โมน)"],
+        rows: [
+          ["รุ่นที่ใช้บ่อย", "TCu-380A, Cu-375", "LNG 52 mg, LNG 19.5 mg"],
+          ["อายุการใช้งาน", "10–12 ปี (TCu-380A)", "5–8 ปี แล้วแต่รุ่น/ข้อบ่งใช้"],
+          ["กลไกหลัก", "ไอออนทองแดงเป็นพิษต่ออสุจิ + ทำให้เยื่อบุโพรงมดลูกอักเสบแบบปลอดเชื้อ", "ทำให้มูกปากมดลูกข้น + เยื่อบุโพรงมดลูกฝ่อ ไม่ยับยั้งการตกไข่ในคนส่วนใหญ่"],
+          ["ผลต่อประจำเดือน", "มักมามากขึ้น / ปวดท้องมากขึ้นใน 3–6 เดือนแรก", "เลือดออกกะปริดกะปรอยช่วงแรก แล้วประจำเดือนน้อยลง 20% ขาดประจำเดือนที่ 1 ปี"],
+          ["ใช้คุมกำเนิดฉุกเฉินได้", "ได้ ภายใน 5 วันหลังมีเพศสัมพันธ์ (วิธีที่ได้ผลที่สุด)", "ไม่ใช่ทางเลือกหลัก"],
+          ["ข้อบ่งใช้เสริม", "—", "เลือดออกผิดปกติจากโพรงมดลูก, ปวดประจำเดือน, endometrial protection ขณะให้เอสโตรเจน"]
+        ]
+      },
+      {
+        type: "callout",
+        tone: "info",
+        title: "ประสิทธิภาพ",
+        text: "ทั้งสองชนิดเป็น LARC ที่มีอัตราล้มเหลว < 1 ต่อ 100 ผู้ใช้ต่อปี และไม่ขึ้นกับวินัยผู้ใช้ (typical use ≈ perfect use) จึงเทียบเท่าการทำหมันในแง่ประสิทธิภาพ แต่กลับคืนสภาพเจริญพันธุ์ได้ทันทีเมื่อถอดออก"
+      }
+    ]
+  },
+  {
+    id: "timing",
+    title: "จังหวะเวลาที่ใส่ได้",
+    icon: "🗓️",
+    blocks: [
+      {
+        type: "list",
+        items: [
+          "<b>ช่วงใดของรอบเดือนก็ได้</b> ถ้ามั่นใจพอสมควรว่าไม่ตั้งครรภ์ (reasonably certain not pregnant) — ไม่จำเป็นต้องรอให้มีประจำเดือน",
+          "<b>หลังคลอด</b>: ภายใน 48 ชั่วโมงแรก (post-placental / immediate postpartum) หรือรอ ≥ 4 สัปดาห์ — ช่วง 48 ชม. ถึง 4 สัปดาห์ควรเลี่ยงเพราะหลุดง่ายและเสี่ยงทะลุสูงขึ้น",
+          "<b>หลังแท้ง</b>: ใส่ได้ทันทีหลังแท้งไตรมาสแรกหรือไตรมาสสอง ถ้าไม่มีการติดเชื้อ",
+          "<b>คุมกำเนิดฉุกเฉิน</b>: Cu-IUD ภายใน 5 วันหลังมีเพศสัมพันธ์ที่ไม่ได้ป้องกัน หรือภายใน 5 วันหลังวันตกไข่ที่คาดคะเน",
+          "<b>ให้นมบุตร</b>: ใช้ได้ทั้งสองชนิด ไม่รบกวนน้ำนม"
+        ]
+      },
+      {
+        type: "callout",
+        tone: "warn",
+        title: "จำเป็นต้องใช้วิธีสำรองไหม?",
+        text: "Cu-IUD คุมกำเนิดได้ <b>ทันที</b> ที่ใส่เสมอ • LNG-IUS คุมกำเนิดทันทีถ้าใส่ภายใน 7 วันแรกของรอบเดือน มิฉะนั้นต้องใช้ถุงยางหรืองดเพศสัมพันธ์ <b>7 วัน</b>"
+      },
+      {
+        type: "checklist",
+        title: "เกณฑ์ \"มั่นใจพอสมควรว่าไม่ตั้งครรภ์\" (เข้าข้อใดข้อหนึ่งก็พอ)",
+        items: [
+          "ไม่เคยมีเพศสัมพันธ์เลยตั้งแต่ประจำเดือนครั้งสุดท้าย",
+          "ใช้วิธีคุมกำเนิดที่เชื่อถือได้อย่างถูกต้องสม่ำเสมอ",
+          "อยู่ใน 7 วันแรกนับจากวันแรกของประจำเดือน",
+          "อยู่ใน 4 สัปดาห์แรกหลังคลอด (ในคนที่ไม่ได้ให้นมบุตร)",
+          "อยู่ใน 7 วันหลังแท้งหรือแท้งบุตร",
+          "ให้นมบุตรเต็มที่ ประจำเดือนยังไม่มา และอยู่ใน 6 เดือนแรกหลังคลอด"
+        ]
+      }
+    ]
+  },
+  {
+    id: "mec",
+    title: "ข้อห้ามและ WHO MEC",
+    icon: "⛔",
+    blocks: [
+      {
+        type: "callout",
+        tone: "info",
+        title: "อ่านค่า MEC อย่างไร",
+        text: "<b>1</b> = ใช้ได้ไม่จำกัด • <b>2</b> = ประโยชน์มากกว่าความเสี่ยง ใช้ได้ • <b>3</b> = ความเสี่ยงมากกว่าประโยชน์ ไม่แนะนำ ยกเว้นไม่มีทางเลือกอื่นและติดตามใกล้ชิด • <b>4</b> = ห้ามใช้เด็ดขาด"
+      },
+      {
+        type: "table",
+        head: ["ภาวะ", "Cu-IUD", "LNG-IUS"],
+        rows: [
+          ["ตั้งครรภ์", "4", "4"],
+          ["ติดเชื้อหลังคลอด / หลังแท้งติดเชื้อ", "4", "4"],
+          ["เลือดออกทางช่องคลอดผิดปกติที่ยังไม่ได้หาสาเหตุ", "4 (เริ่มใส่)", "4 (เริ่มใส่)"],
+          ["โพรงมดลูกผิดรูป (เนื้องอกกดเบียดโพรง, มดลูกพิการแต่กำเนิด)", "4", "4"],
+          ["PID ปัจจุบัน / ปากมดลูกอักเสบเป็นหนอง / หนองในแท้-เทียม", "4 (เริ่มใส่)", "4 (เริ่มใส่)"],
+          ["มะเร็งปากมดลูกที่รอรักษา", "4 (เริ่มใส่)", "4 (เริ่มใส่)"],
+          ["มะเร็งเยื่อบุโพรงมดลูก", "4 (เริ่มใส่)", "4 (เริ่มใส่)"],
+          ["วัณโรคอุ้งเชิงกราน", "4", "4"],
+          ["มะเร็งเต้านมปัจจุบัน", "1", "4"],
+          ["โรคทางเดินน้ำดี/ตับแข็งรุนแรง", "1", "3"],
+          ["โลหิตจางรุนแรง / ธาลัสซีเมีย", "2", "1"],
+          ["HIV ที่ควบคุมโรคได้ดี", "1", "1"],
+          ["วัยรุ่น / ยังไม่เคยมีบุตร", "2", "2"]
+        ]
+      },
+      {
+        type: "callout",
+        tone: "warn",
+        title: "ความเข้าใจผิดที่พบบ่อย",
+        text: "การยังไม่เคยมีบุตรและอายุน้อย <b>ไม่ใช่</b> ข้อห้าม — IUD เป็นทางเลือกแรกที่แนะนำในวัยรุ่นได้ • ประวัติตั้งครรภ์นอกมดลูกก็ <b>ไม่ใช่</b> ข้อห้าม (MEC 1) • ไม่จำเป็นต้องตรวจภายในเพื่อคัดกรองมะเร็งปากมดลูกหรือเจาะเลือดก่อนใส่ ถ้าไม่มีข้อบ่งชี้อื่น"
+      }
+    ]
+  },
+  {
+    id: "assess",
+    title: "ประเมินผู้รับบริการก่อนทำ",
+    icon: "🩺",
+    blocks: [
+      {
+        type: "list",
+        items: [
+          "<b>ซักประวัติ</b>: ประจำเดือนครั้งสุดท้าย ความสม่ำเสมอ ปริมาณ อาการปวด, ประวัติคลอด/แท้ง, ประวัติ PID หรือโรคติดต่อทางเพศสัมพันธ์, ความเสี่ยงติดเชื้อ (คู่นอนหลายคน), โรคประจำตัวและยาที่ใช้, ความต้องการมีบุตรในอนาคต",
+          "<b>ตรวจร่างกาย</b>: สัญญาณชีพ + ตรวจภายในเป็นสิ่งจำเป็น — ประเมินขนาด ทิศทาง และการเคลื่อนไหวของมดลูก มีก้อนหรือกดเจ็บที่ปีกมดลูกหรือไม่ มี cervical motion tenderness หรือไม่",
+          "<b>ตรวจเพิ่มเติมเท่าที่จำเป็น</b>: ตรวจการตั้งครรภ์เมื่อไม่เข้าเกณฑ์ \"มั่นใจพอสมควรว่าไม่ตั้งครรภ์\", ตรวจคัดกรอง STI เฉพาะกลุ่มเสี่ยง (ไม่ต้องรอผลก็ใส่ได้ถ้าไม่มีอาการ), อัลตราซาวด์เฉพาะเมื่อคลำมดลูกไม่ชัด/สงสัยความผิดปกติ",
+          "<b>ให้คำปรึกษาและขอความยินยอม</b>: อธิบายวิธีการ ระยะเวลา ความรู้สึกขณะทำ ประสิทธิภาพ ผลข้างเคียงที่คาดได้ อาการเตือน การนัดติดตาม และการถอดเมื่อต้องการ"
+        ]
+      },
+      {
+        type: "callout",
+        tone: "good",
+        title: "เทคนิคการให้คำปรึกษาที่ได้ผล",
+        text: "อธิบาย <b>ล่วงหน้าว่าจะรู้สึกอย่างไรในแต่ละขั้น</b> (\"ตอนนี้จะใส่เครื่องมือถ่างช่องคลอด อาจรู้สึกตื้อ ๆ\", \"ขั้นนี้จะปวดบีบคล้ายปวดประจำเดือนประมาณ 10 วินาที\") ลดความวิตกกังวลและลดอัตราการเกิด vasovagal ได้จริง และให้ผู้รับบริการรู้ว่าสามารถขอให้หยุดได้ตลอดเวลา"
+      }
+    ]
+  },
+  {
+    id: "equipment",
+    title: "เตรียมเครื่องมือ",
+    icon: "🧰",
+    blocks: [
+      {
+        type: "checklist",
+        title: "ชุดเครื่องมือมาตรฐาน",
+        items: [
+          "ห่วงอนามัยในซองปลอดเชื้อที่ยังไม่ฉีกและยังไม่หมดอายุ",
+          "ถุงมือปลอดเชื้อ + ผ้าปูปลอดเชื้อ",
+          "Speculum (Cusco / Graves) ขนาดพอดี",
+          "Tenaculum ชนิดฟันเดี่ยว (single-tooth)",
+          "Uterine sound (ควรเป็นชนิดที่มีขีดบอกความลึก)",
+          "Sponge/ring forceps + สำลีหรือก๊อซ",
+          "น้ำยาฆ่าเชื้อ: povidone-iodine หรือ chlorhexidine",
+          "กรรไกรปลายยาวสำหรับตัดสาย",
+          "ไฟส่องที่ปรับทิศทางได้",
+          "ชามรูปไต + ถังขยะติดเชื้อ + กล่องทิ้งของมีคม"
+        ]
+      },
+      {
+        type: "checklist",
+        title: "เตรียมพร้อมรับภาวะแทรกซ้อน",
+        items: [
+          "Atropine 0.6 mg และอุปกรณ์ให้สารน้ำ สำหรับ vasovagal ที่รุนแรง",
+          "ยาชาเฉพาะที่ (lidocaine) สำหรับ paracervical block ถ้าจำเป็น",
+          "Cervical dilator ขนาดเล็ก หรือ misoprostol สำรอง กรณีปากมดลูกตีบ",
+          "เตียงที่ปรับให้ศีรษะต่ำได้ (Trendelenburg)"
+        ]
+      },
+      {
+        type: "callout",
+        tone: "warn",
+        title: "อย่าเพิ่งฉีกซอง",
+        text: "ห้ามโหลดห่วงเข้าท่อใส่ก่อนจะวัดความลึกโพรงมดลูกเสร็จ เพราะแขนห่วงที่ถูกพับค้างไว้เกิน 5 นาทีจะไม่กางกลับเป็นรูปตัว T ได้ดี — โหลดหลังทราบความลึกเท่านั้น"
+      }
+    ]
+  }
+];
+
+/* ============ 2. ขั้นตอนหัตถการ ============ */
+CONTENT.phases = [
+  { id: "prep",   name: "เตรียมการ",      color: "#0891b2" },
+  { id: "exam",   name: "ตรวจภายใน",      color: "#7c3aed" },
+  { id: "insert", name: "ใส่ห่วง",         color: "#dc2626" },
+  { id: "finish", name: "เก็บงานและติดตาม", color: "#059669" }
+];
+
+CONTENT.steps = [
+  {
+    id: 1, phase: "prep", title: "ยืนยันตัวตน ทบทวนข้อบ่งชี้ และขอความยินยอม",
+    do: [
+      "ทวนชื่อ–นามสกุล และยืนยันว่าผู้รับบริการเลือกห่วงอนามัยชนิดใด",
+      "ทบทวนว่าไม่มีข้อห้าม MEC 3–4 และไม่ตั้งครรภ์",
+      "อธิบายขั้นตอน ระยะเวลาโดยรวม (5–10 นาที) และสิ่งที่จะรู้สึก",
+      "ให้เซ็นใบยินยอม และเชิญผู้ช่วย/ผู้สังเกตการณ์ตามความเหมาะสม",
+      "ให้ปัสสาวะให้เรียบร้อยก่อนขึ้นเตียง"
+    ],
+    why: "กระเพาะปัสสาวะที่ว่างช่วยให้คลำมดลูกได้แม่นยำ และลดความไม่สบายระหว่างทำ",
+    pitfall: "ข้ามการยืนยันชนิดห่วง แล้วเปิดซองผิดชนิด — ห่วงที่เปิดซองแล้วต้องทิ้ง",
+    diagram: null
+  },
+  {
+    id: 2, phase: "prep", title: "จัดท่าและเตรียมโต๊ะเครื่องมือ",
+    do: [
+      "จัดท่า lithotomy หรือ dorsal lithotomy บนขาหยั่ง ให้ก้นเลยขอบเตียงเล็กน้อย",
+      "ปูผ้าคลุมให้เหลือเฉพาะบริเวณที่ทำ ปรับไฟส่องให้เห็นปากช่องคลอดชัด",
+      "ล้างมือ สวมถุงมือปลอดเชื้อ จัดเครื่องมือบนโต๊ะปลอดเชื้อตามลำดับที่จะใช้",
+      "ตรวจสอบซองห่วงว่ายังปิดสนิท ไม่หมดอายุ และวางไว้บนโต๊ะโดยยังไม่ฉีก"
+    ],
+    why: "การเรียงเครื่องมือตามลำดับใช้งานช่วยให้ทำต่อเนื่อง ลดเวลาที่ tenaculum ค้างบนปากมดลูก",
+    pitfall: "ไฟส่องไม่พอ ทำให้มองปากมดลูกไม่ชัดและใส่ผิดทิศทาง",
+    diagram: null
+  },
+  {
+    id: 3, phase: "exam", title: "ตรวจภายในด้วยสองมือ (bimanual examination)",
+    do: [
+      "สอดนิ้วชี้และนิ้วกลางเข้าช่องคลอด อีกมือกดหน้าท้อง",
+      "ประเมิน <b>ขนาด</b> และที่สำคัญที่สุดคือ <b>ทิศทางของมดลูก</b> ว่าเป็น anteverted, mid-position หรือ retroverted",
+      "คลำหาก้อนที่ปีกมดลูก และตรวจว่ามี cervical motion tenderness หรือไม่",
+      "ถ้าพบสัญญาณของการติดเชื้อ ให้หยุดหัตถการและรักษาก่อน"
+    ],
+    why: "การรู้ทิศทางมดลูกก่อนใส่ sound คือมาตรการป้องกันการทะลุมดลูกที่สำคัญที่สุด — มดลูกคว่ำหลัง (retroverted) ที่ไม่ได้ประเมินไว้คือสาเหตุคลาสสิกของ perforation",
+    pitfall: "ข้ามการตรวจสองมือเพราะรีบ แล้วดัน sound ไปตามแนวที่คิดเอาเองว่าคว่ำหน้า",
+    diagram: "uterus-position"
+  },
+  {
+    id: 4, phase: "exam", title: "ใส่ speculum และทำความสะอาดปากมดลูก",
+    do: [
+      "ใส่ speculum ให้เห็นปากมดลูกและรูเปิดปากมดลูก (external os) เต็มตา",
+      "สังเกตว่ามีตกขาวผิดปกติหรือหนองที่ปากมดลูกหรือไม่",
+      "เช็ดน้ำยาฆ่าเชื้อที่ปากมดลูกและผนังช่องคลอด โดยเช็ดวนออกจาก os ไปด้านนอก อย่างน้อย 2 รอบ ใช้สำลีก้อนใหม่ทุกรอบ",
+      "รอให้น้ำยาแห้งตามเวลาที่กำหนด"
+    ],
+    why: "ลดปริมาณเชื้อที่จะถูกพาเข้าโพรงมดลูกไปกับเครื่องมือ — ไม่ต้องให้ยาปฏิชีวนะป้องกันเป็นกิจวัตร เพราะไม่ลดอัตรา PID",
+    pitfall: "เช็ดจากด้านนอกเข้าหา os ทำให้พาเชื้อจากช่องคลอดเข้าสู่ปากมดลูก",
+    diagram: null
+  },
+  {
+    id: 5, phase: "insert", title: "จับปากมดลูกด้วย tenaculum",
+    do: [
+      "หนีบ tenaculum ที่ริมฝีปากบนของปากมดลูก (anterior lip) ตำแหน่ง 10 และ 2 นาฬิกา",
+      "ถ้ามดลูกคว่ำหลังมาก ให้หนีบที่ริมฝีปากล่าง (posterior lip) แทน",
+      "บอกผู้รับบริการก่อนหนีบทุกครั้ง แล้วปิดคีมช้า ๆ ทีละคลิก",
+      "ดึงรั้งเบา ๆ และคงแรงดึงไว้ตลอด เพื่อยืดมุมระหว่างปากมดลูกกับตัวมดลูกให้เป็นแนวตรง"
+    ],
+    why: "แรงดึงคงที่จาก tenaculum ทำให้โพรงมดลูกเป็นเส้นตรง ลดโอกาสที่ sound หรือท่อใส่จะทะลุผนังมดลูก และช่วยให้ใส่ผ่านคอมดลูกได้ราบรื่นขึ้น",
+    pitfall: "ปิดคีมเร็วเป็นจังหวะเดียว ทำให้ปวดมากและปากมดลูกฉีก • หรือปล่อยแรงดึงระหว่างสอดท่อใส่ ทำให้มุมมดลูกพับกลับ",
+    diagram: "tenaculum-clock"
+  },
+  {
+    id: 6, phase: "insert", title: "วัดความลึกโพรงมดลูกด้วย uterine sound",
+    do: [
+      "จับ sound แบบ \"no-touch technique\" — ห้ามให้ปลาย sound แตะผนังช่องคลอดหรือใบ speculum",
+      "ค่อย ๆ สอด sound ผ่านคอมดลูกตามแนวทิศทางมดลูกที่ประเมินไว้ จนรู้สึกถึงแรงต้านนุ่ม ๆ ที่ยอดมดลูก (fundus)",
+      "อ่านความลึกที่ระดับ external os — ค่าปกติ 6–9 ซม.",
+      "ถอด sound ออกและอ่านซ้ำจากรอยมูกเลือดบนแท่ง"
+    ],
+    why: "ความลึกที่วัดได้จะใช้ตั้งตำแหน่ง blue flange ของท่อใส่ ทำให้ห่วงไปวางที่ยอดโพรงมดลูกพอดี — ตำแหน่งที่ต่ำเกินไปคือสาเหตุหลักของการหลุดและการล้มเหลว",
+    pitfall: "<b>&lt; 6 ซม. ไม่ควรใส่</b> โพรงเล็กเกินไป เสี่ยงหลุดและทะลุ • <b>&gt; 9 ซม.</b> ต้องคิดถึงการตั้งครรภ์ เนื้องอก หรือใส่ทะลุออกไปนอกโพรงแล้ว • ดัน sound แรงจนไม่รู้สึกถึงแรงต้าน = สัญญาณของการทะลุ",
+    diagram: "sounding"
+  },
+  {
+    id: 7, phase: "insert", title: "โหลดห่วงและตั้ง blue flange",
+    do: [
+      "ฉีกซองห่วงบางส่วนตามแนวที่กำหนด โดยยังคงเทคนิคปลอดเชื้อ",
+      "พับแขนทั้งสองข้างเข้าท่อใส่ <b>ภายในซอง</b> โดยดันแขนเข้าเพียงพอที่ปลายแขนอยู่ในท่อ",
+      "เลื่อน blue flange ให้ระยะจากปลายท่อ = ความลึกที่วัดได้จาก sound",
+      "หมุนให้ <b>ระนาบของ flange ขนานกับระนาบของแขนห่วง</b> (แนวนอน) เพื่อให้แขนกางออกตามแนวขวางของโพรงมดลูก"
+    ],
+    why: "flange ทำหน้าที่เป็นตัวหยุด บอกว่าปลายท่อถึงยอดมดลูกแล้ว และบอกทิศการวางแขนห่วงโดยไม่ต้องมองเห็นข้างใน",
+    pitfall: "โหลดห่วงค้างไว้นานเกิน 5 นาที แขนจะจำรูปและไม่กางเป็นตัว T • ตั้ง flange ตั้งฉากกับแขน ทำให้แขนกางในแนวหน้า–หลังแทนแนวขวาง",
+    diagram: "flange"
+  },
+  {
+    id: 8, phase: "insert", title: "สอดท่อใส่เข้าโพรงมดลูก",
+    do: [
+      "คงแรงดึง tenaculum ไว้ตลอด",
+      "สอดท่อใส่ผ่านคอมดลูกอย่างนุ่มนวลตามแนวเดิมที่ sound ผ่าน โดยไม่ให้ปลายแตะผนังช่องคลอด",
+      "ดันจนกระทั่ง flange สัมผัสปากมดลูกพอดี — ห้ามฝืนดันต่อ",
+      "ถ้าติดที่ internal os ให้หยุด ปรับแรงดึงและมุม แล้วลองใหม่ อย่าใช้แรงดัน"
+    ],
+    why: "การหยุดที่ flange พอดี หมายถึงปลายท่ออยู่ที่ยอดโพรงมดลูก ซึ่งเป็นตำแหน่งที่ต้องปล่อยแขนออก",
+    pitfall: "ดันต่อหลัง flange ชนปากมดลูกแล้ว = แรงกดที่ยอดมดลูก เสี่ยงทะลุ",
+    diagram: null
+  },
+  {
+    id: 9, phase: "insert", title: "ปล่อยแขนห่วงด้วย withdrawal technique",
+    do: [
+      "<b>จับแท่งดัน (solid rod) ให้นิ่งสนิท</b> — แท่งนี้จะไม่เคลื่อนตลอดขั้นตอนนี้",
+      "ดึง <b>ท่อใส่</b> ถอยลงมาประมาณ 1–1.5 ซม. เพื่อให้แขนทั้งสองกางออกในโพรงมดลูก",
+      "ดันท่อใส่ขึ้นไปที่ยอดมดลูกอย่างนุ่มนวลอีกครั้ง เพื่อวางห่วงให้ชิดยอด (fundal placement)",
+      "ถอด <b>แท่งดันออกก่อน</b> โดยยังคาท่อใส่ไว้",
+      "แล้วจึงค่อย ๆ ถอนท่อใส่ออก"
+    ],
+    why: "ถ้าดันแท่ง rod เข้าไปแทนที่จะถอยท่อออก (plunger technique) ห่วงจะถูกดันทะลุยอดมดลูก — ลำดับ \"ถอด rod ก่อน ท่อทีหลัง\" ป้องกันการเกี่ยวห่วงให้เลื่อนต่ำลงมาขณะถอนเครื่องมือ",
+    pitfall: "<b>จุดพลาดที่พบบ่อยที่สุดของนักศึกษา</b> — ถอนท่อใส่ออกพร้อมกับแท่งดัน ทำให้ห่วงถูกดึงลงมาอยู่ที่คอมดลูก ต้องถอดออกและใส่ใหม่",
+    diagram: "withdrawal"
+  },
+  {
+    id: 10, phase: "finish", title: "ตัดสายห่วง",
+    do: [
+      "ใช้กรรไกรปลายยาวตัดสายให้เหลือประมาณ <b>3–4 ซม.</b> จาก external os",
+      "บันทึกความยาวสายที่ตัดไว้ในเวชระเบียน",
+      "เก็บปลายสายให้อยู่ใน posterior fornix"
+    ],
+    why: "ความยาวนี้ทำให้ผู้ใช้คลำสายเองได้ ตรวจติดตามได้ และไม่สั้นจนคู่นอนรู้สึกทิ่ม",
+    pitfall: "ตัดสั้นเกินไปจนคลำไม่ได้และถอดยากในอนาคต • ตัดยาวเกินไปทำให้ระคายเคือง",
+    diagram: null
+  },
+  {
+    id: 11, phase: "finish", title: "ถอดเครื่องมือและประเมินผู้รับบริการ",
+    do: [
+      "ถอด tenaculum แล้วกดห้ามเลือดจุดที่หนีบด้วยก๊อซถ้ามีเลือดซึม",
+      "ถอด speculum อย่างนุ่มนวล",
+      "ให้นอนพัก 5–10 นาที สังเกตอาการหน้ามืด คลื่นไส้ ชีพจรช้า",
+      "ลุกจากท่านอนอย่างช้า ๆ",
+      "บันทึกหัตถการ: ชนิดและ lot ของห่วง ความลึกมดลูก ความยาวสาย ภาวะแทรกซ้อน"
+    ],
+    why: "ปฏิกิริยา vasovagal มักเกิดในไม่กี่นาทีแรกหลังทำ การให้พักและลุกช้า ๆ ป้องกันการล้ม",
+    pitfall: "ปล่อยกลับทันทีขณะยังหน้าซีดหรือชีพจรช้า",
+    diagram: null
+  },
+  {
+    id: 12, phase: "finish", title: "ให้คำแนะนำและนัดติดตาม",
+    do: [
+      "สอนคลำสายด้วยตนเอง และแนะนำให้ตรวจหลังมีประจำเดือนแต่ละครั้งในช่วงแรก",
+      "อธิบายอาการข้างเคียงที่พบได้ปกติ: ปวดบีบและเลือดออกกะปริดกะปรอย 3–6 เดือนแรก",
+      "สอนอาการเตือนตามหลัก <b>PAINS</b> และช่องทางติดต่อฉุกเฉิน",
+      "แนะนำยาแก้ปวดกลุ่ม NSAIDs สำหรับอาการปวดหลังใส่",
+      "นัดตรวจซ้ำที่ 4–6 สัปดาห์ หรือหลังประจำเดือนรอบถัดไป",
+      "ย้ำว่าห่วงไม่ป้องกันโรคติดต่อทางเพศสัมพันธ์ ให้ใช้ถุงยางร่วมด้วยเมื่อมีความเสี่ยง",
+      "ให้บัตรบันทึกชนิดห่วง วันที่ใส่ และวันครบกำหนดถอด"
+    ],
+    why: "การหลุดของห่วงเกิดมากที่สุดใน 3 เดือนแรก โดยเฉพาะระหว่างมีประจำเดือน การสอนคลำสายจึงช่วยให้ตรวจพบเร็ว",
+    pitfall: "ไม่ได้ให้บัตรบันทึก ทำให้ผู้ใช้ไม่ทราบวันครบกำหนดถอดและใช้เกินอายุห่วง",
+    diagram: null
+  }
+];
+
+/* ============ 3. ปัญหาระหว่างทำและภาวะแทรกซ้อน ============ */
+CONTENT.troubles = [
+  {
+    id: "vasovagal", title: "หน้ามืด ชีพจรช้า (vasovagal reaction)", tag: "ระหว่างทำ",
+    when: "พบบ่อยที่สุด มักเกิดตอนหนีบ tenaculum หรือใส่ sound ผ่าน internal os",
+    signs: ["ซีด เหงื่อแตก คลื่นไส้", "ชีพจรช้า ความดันต่ำ", "หน้ามืด อาจเป็นลม"],
+    manage: [
+      "หยุดหัตถการทันที ถอดเครื่องมือถ้าปลอดภัยที่จะทำ",
+      "จัดท่าศีรษะต่ำ ยกขาสูง (Trendelenburg)",
+      "ประเมิน ABC วัดสัญญาณชีพ ให้ออกซิเจนถ้าจำเป็น",
+      "ถ้าชีพจรช้ามากและมีอาการ ให้ atropine 0.6 mg IV",
+      "รอให้อาการคงที่ก่อนพิจารณาทำต่อ หรือเลื่อนนัด"
+    ]
+  },
+  {
+    id: "stenosis", title: "ปากมดลูกตีบ สอดเครื่องมือไม่ผ่าน", tag: "ระหว่างทำ",
+    when: "พบบ่อยในผู้ที่ยังไม่เคยคลอดทางช่องคลอด และวัยหมดประจำเดือน",
+    signs: ["sound หรือท่อใส่ติดที่ internal os", "ปวดมากผิดปกติเมื่อพยายามสอด"],
+    manage: [
+      "ห้ามใช้แรงดัน — เพิ่มแรงดึง tenaculum ให้แนวมดลูกตรงขึ้นก่อน",
+      "ลองเปลี่ยนมุมการสอด หรือหนีบ tenaculum ที่ริมฝีปากอีกด้าน",
+      "ใช้ os finder หรือ cervical dilator ขนาดเล็กค่อย ๆ ถ่างขยาย",
+      "พิจารณา paracervical block เพื่อลดปวดและลดการเกร็ง",
+      "นัดใหม่พร้อมให้ misoprostol 400 mcg อมใต้ลิ้นหรือเหน็บช่องคลอด 3 ชม.ก่อนทำ",
+      "พิจารณาใช้อัลตราซาวด์ช่วยนำทางในรายที่ยาก"
+    ]
+  },
+  {
+    id: "perforation", title: "มดลูกทะลุ (uterine perforation)", tag: "ภาวะแทรกซ้อน",
+    when: "อุบัติการณ์ประมาณ 1–2 ต่อ 1,000 ครั้ง เสี่ยงสูงขึ้นในช่วงให้นมบุตรและหลังคลอดไม่นาน",
+    signs: [
+      "sound เข้าไปลึกกว่าที่คลำมดลูกได้มาก หรือไม่รู้สึกถึงแรงต้านของยอดมดลูก",
+      "ปวดรุนแรงเฉียบพลัน",
+      "เลือดออกมากผิดปกติ หรือสัญญาณชีพเปลี่ยน"
+    ],
+    manage: [
+      "หยุดหัตถการทันที ถอดเครื่องมือทั้งหมด",
+      "ประเมินสัญญาณชีพและอาการทางช่องท้องอย่างใกล้ชิด",
+      "ถ้าสัญญาณชีพคงที่ ให้เฝ้าสังเกตอาการ และทำอัลตราซาวด์ยืนยันตำแหน่งห่วง",
+      "ถ้าห่วงหลุดออกไปนอกโพรงมดลูก ต้องนำออกด้วยการส่องกล้อง (laparoscopy) เพราะเสี่ยงพังผืดและลำไส้ทะลุ",
+      "ถ้ามีสัญญาณเลือดออกในช่องท้องหรือสัญญาณชีพไม่คงที่ ปรึกษาผ่าตัดฉุกเฉิน",
+      "ให้ใช้วิธีคุมกำเนิดอื่นทดแทนระหว่างนี้"
+    ]
+  },
+  {
+    id: "expulsion", title: "ห่วงหลุด (expulsion)", tag: "ติดตามผล",
+    when: "2–10% ในปีแรก มากที่สุดใน 3 เดือนแรกและระหว่างมีประจำเดือน",
+    signs: ["คลำสายไม่พบ หรือคลำเจอตัวห่วงที่ปากมดลูก", "สายยาวขึ้นผิดปกติ", "ปวดบีบและเลือดออกมากขึ้น"],
+    manage: [
+      "ถ้าห่วงโผล่ที่ปากมดลูกบางส่วน ให้ถอดออก ไม่ดันกลับเข้าไป",
+      "ตรวจการตั้งครรภ์",
+      "ใส่ห่วงใหม่ได้หลังประเมินแล้ว หรือเปลี่ยนไปใช้วิธีอื่นตามความประสงค์",
+      "ให้ใช้วิธีสำรองระหว่างที่ยังไม่ได้ใส่ใหม่"
+    ]
+  },
+  {
+    id: "lost-string", title: "คลำสายไม่พบ (missing strings)", tag: "ติดตามผล",
+    when: "พบได้บ่อย สาเหตุมีตั้งแต่สายม้วนขึ้นไปในคอมดลูก ห่วงหลุด ไปจนถึงทะลุ",
+    signs: ["ไม่เห็นสายที่ปากมดลูกขณะใส่ speculum"],
+    manage: [
+      "<b>ตรวจการตั้งครรภ์ก่อนเสมอ</b> และให้ใช้วิธีสำรองจนกว่าจะยืนยันตำแหน่งห่วง",
+      "ใช้ cytobrush หรือคีมเล็กเขี่ยในคอมดลูกเพื่อหาสายที่ม้วนขึ้นไป",
+      "ถ้ายังไม่พบ ทำอัลตราซาวด์ทางช่องคลอดเพื่อดูว่าห่วงยังอยู่ในโพรงหรือไม่",
+      "ถ้าอัลตราซาวด์ไม่เห็นห่วง ให้ถ่ายภาพรังสีช่องท้องเพื่อหาห่วงที่หลุดออกนอกมดลูก",
+      "ถ้าห่วงอยู่ในช่องท้อง ต้องนำออกด้วยการส่องกล้อง"
+    ]
+  },
+  {
+    id: "pid", title: "การติดเชื้อในอุ้งเชิงกราน (PID)", tag: "ภาวะแทรกซ้อน",
+    when: "ความเสี่ยงสูงเฉพาะ 20 วันแรกหลังใส่ หลังจากนั้นเท่าประชากรทั่วไป",
+    signs: ["ปวดท้องน้อย ไข้", "ตกขาวเป็นหนอง", "cervical motion tenderness / adnexal tenderness"],
+    manage: [
+      "เริ่มยาปฏิชีวนะตามแนวทางการรักษา PID ทันที",
+      "<b>ไม่จำเป็นต้องถอดห่วงออกทันที</b> ถ้าผู้ป่วยต้องการใช้ต่อ — ให้รักษาและติดตามอาการ",
+      "ถ้าอาการไม่ดีขึ้นใน 48–72 ชั่วโมง จึงพิจารณาถอดห่วง",
+      "รักษาคู่นอนและตรวจคัดกรองโรคติดต่อทางเพศสัมพันธ์"
+    ]
+  },
+  {
+    id: "pregnancy", title: "ตั้งครรภ์ทั้งที่ใส่ห่วงอยู่", tag: "ภาวะแทรกซ้อน",
+    when: "พบน้อยมาก แต่เมื่อเกิดขึ้นต้องคิดถึงการตั้งครรภ์นอกมดลูกเสมอ",
+    signs: ["ประจำเดือนขาด ทดสอบการตั้งครรภ์เป็นบวก", "ปวดท้องน้อยข้างเดียว หรือเลือดออกผิดปกติ"],
+    manage: [
+      "ทำอัลตราซาวด์ยืนยันตำแหน่งการตั้งครรภ์ทันที เพื่อคัดกรองการตั้งครรภ์นอกมดลูก",
+      "ถ้าเป็นการตั้งครรภ์ในโพรงมดลูกและเห็นสาย ให้ <b>ถอดห่วงออก</b> โดยเร็ว เพราะการคาห่วงไว้เพิ่มความเสี่ยงแท้ง แท้งติดเชื้อ และคลอดก่อนกำหนด",
+      "ถ้าไม่เห็นสาย ให้ปรึกษาสูติแพทย์และอธิบายความเสี่ยง",
+      "ให้คำปรึกษาทางเลือกการตั้งครรภ์ตามความประสงค์"
+    ]
+  }
+];
+
+CONTENT.pains = {
+  title: "อาการเตือนที่ต้องรีบมาพบแพทย์ — PAINS",
+  items: [
+    ["P", "Period late", "ประจำเดือนขาด หรือเลือดออกผิดปกติมาก"],
+    ["A", "Abdominal pain", "ปวดท้องน้อยรุนแรง หรือเจ็บขณะมีเพศสัมพันธ์"],
+    ["I", "Infection", "ตกขาวผิดปกติ มีกลิ่นเหม็นหรือเป็นหนอง"],
+    ["N", "Not feeling well", "ไข้ หนาวสั่น อ่อนเพลียผิดปกติ"],
+    ["S", "String problems", "คลำสายไม่พบ สายสั้นลง ยาวขึ้น หรือคลำเจอตัวห่วง"]
+  ]
+};
+
+/* ============ 4. แบบประเมินทักษะ (OSCE / DOPS checklist) ============ */
+CONTENT.rubric = {
+  scale: [
+    { v: 0, label: "ไม่ได้ทำ",        hint: "ไม่ได้ทำขั้นตอนนี้เลย" },
+    { v: 1, label: "ทำแต่ไม่สมบูรณ์", hint: "ทำแต่ลำดับผิด ไม่นุ่มนวล หรือต้องได้รับคำแนะนำ" },
+    { v: 2, label: "ทำได้ถูกต้อง",    hint: "ทำได้ครบถ้วนด้วยตนเองอย่างมั่นใจ" }
+  ],
+  groups: [
+    {
+      name: "การสื่อสารและเตรียมความพร้อม",
+      items: [
+        { t: "แนะนำตัว ยืนยันตัวตนผู้รับบริการ และขอความยินยอม", critical: true },
+        { t: "ทบทวนข้อบ่งชี้ ข้อห้าม และยืนยันว่าไม่ตั้งครรภ์", critical: true },
+        { t: "อธิบายขั้นตอนและความรู้สึกที่จะเกิดขึ้นล่วงหน้า" },
+        { t: "จัดท่าและปูผ้าคลุมโดยคำนึงถึงความเป็นส่วนตัว" },
+        { t: "ล้างมือและสวมถุงมือปลอดเชื้ออย่างถูกวิธี", critical: true },
+        { t: "ตรวจสอบและจัดเรียงเครื่องมือครบถ้วนตามลำดับใช้งาน" }
+      ]
+    },
+    {
+      name: "การตรวจและเทคนิคปลอดเชื้อ",
+      items: [
+        { t: "ตรวจภายในสองมือ ระบุขนาดและทิศทางมดลูกได้ถูกต้อง", critical: true },
+        { t: "ใส่ speculum เห็นปากมดลูกชัดเจนโดยไม่ทำให้เจ็บเกินจำเป็น" },
+        { t: "เช็ดน้ำยาฆ่าเชื้อวนจาก os ออกด้านนอกอย่างน้อย 2 รอบ" },
+        { t: "รักษาเทคนิคปลอดเชื้อตลอดหัตถการ (no-touch technique)", critical: true }
+      ]
+    },
+    {
+      name: "ขั้นตอนการใส่ห่วง",
+      items: [
+        { t: "หนีบ tenaculum ตำแหน่งถูกต้อง ปิดคีมช้า ๆ และแจ้งผู้รับบริการก่อน" },
+        { t: "คงแรงดึง tenaculum ตลอดขั้นตอนการสอดเครื่องมือ", critical: true },
+        { t: "วัดความลึกโพรงมดลูกและอ่านค่าได้ถูกต้อง", critical: true },
+        { t: "ประเมินว่าความลึกอยู่ในเกณฑ์ที่ใส่ได้ (6–9 ซม.)", critical: true },
+        { t: "โหลดห่วงในซองภายในเวลาที่กำหนด และตั้ง flange ตามความลึก", critical: true },
+        { t: "หันระนาบ flange ให้ขนานกับแขนห่วง" },
+        { t: "สอดท่อใส่จนถึง flange โดยไม่ฝืนดันต่อ" },
+        { t: "ใช้ withdrawal technique ได้ถูกต้อง (ถอยท่อ ไม่ดันแท่ง)", critical: true },
+        { t: "ถอดแท่งดันออกก่อน แล้วจึงถอนท่อใส่", critical: true },
+        { t: "ตัดสายยาว 3–4 ซม. จาก external os" }
+      ]
+    },
+    {
+      name: "การดูแลหลังทำและการบันทึก",
+      items: [
+        { t: "ถอดเครื่องมือและตรวจสอบการห้ามเลือด" },
+        { t: "ประเมินอาการผู้รับบริการก่อนให้ลุกจากเตียง", critical: true },
+        { t: "สอนคลำสายและอาการเตือน PAINS" },
+        { t: "นัดติดตามและให้บัตรบันทึกห่วงอนามัย" },
+        { t: "ทิ้งของมีคมและขยะติดเชื้อถูกประเภท", critical: true },
+        { t: "บันทึกเวชระเบียนครบถ้วน (ชนิดห่วง ความลึก ความยาวสาย ภาวะแทรกซ้อน)" }
+      ]
+    }
+  ]
+};
+
+/* ============ 5. คลังข้อสอบ ============ */
+CONTENT.quiz = [
+  {
+    q: "ขณะวัดความลึกโพรงมดลูกด้วย uterine sound อ่านค่าได้ 5.5 ซม. ควรทำอย่างไรต่อ",
+    choices: [
+      "ใส่ห่วงตามปกติ แต่ตั้ง flange ที่ 5.5 ซม.",
+      "ไม่ใส่ห่วงในครั้งนี้ และให้คำปรึกษาวิธีคุมกำเนิดทางเลือกอื่น",
+      "ใช้ dilator ถ่างขยายจนความลึกเพิ่มขึ้นเป็น 6 ซม.",
+      "ตัดแขนห่วงให้สั้นลงก่อนใส่"
+    ],
+    a: 1,
+    exp: "ความลึกโพรงมดลูกน้อยกว่า 6 ซม. ถือว่าโพรงเล็กเกินไปสำหรับห่วงมาตรฐาน เสี่ยงต่อการหลุด การทะลุ และปวดมาก จึงควรงดใส่และเสนอวิธีอื่น การถ่างขยายไม่ได้ทำให้โพรงมดลูกใหญ่ขึ้น และห้ามดัดแปลงตัวห่วงเด็ดขาด"
+  },
+  {
+    q: "ขั้นตอนใดที่ป้องกันการทะลุมดลูกได้ดีที่สุด",
+    choices: [
+      "ให้ยาปฏิชีวนะป้องกันก่อนทำ",
+      "เช็ดน้ำยาฆ่าเชื้อสองรอบ",
+      "ตรวจภายในสองมือเพื่อระบุทิศทางมดลูก แล้วดึงรั้งด้วย tenaculum ให้แนวมดลูกตรง",
+      "ทำอัลตราซาวด์ก่อนทุกราย"
+    ],
+    a: 2,
+    exp: "การทะลุมดลูกส่วนใหญ่เกิดจากการดันเครื่องมือสวนทางกับแนวโพรงมดลูก โดยเฉพาะในมดลูกคว่ำหลังที่ไม่ได้ประเมินไว้ การตรวจสองมือร่วมกับแรงดึงจาก tenaculum ที่ทำให้มุม uterocervical ตรงขึ้น จึงเป็นมาตรการป้องกันหลัก"
+  },
+  {
+    q: "หัวใจของ withdrawal technique ในการปล่อยแขนห่วง TCu-380A คือข้อใด",
+    choices: [
+      "ดันแท่งดัน (rod) เข้าไปขณะที่ท่อใส่อยู่กับที่",
+      "จับแท่งดันให้นิ่ง แล้วดึงท่อใส่ถอยลงมาประมาณ 1–1.5 ซม.",
+      "ถอนท่อใส่และแท่งดันออกพร้อมกันอย่างรวดเร็ว",
+      "หมุนท่อใส่ 90 องศาแล้วดึงออก"
+    ],
+    a: 1,
+    exp: "การดันแท่ง rod เข้าไป (plunger technique) จะดันตัวห่วงกระแทกยอดมดลูกและเสี่ยงทะลุ ที่ถูกต้องคือจับ rod ให้นิ่งแล้วถอยท่อใส่ลงมาเพื่อให้แขนกางออกในโพรงมดลูก จากนั้นดันท่อขึ้นชิดยอดอีกครั้ง"
+  },
+  {
+    q: "ลำดับการถอดเครื่องมือหลังแขนห่วงกางออกแล้วคือข้อใด",
+    choices: [
+      "ถอนท่อใส่ออกก่อน แล้วจึงถอดแท่งดัน",
+      "ถอดแท่งดันออกก่อน แล้วจึงถอนท่อใส่",
+      "ถอนออกพร้อมกันทั้งสองชิ้น",
+      "ถอด tenaculum ก่อนเป็นอันดับแรก"
+    ],
+    a: 1,
+    exp: "ต้องถอดแท่งดันออกก่อนเสมอ ถ้าถอนท่อใส่ออกขณะที่แท่งดันยังอยู่ ปลายแท่งอาจเกี่ยวตัวห่วงให้เลื่อนต่ำลงมาที่คอมดลูก ทำให้ตำแหน่งไม่ถูกต้องและต้องใส่ใหม่"
+  },
+  {
+    q: "ผู้รับบริการอายุ 17 ปี ยังไม่เคยตั้งครรภ์ ต้องการคุมกำเนิดระยะยาว ข้อใดถูกต้อง",
+    choices: [
+      "ห้ามใส่ห่วงเพราะยังไม่เคยมีบุตร",
+      "ใส่ได้ อายุน้อยและยังไม่เคยมีบุตรไม่ใช่ข้อห้าม (MEC 2)",
+      "ต้องรอให้อายุครบ 20 ปีก่อน",
+      "ใส่ได้เฉพาะชนิดฮอร์โมนเท่านั้น"
+    ],
+    a: 1,
+    exp: "WHO MEC จัดกลุ่มวัยรุ่นและผู้ที่ยังไม่เคยมีบุตรเป็น category 2 คือประโยชน์มากกว่าความเสี่ยง ใช้ได้ทั้งสองชนิด และ LARC ยังเป็นทางเลือกที่แนะนำเป็นอันดับต้นในวัยรุ่นเพราะประสิทธิภาพไม่ขึ้นกับวินัยการใช้"
+  },
+  {
+    q: "ผู้ป่วยใส่ห่วงมา 8 เดือน มาด้วยไข้ ปวดท้องน้อย ตกขาวเป็นหนอง ตรวจพบ cervical motion tenderness การจัดการที่เหมาะสมที่สุดคือ",
+    choices: [
+      "ถอดห่วงออกทันทีแล้วจึงเริ่มยาปฏิชีวนะ",
+      "เริ่มยาปฏิชีวนะรักษา PID โดยยังไม่ต้องถอดห่วง แล้วประเมินซ้ำใน 48–72 ชม.",
+      "ถอดห่วงและงดยาปฏิชีวนะ",
+      "ส่งผ่าตัดส่องกล้องทันที"
+    ],
+    a: 1,
+    exp: "หลักฐานปัจจุบันชี้ว่าการคาห่วงไว้ระหว่างรักษา PID ไม่ทำให้ผลการรักษาแย่ลง จึงเริ่มยาปฏิชีวนะก่อนและคงห่วงไว้ได้ถ้าผู้ป่วยประสงค์ใช้ต่อ พิจารณาถอดเมื่ออาการไม่ดีขึ้นใน 48–72 ชั่วโมง"
+  },
+  {
+    q: "ผู้รับบริการมาขอคุมกำเนิดฉุกเฉิน หลังมีเพศสัมพันธ์ที่ไม่ได้ป้องกัน 4 วัน ข้อใดเป็นวิธีที่ได้ผลที่สุด",
+    choices: [
+      "ยาเม็ดคุมกำเนิดฉุกเฉิน levonorgestrel",
+      "ใส่ Cu-IUD",
+      "ใส่ LNG-IUS",
+      "ยาฉีดคุมกำเนิด"
+    ],
+    a: 1,
+    exp: "Cu-IUD ใส่ได้ภายใน 5 วันหลังมีเพศสัมพันธ์ที่ไม่ได้ป้องกัน มีอัตราล้มเหลวต่ำกว่า 0.1% ซึ่งดีกว่ายาเม็ดคุมกำเนิดฉุกเฉินอย่างชัดเจน และยังคุมกำเนิดต่อเนื่องได้ทันที ส่วน LNG-IUS ไม่ใช่ทางเลือกสำหรับข้อบ่งใช้นี้"
+  },
+  {
+    q: "ขณะหนีบ tenaculum ผู้รับบริการหน้าซีด เหงื่อแตก ชีพจร 45 ครั้ง/นาที ควรทำอะไรเป็นอันดับแรก",
+    choices: [
+      "ฉีด atropine ทันที",
+      "รีบใส่ห่วงให้เสร็จโดยเร็วที่สุด",
+      "หยุดหัตถการ จัดท่าศีรษะต่ำยกขาสูง และประเมินสัญญาณชีพ",
+      "ให้ผู้ป่วยลุกนั่งเพื่อให้เลือดไปเลี้ยงสมอง"
+    ],
+    a: 2,
+    exp: "นี่คือ vasovagal reaction ขั้นแรกคือหยุดสิ่งกระตุ้น จัดท่า Trendelenburg และประเมิน ABC ส่วน atropine สงวนไว้สำหรับรายที่ชีพจรช้ามากและมีอาการ การให้ลุกนั่งจะยิ่งทำให้เป็นลม"
+  },
+  {
+    q: "ผู้ป่วยใส่ห่วงมา 6 สัปดาห์ มาตามนัด ตรวจ speculum ไม่เห็นสาย ขั้นตอนแรกที่ควรทำคือ",
+    choices: [
+      "ทำอัลตราซาวด์ทางช่องคลอดทันที",
+      "ตรวจการตั้งครรภ์ และให้ใช้วิธีคุมกำเนิดสำรอง",
+      "ถ่ายภาพรังสีช่องท้อง",
+      "ใส่ห่วงอันใหม่ทับเข้าไป"
+    ],
+    a: 1,
+    exp: "เมื่อคลำสายไม่พบต้องคิดถึงการหลุดของห่วงเป็นอันดับแรก จึงต้องตัดการตั้งครรภ์ออกก่อนและให้ใช้วิธีสำรองจนกว่าจะยืนยันตำแหน่งได้ จากนั้นจึงเขี่ยหาสายในคอมดลูก แล้วค่อยทำอัลตราซาวด์ และถ่ายภาพรังสีเมื่ออัลตราซาวด์ไม่พบห่วง"
+  },
+  {
+    q: "ข้อใดคือ MEC category 4 สำหรับการเริ่มใส่ Cu-IUD",
+    choices: [
+      "ประวัติตั้งครรภ์นอกมดลูก",
+      "โลหิตจางจากธาลัสซีเมีย",
+      "เลือดออกทางช่องคลอดผิดปกติที่ยังไม่ได้หาสาเหตุ",
+      "ติดเชื้อ HIV ที่ควบคุมโรคได้ดี"
+    ],
+    a: 2,
+    exp: "เลือดออกผิดปกติที่ยังไม่ได้หาสาเหตุเป็น category 4 สำหรับการเริ่มใส่ เพราะอาจบดบังพยาธิสภาพร้ายแรง เช่น มะเร็งเยื่อบุโพรงมดลูก ต้องหาสาเหตุก่อน ส่วนประวัติท้องนอกมดลูกเป็น category 1 ธาลัสซีเมียเป็น 2 และ HIV ที่ควบคุมได้ดีเป็น 1"
+  },
+  {
+    q: "หลังใส่ LNG-IUS ในวันที่ 18 ของรอบเดือน ควรแนะนำอย่างไร",
+    choices: [
+      "คุมกำเนิดได้ทันที ไม่ต้องใช้วิธีสำรอง",
+      "ใช้วิธีสำรอง 7 วัน",
+      "ใช้วิธีสำรอง 1 เดือน",
+      "ต้องถอดออกแล้วใส่ใหม่ตอนมีประจำเดือน"
+    ],
+    a: 1,
+    exp: "LNG-IUS คุมกำเนิดได้ทันทีเฉพาะเมื่อใส่ภายใน 7 วันแรกของรอบเดือน นอกช่วงนั้นต้องงดเพศสัมพันธ์หรือใช้ถุงยาง 7 วัน ต่างจาก Cu-IUD ที่ออกฤทธิ์ทันทีเสมอ"
+  },
+  {
+    q: "เหตุใดจึงต้องหมุนระนาบของ blue flange ให้ขนานกับแขนของห่วง",
+    choices: [
+      "เพื่อให้ท่อใส่แข็งแรงขึ้น",
+      "เพื่อให้แขนห่วงกางออกในแนวขวางของโพรงมดลูก ซึ่งเป็นแนวที่โพรงกว้างที่สุด",
+      "เพื่อให้สายห่วงยาวเท่ากันทั้งสองเส้น",
+      "ไม่มีความจำเป็น เป็นเพียงธรรมเนียมปฏิบัติ"
+    ],
+    a: 1,
+    exp: "โพรงมดลูกเป็นรูปสามเหลี่ยมแบนในแนวหน้า–หลัง กว้างที่สุดในแนวขวาง (transverse) การตั้ง flange ให้ขนานกับแขนทำให้ผู้ทำทราบทิศของแขนโดยไม่ต้องมองเห็น และวางแขนได้ตรงกับมุมท่อนำไข่ทั้งสองข้าง ลดโอกาสหลุดและตำแหน่งผิด"
+  },
+  {
+    q: "ผู้ป่วยใส่ Cu-IUD อยู่ ตรวจพบว่าตั้งครรภ์ในโพรงมดลูกอายุครรภ์ 7 สัปดาห์ และเห็นสายห่วงที่ปากมดลูก ควรทำอย่างไร",
+    choices: [
+      "คาห่วงไว้จนคลอด",
+      "ถอดห่วงออกโดยเร็ว เพราะลดความเสี่ยงแท้ง แท้งติดเชื้อ และคลอดก่อนกำหนด",
+      "ยุติการตั้งครรภ์เป็นทางเลือกเดียว",
+      "ผ่าตัดส่องกล้องเอาห่วงออก"
+    ],
+    a: 1,
+    exp: "เมื่อมองเห็นสาย การถอดห่วงในไตรมาสแรกช่วยลดความเสี่ยงแท้งเอง แท้งติดเชื้อ และคลอดก่อนกำหนดเมื่อเทียบกับการคาไว้ ทั้งนี้ต้องยืนยันก่อนว่าเป็นการตั้งครรภ์ในโพรงมดลูก ไม่ใช่ท้องนอกมดลูก"
+  },
+  {
+    q: "ข้อใดคือคำแนะนำหลังใส่ห่วงที่ถูกต้อง",
+    choices: [
+      "ห่วงป้องกันโรคติดต่อทางเพศสัมพันธ์ได้ จึงไม่ต้องใช้ถุงยาง",
+      "ประจำเดือนที่มามากขึ้นในช่วง 3–6 เดือนแรกของ Cu-IUD เป็นเรื่องที่พบได้และมักดีขึ้นเอง",
+      "ห้ามใช้ผ้าอนามัยแบบสอดตลอดไป",
+      "ต้องถอดห่วงออกทุกครั้งก่อนตรวจภายในประจำปี"
+    ],
+    a: 1,
+    exp: "Cu-IUD ทำให้ประจำเดือนมามากขึ้นและปวดมากขึ้นในช่วงแรก ซึ่งมักดีขึ้นภายใน 3–6 เดือน และบรรเทาได้ด้วย NSAIDs • ห่วงไม่ป้องกันโรคติดต่อทางเพศสัมพันธ์ • ใช้ผ้าอนามัยแบบสอดได้ • ไม่ต้องถอดเพื่อตรวจภายใน"
+  }
+];
+
+
+/* ------------------------------------------------------------------
+ * diagrams.js — ภาพประกอบ SVG แบบ inline (ปรับสีตามธีมด้วย CSS)
+ * เป็นภาพเชิงแผนภาพเพื่อสื่อหลักการ ไม่ใช่ภาพกายวิภาคตามสัดส่วนจริง
+ * ------------------------------------------------------------------ */
+
+const DIAGRAMS = {};
+
+/* มดลูกคว่ำหน้า vs คว่ำหลัง — ทิศทางที่ต้องสอดเครื่องมือ */
+DIAGRAMS["uterus-position"] = `
+<svg viewBox="0 0 340 190" role="img" aria-label="เปรียบเทียบมดลูกคว่ำหน้าและคว่ำหลัง พร้อมทิศทางการสอดเครื่องมือ">
+  <g class="dg">
+    <text class="dg-title" x="80" y="16" text-anchor="middle">Anteverted (คว่ำหน้า)</text>
+    <path class="dg-organ" d="M52 96 q-10 -44 30 -56 q42 -12 56 22 q10 30 -18 44 q-22 11 -40 6 z"/>
+    <path class="dg-canal" d="M52 96 q14 20 30 30"/>
+    <path class="dg-cervix" d="M74 118 l22 22 q6 8 -4 14 q-12 6 -20 -4 l-16 -20 z"/>
+    <path class="dg-arrow" d="M74 154 q4 -22 22 -36 q22 -18 34 -34" marker-end="url(#dgArrow)"/>
+    <text class="dg-note" x="80" y="182" text-anchor="middle">ปลายมดลูกชี้ไปทางหน้าท้อง</text>
+
+    <line class="dg-div" x1="170" y1="24" x2="170" y2="170"/>
+
+    <text class="dg-title" x="256" y="16" text-anchor="middle">Retroverted (คว่ำหลัง)</text>
+    <path class="dg-organ" d="M290 74 q26 26 -2 48 q-30 22 -60 6 q-26 -16 -14 -40 q14 -24 44 -22 z"/>
+    <path class="dg-canal" d="M226 90 q6 22 22 32"/>
+    <path class="dg-cervix" d="M242 122 l20 22 q6 8 -4 14 q-12 6 -20 -4 l-14 -20 z"/>
+    <path class="dg-arrow" d="M244 156 q-2 -22 -8 -38 q-8 -20 -22 -30" marker-end="url(#dgArrow)"/>
+    <text class="dg-note" x="256" y="182" text-anchor="middle">ต้องสอดไปทางด้านหลัง มิฉะนั้นทะลุ</text>
+  </g>
+  <defs>
+    <marker id="dgArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="dg-arrowhead" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+</svg>`;
+
+/* ตำแหน่งหนีบ tenaculum บนปากมดลูก */
+DIAGRAMS["tenaculum-clock"] = `
+<svg viewBox="0 0 300 190" role="img" aria-label="ตำแหน่งหนีบ tenaculum ที่ปากมดลูก ตำแหน่ง 10 และ 2 นาฬิกา">
+  <g class="dg">
+    <circle class="dg-organ" cx="100" cy="95" r="68"/>
+    <ellipse class="dg-os" cx="100" cy="95" rx="9" ry="16"/>
+    <text class="dg-tick" x="100" y="40" text-anchor="middle">12</text>
+    <text class="dg-tick" x="155" y="99" text-anchor="middle">3</text>
+    <text class="dg-tick" x="116" y="156" text-anchor="middle">6</text>
+    <text class="dg-tick" x="45" y="99" text-anchor="middle">9</text>
+    <circle class="dg-mark" cx="66" cy="61" r="8"/>
+    <circle class="dg-mark" cx="134" cy="61" r="8"/>
+    <text class="dg-marklabel" x="66" y="65" text-anchor="middle">10</text>
+    <text class="dg-marklabel" x="134" y="65" text-anchor="middle">2</text>
+    <path class="dg-arrow" d="M100 112 q-8 40 -30 62" marker-end="url(#dgArrow2)"/>
+    <text class="dg-note" x="52" y="182" text-anchor="middle">แรงดึง</text>
+    <text class="dg-note" x="228" y="60" text-anchor="middle">หนีบที่ริมฝีปากบน</text>
+    <text class="dg-note" x="228" y="78" text-anchor="middle">ตำแหน่ง 10 และ 2 นาฬิกา</text>
+    <text class="dg-note dg-strong" x="228" y="108" text-anchor="middle">ดึงรั้งค้างไว้</text>
+    <text class="dg-note" x="228" y="126" text-anchor="middle">ตลอดการสอดเครื่องมือ</text>
+  </g>
+  <defs>
+    <marker id="dgArrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="dg-arrowhead" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+</svg>`;
+
+/* การวัดความลึกโพรงมดลูก */
+DIAGRAMS["sounding"] = `
+<svg viewBox="0 0 320 200" role="img" aria-label="การวัดความลึกโพรงมดลูกด้วย uterine sound ค่าปกติ 6 ถึง 9 เซนติเมตร">
+  <g class="dg">
+    <path class="dg-organ" d="M96 62 q-14 -34 28 -44 q46 -10 62 26 q12 30 -18 46 l-30 16 l-30 -20 z"/>
+    <path class="dg-cavity" d="M112 60 q26 -22 60 4 l-30 40 z"/>
+    <path class="dg-cervix" d="M128 106 l20 40 q4 10 -8 14 q-14 4 -20 -8 l-14 -34 z"/>
+    <path class="dg-tool" d="M124 178 q4 -34 16 -58 q10 -22 20 -46"/>
+    <circle class="dg-toolTip" cx="160" cy="74" r="4"/>
+    <line class="dg-measure" x1="196" y1="74" x2="196" y2="152"/>
+    <line class="dg-measure" x1="188" y1="74" x2="204" y2="74"/>
+    <line class="dg-measure" x1="188" y1="152" x2="204" y2="152"/>
+    <text class="dg-note dg-strong" x="252" y="106" text-anchor="middle">6–9 ซม.</text>
+    <text class="dg-note" x="252" y="124" text-anchor="middle">ยอดมดลูก → external os</text>
+    <text class="dg-warn" x="160" y="194" text-anchor="middle">&lt; 6 ซม. = ไม่ใส่ &nbsp;|&nbsp; &gt; 9 ซม. = หาสาเหตุ</text>
+  </g>
+</svg>`;
+
+/* การตั้ง blue flange */
+DIAGRAMS["flange"] = `
+<svg viewBox="0 0 330 170" role="img" aria-label="การตั้งตำแหน่ง blue flange ให้เท่ากับความลึกโพรงมดลูก และหันระนาบขนานกับแขนห่วง">
+  <g class="dg">
+    <line class="dg-tube" x1="40" y1="60" x2="250" y2="60"/>
+    <path class="dg-iud" d="M56 60 l0 -22 M56 60 l0 22"/>
+    <path class="dg-iud" d="M50 38 l12 0 M50 82 l12 0"/>
+    <rect class="dg-flange" x="150" y="42" width="9" height="36" rx="2"/>
+    <line class="dg-measure" x1="46" y1="104" x2="154" y2="104"/>
+    <line class="dg-measure" x1="46" y1="96" x2="46" y2="112"/>
+    <line class="dg-measure" x1="154" y1="96" x2="154" y2="112"/>
+    <text class="dg-note dg-strong" x="100" y="126" text-anchor="middle">= ความลึกที่วัดได้จาก sound</text>
+    <text class="dg-note" x="256" y="46" text-anchor="start">ด้ามจับ</text>
+    <text class="dg-note" x="164" y="34" text-anchor="start">flange</text>
+    <text class="dg-note" x="30" y="34" text-anchor="middle">แขนห่วง</text>
+    <text class="dg-note dg-strong" x="165" y="152" text-anchor="middle">ระนาบ flange ต้องขนานกับแขนห่วง (แนวนอน)</text>
+  </g>
+</svg>`;
+
+/* Withdrawal technique 3 จังหวะ */
+DIAGRAMS["withdrawal"] = `
+<svg viewBox="0 0 360 210" role="img" aria-label="ลำดับสามจังหวะของ withdrawal technique">
+  <g class="dg">
+    <g>
+      <text class="dg-title" x="60" y="18" text-anchor="middle">1. ถอยท่อใส่</text>
+      <path class="dg-organ" d="M20 44 q40 -22 80 0 q10 44 -40 62 q-50 -18 -40 -62 z"/>
+      <line class="dg-tube" x1="60" y1="130" x2="60" y2="62"/>
+      <line class="dg-rod" x1="60" y1="140" x2="60" y2="52"/>
+      <path class="dg-iud" d="M42 56 l36 0"/>
+      <path class="dg-arrow" d="M78 74 L78 104" marker-end="url(#dgArrow3)"/>
+      <text class="dg-note" x="60" y="168" text-anchor="middle">จับแท่งดันนิ่ง</text>
+      <text class="dg-note" x="60" y="184" text-anchor="middle">ดึงท่อลง 1–1.5 ซม.</text>
+      <text class="dg-note" x="60" y="200" text-anchor="middle">แขนกางออก</text>
+    </g>
+    <g transform="translate(120,0)">
+      <text class="dg-title" x="60" y="18" text-anchor="middle">2. ดันชิดยอดมดลูก</text>
+      <path class="dg-organ" d="M20 44 q40 -22 80 0 q10 44 -40 62 q-50 -18 -40 -62 z"/>
+      <line class="dg-tube" x1="60" y1="130" x2="60" y2="54"/>
+      <line class="dg-rod" x1="60" y1="140" x2="60" y2="52"/>
+      <path class="dg-iud" d="M40 50 l40 0"/>
+      <path class="dg-arrow" d="M82 96 L82 62" marker-end="url(#dgArrow3)"/>
+      <text class="dg-note" x="60" y="168" text-anchor="middle">ดันท่อขึ้นเบา ๆ</text>
+      <text class="dg-note" x="60" y="184" text-anchor="middle">ให้ห่วงชิดยอดโพรง</text>
+    </g>
+    <g transform="translate(240,0)">
+      <text class="dg-title" x="60" y="18" text-anchor="middle">3. ถอดเครื่องมือ</text>
+      <path class="dg-organ" d="M20 44 q40 -22 80 0 q10 44 -40 62 q-50 -18 -40 -62 z"/>
+      <path class="dg-iud" d="M40 50 l40 0 M60 50 l0 34"/>
+      <line class="dg-tube" x1="60" y1="130" x2="60" y2="96"/>
+      <path class="dg-arrow" d="M84 108 L84 140" marker-end="url(#dgArrow3)"/>
+      <text class="dg-note dg-strong" x="60" y="168" text-anchor="middle">ถอดแท่งดันก่อน</text>
+      <text class="dg-note" x="60" y="184" text-anchor="middle">แล้วจึงถอนท่อใส่</text>
+    </g>
+  </g>
+  <defs>
+    <marker id="dgArrow3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="dg-arrowhead" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+</svg>`;
+
+
+/* ------------------------------------------------------------------
+ * app.js — ตรรกะการแสดงผลและการเก็บความคืบหน้า
+ * ------------------------------------------------------------------ */
+(function () {
+  "use strict";
+
+  const $  = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  /* ---------- storage ---------- */
+  const KEY = "iud-app-v1";
+  let state = { doneSteps: [], rubric: {}, theme: null, quizBest: null };
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) state = Object.assign(state, JSON.parse(raw));
+  } catch (e) { /* โหมดส่วนตัว หรือปิดการเก็บข้อมูล — ใช้ค่าเริ่มต้น */ }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  /* ---------- theme ---------- */
+  if (state.theme) document.documentElement.setAttribute("data-theme", state.theme);
+  $("#themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const isDark = cur ? cur === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    state.theme = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", state.theme);
+    save();
+  });
+
+  /* ---------- tabs ---------- */
+  $("#tabbar").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    $$("#tabbar button").forEach((x) => x.classList.toggle("on", x === b));
+    $$(".view").forEach((v) => v.classList.toggle("on", v.id === "v-" + b.dataset.v));
+    window.scrollTo({ top: 0 });
+  });
+
+  /* ---------- accordion (มอบหมายเหตุการณ์ครั้งเดียว) ---------- */
+  document.addEventListener("click", (e) => {
+    const h = e.target.closest(".acc-head");
+    if (!h) return;
+    const acc = h.closest(".acc");
+    const open = acc.classList.toggle("open");
+    h.setAttribute("aria-expanded", String(open));
+  });
+
+  /* =========================================================
+     มุมมองที่ 1 — เรียนรู้
+     ========================================================= */
+  function renderBlock(b) {
+    if (b.type === "table") {
+      return '<div class="blk tablewrap"><table><thead><tr>' +
+        b.head.map((h) => "<th>" + h + "</th>").join("") +
+        "</tr></thead><tbody>" +
+        b.rows.map((r) => "<tr>" + r.map((c) => "<td>" + c + "</td>").join("") + "</tr>").join("") +
+        "</tbody></table></div>";
+    }
+    if (b.type === "list") {
+      return '<div class="blk"><ul>' + b.items.map((i) => "<li>" + i + "</li>").join("") + "</ul></div>";
+    }
+    if (b.type === "callout") {
+      return '<div class="blk callout ' + b.tone + '"><span class="ct">' + b.title + "</span>" + b.text + "</div>";
+    }
+    if (b.type === "checklist") {
+      return '<div class="blk"><div class="sub-lb">' + b.title + '</div><ul class="mini-check">' +
+        b.items.map((i) => "<li>" + i + "</li>").join("") + "</ul></div>";
+    }
+    return "";
+  }
+
+  function renderLearn() {
+    let h = '<div class="card card-pad">' +
+      '<h2 style="font-size:17px;margin-bottom:6px">ก่อนเริ่มฝึก</h2>' +
+      '<p class="note">แอปนี้ใช้ประกอบการฝึกหัตถการกับหุ่นจำลองและภายใต้การกำกับของอาจารย์ ' +
+      'ไม่ใช้แทนการตัดสินใจทางคลินิกหรือแนวปฏิบัติของสถาบัน ' +
+      'แตะหัวข้อเพื่อเปิดอ่าน ความคืบหน้าและคะแนนจะถูกเก็บไว้ในเครื่องของคุณเท่านั้น</p></div>';
+
+    h += '<div class="sec-title">พื้นฐานที่ต้องรู้ก่อนลงมือ</div>';
+    CONTENT.learn.forEach((sec) => {
+      h += '<div class="card acc"><button class="acc-head" aria-expanded="false">' +
+        '<span class="ic">' + sec.icon + '</span>' +
+        '<span class="tx">' + esc(sec.title) + "</span>" +
+        '<span class="ch">▾</span></button>' +
+        '<div class="acc-body">' + sec.blocks.map(renderBlock).join("") + "</div></div>";
+    });
+
+    h += '<div class="card card-pad"><div class="sub-lb">แหล่งอ้างอิงเนื้อหา</div>' +
+      '<p class="ref">WHO Medical Eligibility Criteria for Contraceptive Use, 5th ed.</p>' +
+      '<p class="ref">WHO Selected Practice Recommendations for Contraceptive Use, 3rd ed.</p>' +
+      '<p class="ref">CDC U.S. Selected Practice Recommendations for Contraceptive Use</p>' +
+      '<p class="ref">แนวทางการให้บริการคุมกำเนิด สำนักอนามัยการเจริญพันธุ์ กรมอนามัย</p>' +
+      '<p class="note" style="margin-top:8px">ตรวจสอบเทียบกับแนวปฏิบัติล่าสุดของโรงพยาบาลที่ปฏิบัติงานเสมอ</p></div>';
+
+    $("#v-learn").innerHTML = h;
+  }
+
+  /* =========================================================
+     มุมมองที่ 2 — ขั้นตอนหัตถการ
+     ========================================================= */
+  let phaseFilter = "all";
+
+  function stepHTML(s) {
+    const done = state.doneSteps.indexOf(s.id) !== -1;
+    const ph = CONTENT.phases.filter((p) => p.id === s.phase)[0];
+    let b = '<span class="phase-tag">' + ph.name + "</span>" +
+      '<ul class="do-list">' + s.do.map((d) => "<li>" + d + "</li>").join("") + "</ul>";
+    if (s.diagram && DIAGRAMS[s.diagram]) b += '<div class="figure">' + DIAGRAMS[s.diagram] + "</div>";
+    b += '<div class="why"><span class="lb">ทำไมต้องทำแบบนี้</span>' + s.why + "</div>";
+    b += '<div class="pit"><span class="lb">จุดที่มักพลาด</span>' + s.pitfall + "</div>";
+    b += '<div class="stepfoot"><button class="btn ' + (done ? "ghost" : "primary") +
+      '" data-done="' + s.id + '">' + (done ? "◻ ยกเลิกเครื่องหมาย" : "✓ ทำขั้นตอนนี้แล้ว") + "</button></div>";
+
+    return '<div class="card acc step' + (done ? " done" : "") + '" data-step="' + s.id + '">' +
+      '<button class="acc-head" aria-expanded="false">' +
+      '<span class="num">' + (done ? "✓" : s.id) + "</span>" +
+      '<span class="tx">' + esc(s.title) + "</span>" +
+      '<span class="ch">▾</span></button>' +
+      '<div class="acc-body">' + b + "</div></div>";
+  }
+
+  function renderSteps() {
+    const list = CONTENT.steps.filter((s) => phaseFilter === "all" || s.phase === phaseFilter);
+    const pct = Math.round((state.doneSteps.length / CONTENT.steps.length) * 100);
+
+    let h = '<div class="card"><div class="prog">' +
+      '<div class="bar"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="pct">' + state.doneSteps.length + "/" + CONTENT.steps.length + "</div>" +
+      '</div><div style="padding:0 14px 12px"><button class="btn ghost small" id="resetSteps">ล้างความคืบหน้า</button></div></div>';
+
+    h += '<div class="phasebar"><button class="chip' + (phaseFilter === "all" ? " on" : "") +
+      '" data-ph="all">ทั้งหมด</button>' +
+      CONTENT.phases.map((p) => '<button class="chip' + (phaseFilter === p.id ? " on" : "") +
+        '" data-ph="' + p.id + '">' + p.name + "</button>").join("") + "</div>";
+
+    h += list.map(stepHTML).join("");
+    $("#v-steps").innerHTML = h;
+  }
+
+  $("#v-steps").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (chip) { phaseFilter = chip.dataset.ph; renderSteps(); return; }
+
+    if (e.target.id === "resetSteps") {
+      state.doneSteps = []; save(); renderSteps(); return;
+    }
+
+    const d = e.target.closest("[data-done]");
+    if (d) {
+      const id = Number(d.dataset.done);
+      const i = state.doneSteps.indexOf(id);
+      if (i === -1) state.doneSteps.push(id); else state.doneSteps.splice(i, 1);
+      save();
+      const openIds = $$("#v-steps .acc.open").map((a) => a.dataset.step);
+      renderSteps();
+      openIds.forEach((sid) => {
+        const el = $('#v-steps .step[data-step="' + sid + '"]');
+        if (el) el.classList.add("open");
+      });
+    }
+  });
+
+  /* =========================================================
+     มุมมองที่ 3 — ปัญหาและภาวะแทรกซ้อน
+     ========================================================= */
+  function renderTrouble() {
+    let h = '<div class="card card-pad"><span class="ct" style="font-weight:700">' +
+      CONTENT.pains.title + '</span><ul class="pains">' +
+      CONTENT.pains.items.map((p) =>
+        '<li><span class="k">' + p[0] + "</span><div><div>" + p[2] +
+        '</div><div class="en">' + p[1] + "</div></div></li>").join("") +
+      "</ul></div>";
+
+    h += '<div class="sec-title">แก้ปัญหาระหว่างทำและภาวะแทรกซ้อน</div>';
+    CONTENT.troubles.forEach((t) => {
+      let b = '<span class="tag">' + t.tag + "</span>" +
+        '<p class="note">' + t.when + "</p>" +
+        '<div class="sub-lb">สิ่งที่พบ</div><ul class="blk">' +
+        t.signs.map((s) => "<li>" + s + "</li>").join("") + "</ul>" +
+        '<div class="sub-lb">การจัดการ</div><ul class="do-list">' +
+        t.manage.map((s) => "<li>" + s + "</li>").join("") + "</ul>";
+      h += '<div class="card acc"><button class="acc-head" aria-expanded="false">' +
+        '<span class="ic">🔎</span><span class="tx">' + esc(t.title) + "</span>" +
+        '<span class="ch">▾</span></button><div class="acc-body">' + b + "</div></div>";
+    });
+    $("#v-trouble").innerHTML = h;
+  }
+
+  /* =========================================================
+     มุมมองที่ 4 — แบบประเมินทักษะ
+     ========================================================= */
+  function rubricKey(g, i) { return g + "-" + i; }
+
+  function rubricStats() {
+    let total = 0, max = 0, missedCritical = 0, rated = 0, items = 0;
+    CONTENT.rubric.groups.forEach((g, gi) => {
+      g.items.forEach((it, ii) => {
+        items++;
+        max += 2;
+        const v = state.rubric[rubricKey(gi, ii)];
+        if (v !== undefined) { total += v; rated++; }
+        if (it.critical && v !== undefined && v < 2) missedCritical++;
+      });
+    });
+    return { total: total, max: max, missedCritical: missedCritical, rated: rated, items: items };
+  }
+
+  function renderRubric() {
+    const st = rubricStats();
+    const pct = st.max ? Math.round((st.total / st.max) * 100) : 0;
+    const verdict = st.rated < st.items
+      ? { t: "ยังประเมินไม่ครบ (" + st.rated + "/" + st.items + " ข้อ)", tone: "info" }
+      : st.missedCritical > 0
+        ? { t: "ยังไม่ผ่าน — มีข้อสำคัญ (critical) ที่ทำไม่ถูกต้อง " + st.missedCritical + " ข้อ", tone: "danger" }
+        : pct >= 80
+          ? { t: "ผ่านเกณฑ์ — คะแนน " + pct + "%", tone: "good" }
+          : { t: "ยังไม่ผ่านเกณฑ์ — ต้องได้ตั้งแต่ 80% ขึ้นไป (ได้ " + pct + "%)", tone: "warn" };
+
+    let h = '<div class="card card-pad">' +
+      '<h2 style="font-size:17px;margin-bottom:6px">แบบประเมินทักษะหัตถการ</h2>' +
+      '<p class="note">ใช้ได้ทั้งการประเมินตนเองหลังฝึกกับหุ่น และให้อาจารย์ประเมินแบบ DOPS ' +
+      'ข้อที่ติดป้าย <b>critical</b> คือข้อที่ถ้าทำไม่ถูกต้องถือว่ายังไม่ผ่าน แม้คะแนนรวมจะสูง</p></div>';
+
+    h += '<div class="card"><div class="prog"><div class="bar"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="pct">' + st.total + "/" + st.max + "</div></div>" +
+      '<div style="padding:0 14px 12px"><div class="callout ' + verdict.tone + '">' + verdict.t + "</div>" +
+      '<button class="btn ghost small" id="resetRubric" style="margin-top:10px">ล้างผลประเมิน</button></div></div>';
+
+    CONTENT.rubric.groups.forEach((g, gi) => {
+      const gTotal = g.items.reduce((a, _, ii) => a + (state.rubric[rubricKey(gi, ii)] || 0), 0);
+      h += '<div class="card"><div class="group-head">' + esc(g.name) +
+        "<span>" + gTotal + "/" + g.items.length * 2 + "</span></div>";
+      g.items.forEach((it, ii) => {
+        const v = state.rubric[rubricKey(gi, ii)];
+        h += '<div class="rub-item"><div class="lbl">' +
+          (it.critical ? '<span class="crit">critical</span>' : "") +
+          "<span>" + esc(it.t) + "</span></div><div class=\"rate\">" +
+          CONTENT.rubric.scale.map((s) =>
+            '<button data-v="' + s.v + '" data-k="' + rubricKey(gi, ii) + '"' +
+            (v === s.v ? ' class="on"' : "") + ' title="' + esc(s.hint) + '">' + s.label + "</button>").join("") +
+          "</div></div>";
+      });
+      h += "</div>";
+    });
+
+    $("#v-rubric").innerHTML = h;
+  }
+
+  $("#v-rubric").addEventListener("click", (e) => {
+    if (e.target.id === "resetRubric") { state.rubric = {}; save(); renderRubric(); return; }
+    const b = e.target.closest("[data-k]");
+    if (!b) return;
+    const k = b.dataset.k, v = Number(b.dataset.v);
+    if (state.rubric[k] === v) delete state.rubric[k]; else state.rubric[k] = v;
+    save();
+    const y = window.scrollY;
+    renderRubric();
+    window.scrollTo({ top: y });
+  });
+
+  /* =========================================================
+     มุมมองที่ 5 — ควิซ
+     ========================================================= */
+  let quiz = { order: [], idx: 0, score: 0, answered: false };
+
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function startQuiz() {
+    quiz = { order: shuffle(CONTENT.quiz.map((_, i) => i)), idx: 0, score: 0, answered: false };
+    renderQuiz();
+  }
+
+  function renderQuiz() {
+    const v = $("#v-quiz");
+
+    if (quiz.idx >= quiz.order.length) {
+      const pct = Math.round((quiz.score / quiz.order.length) * 100);
+      if (state.quizBest === null || pct > state.quizBest) { state.quizBest = pct; save(); }
+      v.innerHTML = '<div class="card score">' +
+        '<div class="big">' + pct + "%</div>" +
+        '<div class="sub">ตอบถูก ' + quiz.score + " จาก " + quiz.order.length + " ข้อ" +
+        (state.quizBest !== null ? " • สถิติสูงสุด " + state.quizBest + "%" : "") + "</div>" +
+        '<div class="callout ' + (pct >= 80 ? "good" : pct >= 60 ? "warn" : "danger") + '">' +
+        (pct >= 80 ? "พร้อมลงฝึกกับหุ่นจำลองแล้ว" :
+          pct >= 60 ? "ทบทวนหัวข้อที่ตอบผิดอีกครั้งก่อนลงฝึก" :
+            "ควรกลับไปอ่านหมวดเรียนรู้และขั้นตอนหัตถการให้ครบก่อน") + "</div>" +
+        '<button class="btn primary" id="againBtn" style="margin-top:14px">เริ่มทำใหม่</button></div>';
+      return;
+    }
+
+    const q = CONTENT.quiz[quiz.order[quiz.idx]];
+    v.innerHTML = '<div class="card card-pad">' +
+      '<div class="qmeta"><span>ข้อ ' + (quiz.idx + 1) + " / " + quiz.order.length + "</span>" +
+      "<span>ถูก " + quiz.score + " ข้อ</span></div>" +
+      '<div class="qtext">' + esc(q.q) + "</div>" +
+      q.choices.map((c, i) => '<button class="opt" data-i="' + i + '">' + esc(c) + "</button>").join("") +
+      '<div id="expBox"></div></div>';
+  }
+
+  $("#v-quiz").addEventListener("click", (e) => {
+    if (e.target.id === "againBtn") { startQuiz(); window.scrollTo({ top: 0 }); return; }
+    if (e.target.id === "nextBtn") {
+      quiz.idx++; quiz.answered = false; renderQuiz(); window.scrollTo({ top: 0 }); return;
+    }
+    const opt = e.target.closest(".opt");
+    if (!opt || quiz.answered) return;
+
+    quiz.answered = true;
+    const q = CONTENT.quiz[quiz.order[quiz.idx]];
+    const picked = Number(opt.dataset.i);
+    if (picked === q.a) quiz.score++;
+
+    $$("#v-quiz .opt").forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.a) b.classList.add("correct");
+      else if (i === picked) b.classList.add("wrong");
+    });
+    $("#expBox").innerHTML = '<div class="exp"><span class="lb">' +
+      (picked === q.a ? "ถูกต้อง" : "ยังไม่ถูก") + "</span>" + q.exp + "</div>" +
+      '<button class="btn primary" id="nextBtn" style="margin-top:12px">' +
+      (quiz.idx + 1 >= quiz.order.length ? "ดูผลคะแนน" : "ข้อถัดไป") + "</button>";
+  });
+
+  /* ---------- boot ---------- */
+  renderLearn();
+  renderSteps();
+  renderTrouble();
+  renderRubric();
+  startQuiz();
+})();
+
+</script>
+</body>
+</html>
