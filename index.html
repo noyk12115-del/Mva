@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>MVA Trainer — คู่มือฝึกและทบทวนการดูดชิ้นเนื้อในโพรงมดลูกด้วยมือ</title>
 <meta name="description" content="แอปสอนและทบทวนหัตถการ Manual Vacuum Aspiration (MVA) สำหรับการทำงานจริงและการสอบ — บทเรียน เช็กลิสต์ OSCE คลังข้อสอบ กรณีศึกษา และการ์ดอ้างอิงเร็ว">
-<meta name="theme-color" content="#0d7a72">
+<meta name="theme-color" content="#0d7a72" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1518" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+<div class="stickytop">
 <header class="topbar">
   <div class="topbar-in">
     <div class="logo">MVA</div>
@@ -20,13 +22,16 @@
       <p>ฝึกหัตถการดูดชิ้นเนื้อในโพรงมดลูกด้วยมือ — ใช้ทำงานและเตรียมสอบ</p>
     </div>
     <div class="spacer"></div>
+    <button class="icon-btn" id="shareTop" title="ส่งลิงก์หน้านี้ให้คนอื่น" aria-label="ส่งลิงก์หน้านี้">🔗</button>
     <button class="icon-btn" id="themeBtn" title="สลับโหมดสว่าง/มืด" aria-label="สลับธีม">◐</button>
   </div>
 </header>
 
 <nav class="tabs"><div class="tabs-in" id="tabs"></div></nav>
+</div>
 
 <main id="view" tabindex="-1"></main>
+<noscript><div style="max-width:960px;margin:0 auto;padding:24px 16px"><b>แอปนี้ต้องเปิดใช้งาน JavaScript</b> — กรุณาเปิด JavaScript ในเบราว์เซอร์แล้วโหลดหน้านี้ใหม่</div></noscript>
 
 <footer class="disc">
   <b>ข้อจำกัดความรับผิดชอบ</b> — เนื้อหาในแอปนี้จัดทำเพื่อการศึกษาและทบทวนของบุคลากรทางการแพทย์เท่านั้น

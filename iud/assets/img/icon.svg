@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ไอคอนแอปสอนใส่ห่วงอนามัย">
+  <rect width="512" height="512" rx="118" fill="#b3235c"/>
+  <g fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round">
+    <path d="M138 154 H374"/>
+    <path d="M256 154 V328"/>
+    <path d="M256 328 q-26 42 -34 78" stroke-width="26"/>
+    <path d="M256 328 q26 42 34 78" stroke-width="26"/>
+  </g>
+</svg>
